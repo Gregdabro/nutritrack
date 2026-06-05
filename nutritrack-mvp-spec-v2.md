@@ -1624,14 +1624,14 @@ if (process.env.NODE_ENV === 'production') {
 
 ### Спринт 0 — Подготовка (3-5 дней)
 
-- [ ] Создать репозиторий, настроить структуру проекта
-- [ ] Подключить MongoDB Atlas
-- [ ] Создать Telegram-бота (BotFather)
-- [ ] Настроить переменные окружения (включая DeepSeek API key)
-- [ ] Базовый Express сервер + Telegraf бот (hello world)
-- [ ] React + Vite проект
-- [ ] Настроить pino-логирование
-- [ ] Deploy на Railway + Vercel (пустые)
+- [x] Создать репозиторий, настроить структуру проекта
+- [x] Подключить MongoDB Atlas
+- [x] Создать Telegram-бота (BotFather)
+- [x] Настроить переменные окружения (включая DeepSeek API key)
+- [x] Базовый Express сервер + Telegraf бот (hello world)
+- [x] React + Vite проект
+- [x] Настроить pino-логирование
+- [x] Deploy на Railway + Vercel (пустые)
 
 ### Спринт 1 — Авторизация и профиль (4-7 дней)
 
