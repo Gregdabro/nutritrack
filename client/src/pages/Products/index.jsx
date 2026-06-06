@@ -52,6 +52,8 @@ export default function Products() {
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState(null);
   const [form, setForm] = useState(EMPTY_FORM);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState(null);
 
   // Redirect if not logged in
   useEffect(() => {
@@ -112,15 +114,20 @@ export default function Products() {
     setShowForm(false);
     setEditingId(null);
     setForm(EMPTY_FORM);
+    setError(null);
   }
 
   function handleFieldChange(field) {
     return (e) => {
       setForm((prev) => ({ ...prev, [field]: e.target.value }));
+      setError(null);
     };
   }
 
   async function handleSubmit() {
+    setSaving(true);
+    setError(null);
+
     const aliases = form.aliases
       ? form.aliases.split(',').map((s) => s.trim()).filter(Boolean)
       : [];
@@ -139,14 +146,26 @@ export default function Products() {
       currentPriceEur: form.currentPriceEur !== '' ? Number(form.currentPriceEur) : null,
     };
 
-    if (editingId) {
-      await api.products.update(editingId, body);
-    } else {
-      await api.products.create(body);
-    }
+    try {
+      if (editingId) {
+        await api.products.update(editingId, body);
+      } else {
+        await api.products.create(body);
+      }
 
-    cancelForm();
-    fetchProducts();
+      cancelForm();
+      fetchProducts();
+    } catch (err) {
+      const msg =
+        err.response?.data?.error === 'VALIDATION_ERROR'
+          ? 'Проверьте заполнение полей: ' +
+            err.response.data.details?.map((d) => d.message).join(', ')
+          : err.response?.data?.message ||
+            'Не удалось сохранить продукт. Попробуйте ещё раз.';
+      setError(msg);
+    } finally {
+      setSaving(false);
+    }
   }
 
   async function handleDelete(product) {
@@ -183,6 +202,8 @@ export default function Products() {
             <div className={styles.formTitle}>
               {editingId ? 'Редактировать продукт' : 'Новый продукт'}
             </div>
+
+            {error && <div className={styles.formError}>{error}</div>}
 
             <div className={styles.formGrid}>
               <div className={`${styles.formField} ${styles.formFieldFull}`}>
@@ -291,8 +312,12 @@ export default function Products() {
               <button className={styles.cancelBtn} onClick={cancelForm}>
                 Отмена
               </button>
-              <button className={styles.saveBtn} onClick={handleSubmit} disabled={!form.name.trim()}>
-                Сохранить
+              <button
+                className={styles.saveBtn}
+                onClick={handleSubmit}
+                disabled={!form.name.trim() || saving}
+              >
+                {saving ? 'Сохранение...' : 'Сохранить'}
               </button>
             </div>
           </div>

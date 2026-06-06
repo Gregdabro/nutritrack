@@ -210,6 +210,16 @@
   color: #1A1916;
 }
 
+.formError {
+  background: #FAECE7;
+  color: #993C1D;
+  padding: 10px 14px;
+  border-radius: 8px;
+  margin-bottom: 14px;
+  font-size: 13px;
+  line-height: 1.4;
+}
+
 .formGrid {
   display: grid;
   grid-template-columns: 1fr 1fr;
