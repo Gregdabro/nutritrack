@@ -33,9 +33,11 @@ async function main() {
       logger.error('RAILWAY_STATIC_URL is not set in production');
       process.exit(1);
     }
-    const webhookPath = await bot.createWebhook({ domain });
-    app.use(webhookPath);
-    logger.info({ domain }, 'Bot webhook configured');
+    // Извлекаем hostname из полного URL (напр. nutritrack.up.railway.app)
+    const hostname = new URL(domain).hostname;
+    const webhookPath = await bot.createWebhook({ domain: hostname });
+    app.use(webhookPath, bot.webhookCallback(webhookPath));
+    logger.info({ hostname, webhookPath }, 'Bot webhook configured');
   } else {
     bot.launch();
     logger.info('Bot started in polling mode');
