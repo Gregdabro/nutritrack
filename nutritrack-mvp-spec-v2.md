@@ -1662,6 +1662,7 @@ if (process.env.NODE_ENV === 'production') {
 - [ ] AI Layer: DeepSeekProvider + ClaudeProvider + AIProviderFactory + aiClient
 - [ ] services/aiParser.js
 - [ ] services/nutritionCalc.js
+- [ ] **Unit-тесты для `nutritionCalc.js`** — 10-15 кейсов: расчёт БЖУ на порцию, суммирование totals, расчёт стоимости, граничные значения (0г, null цена). Инструмент: `node:test` (встроен в Node 20, без зависимостей)
 - [ ] Zod-схемы: foodLogSchemas.js
 - [ ] POST /food-logs/parse (с graceful degradation)
 - [ ] POST /food-logs
@@ -1678,6 +1679,7 @@ if (process.env.NODE_ENV === 'production') {
 
 - [ ] Mongoose схема: Workout
 - [ ] services/caloriesBurned.js
+- [ ] **Unit-тесты для `caloriesBurned.js`** — 5-8 кейсов: разные типы тренировок (home/run/gym), граничные значения длительности, корректность MET-формулы
 - [ ] CRUD /workouts
 - [ ] Zod-схема: workoutSchemas.js
 - [ ] Telegram-бот: /train, парсинг результатов свободным текстом
@@ -1926,6 +1928,17 @@ AI-рынок нестабилен: провайдеры меняют тариф
 
 **Обоснование:**
 Бессистемный `console.log` не позволяет фильтровать по уровням, не структурирован для поиска, не поддерживает redact-механизм для скрытия чувствительных данных. Pino — минимальный overhead, нативный JSON, поддержка уровней и redact-полей. В development используется `pino-pretty` для читаемого вывода. В production — raw JSON для парсинга Railway/Render логов.
+
+---
+
+### ADR-09: CommonJS вместо ESM
+
+**Решение:** Backend использует CommonJS (`require` / `module.exports`). Миграция на ESM не планируется в рамках MVP.
+
+**Обоснование:**
+Выбор сознательный. На момент написания ТЗ ключевые зависимости — Telegraf 4.x, Mongoose 8.x, node-cron — работают в CJS без нареканий. ESM-экосистема Node.js остаётся неровной: часть пакетов публикует только ESM-сборки, что создаёт проблемы с динамическими импортами и смешанными графами зависимостей. Для MVP с двумя пользователями выигрыш от ESM (tree-shaking, top-level await) не покрывает риск отладки edge-cases совместимости.
+
+**Условие пересмотра:** При добавлении зависимости, которая поставляется только как ESM (pure ESM package), вопрос миграции открывается заново. В этом случае переход делается целиком — не смешанный граф.
 
 ---
 
