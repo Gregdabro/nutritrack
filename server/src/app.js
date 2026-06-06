@@ -35,9 +35,7 @@ async function main() {
     const domain = publicDomain || staticUrl;
 
     if (domain) {
-      const hostname = publicDomain
-        ? `${process.env.RAILWAY_SERVICE_NAME}.${publicDomain}`
-        : new URL(staticUrl).hostname;
+      const hostname = publicDomain || new URL(staticUrl).hostname;
       try {
         const webhookPath = await bot.createWebhook({ domain: hostname });
         app.use(webhookPath, bot.webhookCallback(webhookPath));
