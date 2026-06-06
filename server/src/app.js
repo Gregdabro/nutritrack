@@ -28,16 +28,28 @@ async function main() {
   const port = process.env.PORT || 3001;
 
   if (process.env.NODE_ENV === 'production') {
-    const domain = process.env.RAILWAY_STATIC_URL;
-    if (!domain) {
-      logger.error('RAILWAY_STATIC_URL is not set in production');
-      process.exit(1);
+    const publicDomain = process.env.RAILWAY_PUBLIC_DOMAIN;
+    const staticUrl = process.env.RAILWAY_STATIC_URL;
+    const domain = publicDomain || staticUrl;
+
+    if (domain) {
+      const hostname = publicDomain
+        ? `${process.env.RAILWAY_SERVICE_NAME}.${publicDomain}`
+        : new URL(staticUrl).hostname;
+      try {
+        const webhookPath = await bot.createWebhook({ domain: hostname });
+        app.use(webhookPath, bot.webhookCallback(webhookPath));
+        logger.info({ hostname, webhookPath }, 'Bot webhook configured');
+      } catch (webhookErr) {
+        logger.error({ err: webhookErr }, 'Webhook setup failed, falling back to polling');
+        bot.launch();
+        logger.info('Bot started in polling mode (fallback)');
+      }
+    } else {
+      logger.warn('No Railway domain found, starting bot in polling mode');
+      bot.launch();
+      logger.info('Bot started in polling mode');
     }
-    // Извлекаем hostname из полного URL (напр. nutritrack.up.railway.app)
-    const hostname = new URL(domain).hostname;
-    const webhookPath = await bot.createWebhook({ domain: hostname });
-    app.use(webhookPath, bot.webhookCallback(webhookPath));
-    logger.info({ hostname, webhookPath }, 'Bot webhook configured');
   } else {
     bot.launch();
     logger.info('Bot started in polling mode');
