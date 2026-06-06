@@ -1,7 +1,6 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
 import useAuthStore from './store/authStore';
 import Login from './pages/Login';
-import LoginSuccess from './pages/LoginSuccess';
 import LoginToken from './pages/LoginToken';
 import Settings from './pages/Settings';
 
@@ -24,7 +23,6 @@ export default function App() {
   return (
     <Routes>
       <Route path="/login" element={<Login />} />
-      <Route path="/login/success" element={<LoginSuccess />} />
       <Route path="/login/token" element={<LoginToken />} />
       <Route
         path="/settings"

@@ -8,7 +8,6 @@ const requestLogger = require('./middleware/requestLogger');
 const errorHandler = require('./middleware/errorHandler');
 const authRoutes = require('./routes/auth');
 const goalRoutes = require('./routes/goals');
-const oidcRoutes = require('./routes/oidc');
 const bot = require('./bot');
 
 async function main() {
@@ -24,7 +23,6 @@ async function main() {
   });
 
   app.use('/api/auth', authRoutes.router);
-  app.use('/api/auth/oidc', oidcRoutes);
   app.use('/api/goals', goalRoutes);
 
   app.use(errorHandler);
