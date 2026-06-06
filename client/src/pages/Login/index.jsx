@@ -1,8 +1,11 @@
 import { useEffect, useState } from 'react';
-import { useSearchParams, useNavigate, Link } from 'react-router-dom';
+import { useSearchParams, useNavigate } from 'react-router-dom';
 import useAuthStore from '../../store/authStore';
 import api from '../../api';
 import styles from './Login.module.css';
+
+// URL колбэка на бэкенде — виджет с data-auth-url делает редирект сюда
+const CALLBACK_URL = `${import.meta.env.VITE_API_URL}/auth/oidc/callback`;
 
 export default function Login() {
   const navigate = useNavigate();
@@ -19,48 +22,20 @@ export default function Login() {
     }
   }, [token, navigate]);
 
-  // ---- Telegram Widget (старый способ) ----
+  // ---- Telegram Widget с data-auth-url (редирект, без попапа) ----
   useEffect(() => {
-    window.onTelegramAuth = async (user) => {
-      try {
-        const { data } = await api.auth.telegram(user);
-        setToken(data.token);
-        setUser(data.user);
-        navigate('/');
-      } catch {
-        setError('Ошибка авторизации через Telegram');
-      }
-    };
-
     const script = document.createElement('script');
     script.src = 'https://telegram.org/js/telegram-widget.js?22';
     script.async = true;
     script.setAttribute('data-telegram-login', import.meta.env.VITE_BOT_USERNAME);
     script.setAttribute('data-size', 'large');
-    script.setAttribute('data-onauth', 'onTelegramAuth(user)');
+    script.setAttribute('data-auth-url', CALLBACK_URL);
 
     const container = document.getElementById('telegram-widget');
     if (container) {
       container.appendChild(script);
     }
-
-    return () => {
-      delete window.onTelegramAuth;
-    };
   }, []);
-
-  // ---- OIDC Redirect (новый надёжный способ) ----
-  async function handleOidcLogin() {
-    setLoading(true);
-    setError(null);
-    try {
-      const { data } = await api.get('/auth/oidc/auth-url');
-      window.location.href = data.url;
-    } catch {
-      setError('Не удалось начать вход через Telegram');
-      setLoading(false);
-    }
-  }
 
   // ---- Dev Login (тестирование) ----
   async function handleDevLogin() {
@@ -92,28 +67,13 @@ export default function Login() {
           </div>
         )}
 
-        {/* Основная кнопка — OIDC редирект */}
-        <button
-          type="button"
-          className={styles.oidcBtn}
-          onClick={handleOidcLogin}
-          disabled={loading}
-        >
-          {loading ? 'Перенаправление...' : '🔵 Войти через Telegram'}
-        </button>
+        {/* Telegram Login Widget — использует data-auth-url для редиректа */}
+        <div id="telegram-widget" className={styles.widget} />
 
         <p className={styles.oidcHint}>
-          Откроется страница Telegram для подтверждения входа. Это надёжнее,
-          чем всплывающее окно.
+          После нажатия кнопки откроется страница Telegram для подтверждения.
+          Без всплывающих окон — просто редирект.
         </p>
-
-        {/* Запасной вариант — старый виджет */}
-        <details className={styles.fallback}>
-          <summary className={styles.fallbackSummary}>
-            Если основной способ не работает — старый виджет ▼
-          </summary>
-          <div id="telegram-widget" className={styles.widget} />
-        </details>
 
         <hr className={styles.divider} />
 
@@ -130,8 +90,9 @@ export default function Login() {
             type="button"
             className={styles.devBtn}
             onClick={handleDevLogin}
+            disabled={loading}
           >
-            Войти как Dev (telegramId: 99999)
+            {loading ? 'Вход...' : 'Войти как Dev (telegramId: 99999)'}
           </button>
         )}
       </div>

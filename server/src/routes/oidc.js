@@ -1,156 +1,58 @@
 const { Router } = require('express');
 const crypto = require('crypto');
 const jwt = require('jsonwebtoken');
-const axios = require('axios');
 const User = require('../models/User');
 const { AuthenticationError } = require('../errors/AppError');
 const logger = require('../logger');
 
 const router = Router();
 
-// Конфигурация
-const CLIENT_ID = process.env.TELEGRAM_CLIENT_ID;
-const CLIENT_SECRET = process.env.TELEGRAM_CLIENT_SECRET;
-const REDIRECT_URI = process.env.OIDC_REDIRECT_URI
-  || `${process.env.WEBAPP_URL || ''}/api/auth/oidc/callback`;
-
-// Ленивая инициализация jose (ESM-пакет, нужен динамический import)
-let _joseJWKS = null;
-async function getJoseJWKS() {
-  if (!_joseJWKS) {
-    const jose = await import('jose');
-    _joseJWKS = {
-      jwtVerify: jose.jwtVerify,
-      jwks: jose.createRemoteJWKSet(
-        new URL('https://oauth.telegram.org/.well-known/jwks.json'),
-      ),
-    };
-  }
-  return _joseJWKS;
+// Telegram hash validation (тот же алгоритм, что в auth.js)
+function validateTelegramHash(data) {
+  const { hash, ...rest } = data;
+  const dataCheckString = Object.keys(rest)
+    .sort()
+    .map(k => `${k}=${rest[k]}`)
+    .join('\n');
+  const secretKey = crypto.createHmac('sha256', 'WebAppData')
+    .update(process.env.BOT_TOKEN).digest();
+  const expectedHash = crypto.createHmac('sha256', secretKey)
+    .update(dataCheckString).digest('hex');
+  return hash === expectedHash;
 }
 
-// In-memory хранилище PKCE и state (с TTL)
-const pendingAuth = new Map();
-
-// Очистка просроченных записей каждые 5 минут
-setInterval(() => {
-  const now = Date.now();
-  for (const [key, entry] of pendingAuth) {
-    if (now - entry.createdAt > 600_000) pendingAuth.delete(key); // 10 мин
-  }
-}, 300_000);
-
-function base64URL(buf) {
-  return buf.toString('base64url');
-}
-
-function sha256(buf) {
-  return crypto.createHash('sha256').update(buf).digest();
-}
-
-function generateState() {
-  return crypto.randomBytes(32).toString('hex');
-}
-
-// GET: сгенерировать URL для редиректа на Telegram OAuth
-router.get('/auth-url', (_req, res) => {
-  try {
-    const state = generateState();
-    const codeVerifier = base64URL(crypto.randomBytes(32));
-    const codeChallenge = base64URL(sha256(codeVerifier));
-
-    pendingAuth.set(state, {
-      verifier: codeVerifier,
-      createdAt: Date.now(),
-    });
-
-    const params = new URLSearchParams({
-      client_id: CLIENT_ID,
-      redirect_uri: REDIRECT_URI,
-      response_type: 'code',
-      scope: 'openid profile',
-      state,
-      code_challenge: codeChallenge,
-      code_challenge_method: 'S256',
-    });
-
-    const url = `https://oauth.telegram.org/auth?${params.toString()}`;
-
-    res.json({ url });
-  } catch (err) {
-    logger.error({ err }, 'Failed to generate OIDC URL');
-    res.status(500).json({ error: 'INTERNAL_ERROR', message: 'Failed to generate auth URL' });
-  }
-});
-
-// GET: callback от Telegram OAuth
+// GET: редирект-колбэк от старого виджета (data-auth-url)
+// Telegram делает GET на этот URL с параметрами: id, first_name, hash, auth_date, ...
 router.get('/callback', async (req, res) => {
   try {
-    const { code, state, error, error_description } = req.query;
+    const { hash, id, first_name, last_name, username, photo_url, auth_date } = req.query;
 
-    if (error) {
-      logger.warn({ error, error_description }, 'Telegram OAuth error');
+    if (!hash || !id) {
       const frontendUrl = process.env.WEBAPP_URL || 'http://localhost:5173';
-      return res.redirect(`${frontendUrl}/login?error=${encodeURIComponent(error_description || error)}`);
+      return res.redirect(`${frontendUrl}/login?error=missing_data`);
     }
 
-    if (!code) {
-      return res.status(400).json({ error: 'VALIDATION_ERROR', message: 'Missing code parameter' });
-    }
+    // Проверяем hash
+    const data = { id: Number(id), first_name, hash, auth_date: Number(auth_date) };
+    if (last_name) data.last_name = last_name;
+    if (username) data.username = username;
+    if (photo_url) data.photo_url = photo_url;
 
-    // Проверяем state
-    const pending = pendingAuth.get(state);
-    if (!pending) {
-      logger.warn({ state }, 'Invalid or expired OIDC state');
+    if (!validateTelegramHash(data)) {
+      logger.warn({ telegramId: id }, 'Invalid hash in OIDC callback');
       const frontendUrl = process.env.WEBAPP_URL || 'http://localhost:5173';
-      return res.redirect(`${frontendUrl}/login?error=expired_state`);
+      return res.redirect(`${frontendUrl}/login?error=invalid_hash`);
     }
-    pendingAuth.delete(state);
-
-    // Обмениваем code на id_token
-    const tokenResponse = await axios.post(
-      'https://oauth.telegram.org/token',
-      new URLSearchParams({
-        grant_type: 'authorization_code',
-        code,
-        redirect_uri: REDIRECT_URI,
-        client_id: CLIENT_ID,
-        code_verifier: pending.verifier,
-      }).toString(),
-      {
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        auth: { username: CLIENT_ID, password: CLIENT_SECRET },
-        timeout: 10000,
-      },
-    );
-
-    const { id_token } = tokenResponse.data;
-    if (!id_token) {
-      logger.error('No id_token in Telegram response');
-      throw new AuthenticationError('No id_token received from Telegram');
-    }
-
-    // Валидируем id_token через JWKS
-    const { jwtVerify, jwks } = await getJoseJWKS();
-    const { payload } = await jwtVerify(id_token, jwks, {
-      issuer: 'https://oauth.telegram.org',
-      audience: CLIENT_ID,
-    });
-
-    logger.info({ sub: payload.sub }, 'OIDC id_token validated');
-
-    // Извлекаем данные пользователя
-    const telegramId = String(payload.id || payload.sub);
-    const firstName = payload.name || payload.preferred_username || `User_${telegramId}`;
 
     // Upsert пользователя
     const user = await User.findOneAndUpdate(
-      { telegramId },
+      { telegramId: String(id) },
       {
-        telegramId,
-        firstName,
-        ...(payload.preferred_username && { username: payload.preferred_username }),
-        ...(payload.picture && { photoUrl: payload.picture }),
+        telegramId: String(id),
+        firstName: first_name || 'User',
+        ...(last_name && { lastName: last_name }),
+        ...(username && { username }),
+        ...(photo_url && { photoUrl: photo_url }),
       },
       { upsert: true, new: true, setDefaultsOnInsert: true },
     );
@@ -162,20 +64,20 @@ router.get('/callback', async (req, res) => {
       { expiresIn: '30d' },
     );
 
-    logger.info({ userId: user._id.toString() }, 'User authenticated via OIDC');
+    logger.info({ userId: user._id.toString() }, 'User authenticated via redirect-login');
 
-    // Редирект на фронтенд с токеном
+    // Редирект на фронтенд с токеном в URL
     const frontendUrl = process.env.WEBAPP_URL || 'http://localhost:5173';
-    const redirectParams = new URLSearchParams({
+    const params = new URLSearchParams({
       token: appToken,
       userId: user._id.toString(),
       firstName: user.firstName,
       telegramId: user.telegramId,
     });
 
-    res.redirect(`${frontendUrl}/login/success?${redirectParams.toString()}`);
+    res.redirect(`${frontendUrl}/login/success?${params.toString()}`);
   } catch (err) {
-    logger.error({ err: err.message }, 'OIDC callback failed');
+    logger.error({ err: err.message }, 'Redirect-login callback failed');
     const frontendUrl = process.env.WEBAPP_URL || 'http://localhost:5173';
     res.redirect(`${frontendUrl}/login?error=auth_failed`);
   }
