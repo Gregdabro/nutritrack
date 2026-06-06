@@ -4,6 +4,9 @@ const express = require('express');
 const logger = require('./logger');
 const { connectDB } = require('./config/db');
 const requestLogger = require('./middleware/requestLogger');
+const errorHandler = require('./middleware/errorHandler');
+const authRoutes = require('./routes/auth');
+const goalRoutes = require('./routes/goals');
 const bot = require('./bot');
 
 async function main() {
@@ -16,6 +19,11 @@ async function main() {
   app.get('/health', (req, res) => {
     res.json({ status: 'ok', timestamp: new Date().toISOString() });
   });
+
+  app.use('/api/auth', authRoutes);
+  app.use('/api/goals', goalRoutes);
+
+  app.use(errorHandler);
 
   const port = process.env.PORT || 3001;
 

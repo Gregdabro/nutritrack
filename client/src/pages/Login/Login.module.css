@@ -1,0 +1,35 @@
+.page {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background: #f5f5f5;
+}
+
+.card {
+  background: #fff;
+  border-radius: 16px;
+  padding: 48px;
+  text-align: center;
+  box-shadow: 0 2px 16px rgba(0, 0, 0, 0.08);
+  max-width: 400px;
+  width: 100%;
+}
+
+.title {
+  font-size: 28px;
+  font-weight: 700;
+  margin: 0 0 8px;
+  color: #1a1a1a;
+}
+
+.subtitle {
+  color: #666;
+  margin: 0 0 32px;
+  font-size: 16px;
+}
+
+.widget {
+  display: flex;
+  justify-content: center;
+}

@@ -1,23 +1,36 @@
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, Navigate } from 'react-router-dom';
+import useAuthStore from './store/authStore';
+import Login from './pages/Login';
+import Settings from './pages/Settings';
+
+function ProtectedRoute({ children }) {
+  const token = useAuthStore((s) => s.token);
+  if (!token) return <Navigate to="/login" replace />;
+  return children;
+}
 
 function Dashboard() {
-  return <h1>Dashboard</h1>;
-}
-
-function Login() {
-  return <h1>Login</h1>;
-}
-
-function Settings() {
-  return <h1>Settings</h1>;
+  return (
+    <div style={{ padding: 40, textAlign: 'center' }}>
+      <h1>NutriTrack</h1>
+      <p>Dashboard будет здесь (Спринт 6)</p>
+    </div>
+  );
 }
 
 export default function App() {
   return (
     <Routes>
-      <Route path="/" element={<Dashboard />} />
       <Route path="/login" element={<Login />} />
-      <Route path="/settings" element={<Settings />} />
+      <Route
+        path="/settings"
+        element={
+          <ProtectedRoute>
+            <Settings />
+          </ProtectedRoute>
+        }
+      />
+      <Route path="/" element={<Dashboard />} />
     </Routes>
   );
 }

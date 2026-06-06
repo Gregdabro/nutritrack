@@ -1635,16 +1635,16 @@ if (process.env.NODE_ENV === 'production') {
 
 ### Спринт 1 — Авторизация и профиль (4-7 дней)
 
-- [ ] Mongoose схемы: User, Goal
-- [ ] POST /auth/telegram — валидация + JWT
-- [ ] Middleware аутентификации
-- [ ] Zod-схема для /auth/telegram
-- [ ] Centralized error handler
-- [ ] Telegram-бот: /start с онбордингом (2 шага)
-- [ ] GET/PUT /goals
-- [ ] Страница /login с Telegram Widget
-- [ ] Страница /settings — форма целей
-- [ ] Zustand: authStore
+- [x] Mongoose схемы: User, Goal
+- [x] POST /auth/telegram — валидация + JWT
+- [x] Middleware аутентификации
+- [x] Zod-схема для /auth/telegram
+- [x] Centralized error handler
+- [x] Telegram-бот: /start с онбордингом (2 шага)
+- [x] GET/PUT /goals
+- [x] Страница /login с Telegram Widget
+- [x] Страница /settings — форма целей
+- [x] Zustand: authStore
 
 ### Спринт 2 — Продукты (3-5 дней)
 
