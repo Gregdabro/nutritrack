@@ -34,6 +34,67 @@
   justify-content: center;
 }
 
+.error {
+  background: #ffebee;
+  color: #c62828;
+  padding: 10px 16px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  font-size: 14px;
+}
+
+.oidcBtn {
+  display: block;
+  width: 100%;
+  padding: 14px;
+  background: #3390ec;
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.oidcBtn:hover {
+  background: #2878c8;
+}
+
+.oidcBtn:disabled {
+  background: #aaa;
+  cursor: not-allowed;
+}
+
+.oidcHint {
+  margin: 12px 0 0;
+  font-size: 12px;
+  color: #888;
+  line-height: 1.5;
+}
+
+.fallback {
+  margin-top: 24px;
+  text-align: left;
+}
+
+.fallbackSummary {
+  font-size: 13px;
+  color: #888;
+  cursor: pointer;
+  text-align: center;
+}
+
+.fallbackSummary:hover {
+  color: #555;
+}
+
+.widget {
+  display: flex;
+  justify-content: center;
+  margin-top: 16px;
+}
+
 .help {
   margin: 16px 0 0;
   font-size: 12px;

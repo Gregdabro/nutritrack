@@ -1645,6 +1645,13 @@ if (process.env.NODE_ENV === 'production') {
 - [x] Страница /login с Telegram Widget
 - [x] Страница /settings — форма целей
 - [x] Zustand: authStore
+- [ ] **TODO: Telegram Login Widget — подтверждение не приходит**
+    - Проблема: старый виджет (`telegram-widget.js`) использует попап-окно.
+      Если браузер блокирует попап, Telegram показывает «Сообщение отправлено в Telegram»,
+      но подтверждение НЕ приходит — ни от служебного аккаунта Telegram, ни от бота.
+    - Решение: перейти на новый OIDC-редирект (`oauth.telegram.org/auth`).
+      Нужно в @BotFather → Bot Settings → Web Login получить Client ID и Client Secret.
+      Уже установлен пакет `jose` для валидации `id_token` через JWKS.
 
 ### Спринт 2 — Продукты (3-5 дней)
 

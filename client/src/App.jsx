@@ -1,6 +1,7 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
 import useAuthStore from './store/authStore';
 import Login from './pages/Login';
+import LoginSuccess from './pages/LoginSuccess';
 import Settings from './pages/Settings';
 
 function ProtectedRoute({ children }) {
@@ -22,6 +23,7 @@ export default function App() {
   return (
     <Routes>
       <Route path="/login" element={<Login />} />
+      <Route path="/login/success" element={<LoginSuccess />} />
       <Route
         path="/settings"
         element={
