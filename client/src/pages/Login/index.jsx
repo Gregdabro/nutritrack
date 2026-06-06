@@ -4,9 +4,7 @@ import useAuthStore from '../../store/authStore';
 import api from '../../api';
 import styles from './Login.module.css';
 
-// URL колбэка на Railway. Домен нужно добавить в BotFather через /setdomain.
-const API_URL = import.meta.env.VITE_API_URL;
-const CALLBACK_URL = `${API_URL}/auth/oidc/callback`;
+const BOT_URL = 'https://t.me/nutritrack19_bot';
 
 export default function Login() {
   const navigate = useNavigate();
@@ -23,22 +21,7 @@ export default function Login() {
     }
   }, [token, navigate]);
 
-  // ---- Telegram Widget с data-auth-url (редирект, без попапа) ----
-  useEffect(() => {
-    const script = document.createElement('script');
-    script.src = 'https://telegram.org/js/telegram-widget.js?22';
-    script.async = true;
-    script.setAttribute('data-telegram-login', import.meta.env.VITE_BOT_USERNAME);
-    script.setAttribute('data-size', 'large');
-    script.setAttribute('data-auth-url', CALLBACK_URL);
-
-    const container = document.getElementById('telegram-widget');
-    if (container) {
-      container.appendChild(script);
-    }
-  }, []);
-
-  // ---- Dev Login (тестирование) ----
+  // ---- Dev Login (для тестирования) ----
   async function handleDevLogin() {
     setLoading(true);
     try {
@@ -56,25 +39,42 @@ export default function Login() {
     <div className={styles.page}>
       <div className={styles.card}>
         <h1 className={styles.title}>NutriTrack</h1>
-        <p className={styles.subtitle}>Войди через Telegram, чтобы начать</p>
+        <p className={styles.subtitle}>Войди через Telegram-бота</p>
 
         {error && (
           <div className={styles.error}>
-            {error === 'auth_failed'
-              ? 'Ошибка авторизации. Попробуй ещё раз.'
-              : error === 'expired_state'
-                ? 'Сессия истекла. Попробуй ещё раз.'
-                : error}
+            {error === 'auth_failed' ? 'Ошибка авторизации.' : error}
           </div>
         )}
 
-        {/* Telegram Login Widget — использует data-auth-url для редиректа */}
-        <div id="telegram-widget" className={styles.widget} />
+        <div className={styles.steps}>
+          <div className={styles.step}>
+            <span className={styles.stepNum}>1</span>
+            <span>
+              Открой бота{' '}
+              <a href={BOT_URL} target="_blank" rel="noopener noreferrer" className={styles.link}>
+                @nutritrack19_bot
+              </a>
+            </span>
+          </div>
+          <div className={styles.step}>
+            <span className={styles.stepNum}>2</span>
+            <span>Отправь команду <code className={styles.code}>/login</code></span>
+          </div>
+          <div className={styles.step}>
+            <span className={styles.stepNum}>3</span>
+            <span>Нажми на ссылку, которую пришлёт бот</span>
+          </div>
+        </div>
 
-        <p className={styles.oidcHint}>
-          После нажатия кнопки откроется страница Telegram для подтверждения.
-          Без всплывающих окон — просто редирект.
-        </p>
+        <a
+          href={BOT_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+          className={styles.oidcBtn}
+        >
+          Открыть бота в Telegram
+        </a>
 
         <hr className={styles.divider} />
 

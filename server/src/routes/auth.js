@@ -90,6 +90,58 @@ router.post('/bot-login', validate(BotLoginSchema), async (req, res, next) => {
   }
 });
 
+// ---- Bot-Based Login Tokens ----
+// Одноразовые токены: бот генерирует, фронтенд обменивает на JWT
+const loginTokens = new Map();
+const LOGIN_TOKEN_TTL = 5 * 60 * 1000; // 5 минут
+
+setInterval(() => {
+  const now = Date.now();
+  for (const [key, entry] of loginTokens) {
+    if (now - entry.createdAt > LOGIN_TOKEN_TTL) loginTokens.delete(key);
+  }
+}, 60_000);
+
+function createLoginToken(user) {
+  const raw = crypto.randomBytes(32).toString('hex');
+  loginTokens.set(raw, {
+    userId: user._id.toString(),
+    createdAt: Date.now(),
+  });
+  return raw;
+}
+
+// GET: обменять одноразовый токен на JWT
+router.get('/login-token/:rawToken', async (req, res, next) => {
+  try {
+    const entry = loginTokens.get(req.params.rawToken);
+    if (!entry) {
+      throw new AuthenticationError('Invalid or expired login token');
+    }
+    loginTokens.delete(req.params.rawToken);
+
+    const user = await User.findById(entry.userId);
+    if (!user) {
+      throw new NotFoundError('User');
+    }
+
+    const token = generateToken(user);
+
+    logger.info({ userId: user._id.toString() }, 'User authenticated via bot login token');
+
+    res.json({
+      token,
+      user: {
+        id: user._id,
+        firstName: user.firstName,
+        telegramId: user.telegramId,
+      },
+    });
+  } catch (err) {
+    next(err);
+  }
+});
+
 // DEV-only: упрощённый вход для локального тестирования
 router.post('/dev-login', async (req, res, next) => {
   try {
@@ -114,4 +166,4 @@ router.post('/dev-login', async (req, res, next) => {
   }
 });
 
-module.exports = router;
+module.exports = { router, createLoginToken };

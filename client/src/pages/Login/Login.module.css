@@ -12,7 +12,7 @@
   padding: 48px;
   text-align: center;
   box-shadow: 0 2px 16px rgba(0, 0, 0, 0.08);
-  max-width: 400px;
+  max-width: 420px;
   width: 100%;
 }
 
@@ -25,13 +25,8 @@
 
 .subtitle {
   color: #666;
-  margin: 0 0 32px;
+  margin: 0 0 28px;
   font-size: 16px;
-}
-
-.widget {
-  display: flex;
-  justify-content: center;
 }
 
 .error {
@@ -42,6 +37,58 @@
   margin-bottom: 20px;
   font-size: 14px;
 }
+
+/* Steps */
+
+.steps {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-bottom: 24px;
+  text-align: left;
+}
+
+.step {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 15px;
+  color: #333;
+}
+
+.stepNum {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #e3f2fd;
+  color: #1565c0;
+  font-size: 14px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.link {
+  color: #3390ec;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.link:hover {
+  text-decoration: underline;
+}
+
+.code {
+  background: #f0f0f0;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-family: monospace;
+  font-size: 14px;
+}
+
+/* Button */
 
 .oidcBtn {
   display: block;
@@ -54,7 +101,9 @@
   font-size: 16px;
   font-weight: 600;
   cursor: pointer;
+  text-decoration: none;
   transition: background 0.15s;
+  box-sizing: border-box;
 }
 
 .oidcBtn:hover {
@@ -73,34 +122,7 @@
   line-height: 1.5;
 }
 
-.fallback {
-  margin-top: 24px;
-  text-align: left;
-}
-
-.fallbackSummary {
-  font-size: 13px;
-  color: #888;
-  cursor: pointer;
-  text-align: center;
-}
-
-.fallbackSummary:hover {
-  color: #555;
-}
-
-.widget {
-  display: flex;
-  justify-content: center;
-  margin-top: 16px;
-}
-
-.help {
-  margin: 16px 0 0;
-  font-size: 12px;
-  color: #888;
-  line-height: 1.5;
-}
+/* Divider + Dev */
 
 .divider {
   margin: 24px 0;

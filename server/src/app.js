@@ -23,7 +23,7 @@ async function main() {
     res.json({ status: 'ok', timestamp: new Date().toISOString() });
   });
 
-  app.use('/api/auth', authRoutes);
+  app.use('/api/auth', authRoutes.router);
   app.use('/api/auth/oidc', oidcRoutes);
   app.use('/api/goals', goalRoutes);
 
