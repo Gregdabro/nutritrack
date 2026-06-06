@@ -1,6 +1,7 @@
 require('dotenv').config();
 
 const express = require('express');
+const cors = require('cors');
 const logger = require('./logger');
 const { connectDB } = require('./config/db');
 const requestLogger = require('./middleware/requestLogger');
@@ -13,6 +14,7 @@ async function main() {
   await connectDB();
 
   const app = express();
+  app.use(cors());
   app.use(requestLogger);
   app.use(express.json());
 
