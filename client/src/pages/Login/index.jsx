@@ -4,8 +4,9 @@ import useAuthStore from '../../store/authStore';
 import api from '../../api';
 import styles from './Login.module.css';
 
-// URL колбэка — через Vercel (прокси → Railway). Тот же домен что и виджет.
-const CALLBACK_URL = `${window.location.origin}/api/auth/oidc/callback`;
+// URL колбэка на Railway. Домен нужно добавить в BotFather через /setdomain.
+const API_URL = import.meta.env.VITE_API_URL;
+const CALLBACK_URL = `${API_URL}/auth/oidc/callback`;
 
 export default function Login() {
   const navigate = useNavigate();
