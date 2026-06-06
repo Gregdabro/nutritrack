@@ -18,7 +18,7 @@ const SEED_PRODUCTS = [
     name: 'Яйцо куриное',
     aliases: ['яйцо', 'яйца', 'egg'],
     per100g: { protein: 12.7, fat: 10.9, carbs: 0.7, fiber: 0, calories: 157 },
-    category: 'meat',
+    category: 'other',
   },
   {
     name: 'Лосось',

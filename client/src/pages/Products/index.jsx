@@ -56,6 +56,11 @@ export default function Products() {
   const [error, setError] = useState(null);
   const [fetchError, setFetchError] = useState(null);
 
+  // Price form states
+  const [priceFormId, setPriceFormId] = useState(null);
+  const [priceForm, setPriceForm] = useState({ priceEur: '', store: '' });
+  const [priceFormError, setPriceFormError] = useState(null);
+
   // Redirect if not logged in
   useEffect(() => {
     if (!token) navigate('/login');
@@ -98,6 +103,8 @@ export default function Products() {
     setEditingId(null);
     setForm(EMPTY_FORM);
     setShowForm(true);
+    setPriceFormId(null);
+    setPriceFormError(null);
   }
 
   function openEditForm(product) {
@@ -114,6 +121,8 @@ export default function Products() {
       currentPriceEur: product.currentPriceEur ?? '',
     });
     setShowForm(true);
+    setPriceFormId(null);
+    setPriceFormError(null);
   }
 
   function cancelForm() {
@@ -121,6 +130,58 @@ export default function Products() {
     setEditingId(null);
     setForm(EMPTY_FORM);
     setError(null);
+  }
+
+  function handleOpenPriceForm(product) {
+    setShowForm(false);
+    setEditingId(null);
+    setForm(EMPTY_FORM);
+    setError(null);
+
+    setPriceFormId(product._id);
+    setPriceForm({ priceEur: '', store: '' });
+    setPriceFormError(null);
+  }
+
+  function handleCancelPrice() {
+    setPriceFormId(null);
+    setPriceForm({ priceEur: '', store: '' });
+    setPriceFormError(null);
+  }
+
+  async function handleSavePrice(productId) {
+    setPriceFormError(null);
+    try {
+      const priceEurNum = Number(priceForm.priceEur);
+      if (isNaN(priceEurNum) || priceEurNum <= 0) {
+        setPriceFormError('Цена должна быть положительным числом');
+        return;
+      }
+      if (!priceForm.store.trim()) {
+        setPriceFormError('Магазин обязателен для заполнения');
+        return;
+      }
+
+      await api.products.addPrice(productId, {
+        priceEur: priceEurNum,
+        store: priceForm.store.trim(),
+      });
+
+      handleCancelPrice();
+      fetchProducts();
+    } catch (err) {
+      let msg;
+      if (!err.response) {
+        msg = 'Не удалось подключиться к серверу. Проверьте, что сервер запущен.';
+      } else if (err.response?.data?.error === 'VALIDATION_ERROR') {
+        msg = 'Проверьте заполнение полей: ' +
+          err.response.data.details?.map((d) => d.message).join(', ');
+      } else {
+        msg = err.response?.data?.message ||
+          'Не удалось добавить цену. Попробуйте ещё раз.';
+      }
+      setPriceFormError(msg);
+    }
   }
 
   function handleFieldChange(field) {
@@ -381,25 +442,69 @@ export default function Products() {
 
             {products.map((p) => (
               <div key={p._id} className={styles.productRow}>
-                <div className={styles.productName}>
-                  {p.name}
-                  <span className={styles.categoryBadge}>
-                    {CATEGORIES.find((c) => c.value === p.category)?.label || p.category}
-                  </span>
-                </div>
-                <span className={styles.macro}>{formatMacro(p.per100g?.protein)}</span>
-                <span className={styles.macro}>{formatMacro(p.per100g?.fat)}</span>
-                <span className={styles.macro}>{formatMacro(p.per100g?.carbs)}</span>
-                <span className={styles.macro}>{formatMacro(p.per100g?.calories)}</span>
-                <span className={styles.price}>{formatPrice(p.currentPriceEur)}</span>
-                <div className={styles.actions}>
-                  <button className={styles.editBtn} onClick={() => openEditForm(p)}>
-                    Изменить
-                  </button>
-                  <button className={styles.deleteBtn} onClick={() => handleDelete(p)}>
-                    Удалить
-                  </button>
-                </div>
+                {priceFormId === p._id ? (
+                  <div className={styles.priceFormInline}>
+                    <div className={styles.priceFormRow}>
+                      <span className={styles.priceFormProductName}>{p.name}</span>
+                      <div className={styles.priceFormFields}>
+                        <input
+                          type="number"
+                          step="0.01"
+                          min="0"
+                          placeholder="5.90"
+                          value={priceForm.priceEur}
+                          onChange={(e) => setPriceForm({ ...priceForm, priceEur: e.target.value })}
+                          className={`${styles.priceFormInput} ${styles.priceInput}`}
+                        />
+                        <input
+                          type="text"
+                          placeholder="Conad"
+                          value={priceForm.store}
+                          onChange={(e) => setPriceForm({ ...priceForm, store: e.target.value })}
+                          className={`${styles.priceFormInput} ${styles.storeInput}`}
+                        />
+                        <button
+                          className={styles.priceFormSaveBtn}
+                          onClick={() => handleSavePrice(p._id)}
+                          disabled={!priceForm.priceEur || !priceForm.store}
+                        >
+                          Сохранить
+                        </button>
+                        <button className={styles.priceFormCancelBtn} onClick={handleCancelPrice}>
+                          Отмена
+                        </button>
+                      </div>
+                    </div>
+                    {priceFormError && (
+                      <div className={styles.priceFormError}>{priceFormError}</div>
+                    )}
+                  </div>
+                ) : (
+                  <>
+                    <div className={styles.productName}>
+                      {p.name}
+                      <span className={styles.categoryBadge}>
+                        {CATEGORIES.find((c) => c.value === p.category)?.label || p.category}
+                      </span>
+                    </div>
+                    <span className={styles.macro}>{formatMacro(p.per100g?.protein)}</span>
+                    <span className={styles.macro}>{formatMacro(p.per100g?.fat)}</span>
+                    <span className={styles.macro}>{formatMacro(p.per100g?.carbs)}</span>
+                    <span className={styles.macro}>{formatMacro(p.per100g?.calories)}</span>
+                    <span className={styles.price}>{formatPrice(p.currentPriceEur)}</span>
+                    <div className={styles.actions}>
+                      <button className={styles.priceBtn} onClick={() => handleOpenPriceForm(p)}>
+                        + Цена
+                      </button>
+                      <button className={styles.editBtn} onClick={() => openEditForm(p)}>
+                        Изменить
+                      </button>
+                      <button className={styles.deleteBtn} onClick={() => handleDelete(p)}>
+                        Удалить
+                      </button>
+                    </div>
+                  </>
+                )}
               </div>
             ))}
 

@@ -22,8 +22,7 @@ router.get('/', validateQuery(ListProductsSchema), async (req, res, next) => {
     const { search, limit, offset } = req.query;
 
     // Lazy seed: если у пользователя ещё нет продуктов — наполняем стартовыми
-    const totalCount = await Product.countDocuments({ userId: req.user.userId });
-    if (totalCount === 0 && !search) {
+    if (!search) {
       await seedProducts(req.user.userId);
     }
 
