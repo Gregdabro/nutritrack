@@ -24,4 +24,13 @@ api.goals = {
   update: (data) => api.put('/goals', data),
 };
 
+api.products = {
+  list: (params) => api.get('/products', { params }),
+  get: (id) => api.get(`/products/${id}`),
+  create: (data) => api.post('/products', data),
+  update: (id, data) => api.put(`/products/${id}`, data),
+  remove: (id) => api.delete(`/products/${id}`),
+  addPrice: (id, data) => api.post(`/products/${id}/price`, data),
+};
+
 export default api;

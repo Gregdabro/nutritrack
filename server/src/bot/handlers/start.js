@@ -1,6 +1,7 @@
 const { Markup } = require('telegraf');
 const User = require('../../models/User');
 const Goal = require('../../models/Goal');
+const { seedProducts } = require('../../config/seedProducts');
 const logger = require('../../logger');
 
 const DEFAULT_GOALS = {
@@ -65,6 +66,7 @@ async function handleOnboarding(ctx) {
 
     if (text === 'Пропустить, настрою потом') {
       await saveDefaultGoals(user._id);
+      await seedProducts(user._id);
       await User.updateOne(
         { _id: user._id },
         { botState: 'idle', botStateData: null },
@@ -120,6 +122,7 @@ async function handleOnboarding(ctx) {
   if (user.botState === 'onboarding_confirm') {
     if (text === 'Принять ✅') {
       await saveDefaultGoals(user._id);
+      await seedProducts(user._id);
       await User.updateOne(
         { _id: user._id },
         { botState: 'idle', botStateData: null },
@@ -133,6 +136,7 @@ async function handleOnboarding(ctx) {
 
     if (text === 'Пропустить') {
       await saveDefaultGoals(user._id);
+      await seedProducts(user._id);
       await User.updateOne(
         { _id: user._id },
         { botState: 'idle', botStateData: null },

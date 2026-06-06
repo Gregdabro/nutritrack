@@ -1,0 +1,288 @@
+.page {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  min-height: 100vh;
+  background: #F7F6F2;
+  padding: 40px 16px;
+}
+
+.card {
+  background: #FFFFFF;
+  border-radius: 14px;
+  border: 0.5px solid rgba(0, 0, 0, 0.08);
+  padding: 24px;
+  max-width: 800px;
+  width: 100%;
+}
+
+.title {
+  font-size: 22px;
+  font-weight: 700;
+  margin: 0 0 20px;
+  color: #1A1916;
+}
+
+.loading {
+  text-align: center;
+  color: #6B6A65;
+  font-size: 16px;
+  margin-top: 80px;
+}
+
+/* Search + add row */
+.toolbar {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.searchInput {
+  flex: 1;
+  padding: 8px 12px;
+  border: 0.5px solid rgba(0, 0, 0, 0.14);
+  border-radius: 8px;
+  font-size: 14px;
+  outline: none;
+  color: #1A1916;
+  background: #FFFFFF;
+  transition: border-color 0.15s;
+}
+
+.searchInput:focus {
+  border-color: #639922;
+}
+
+.searchInput::placeholder {
+  color: #A09F9A;
+}
+
+.addBtn {
+  padding: 8px 16px;
+  background: #639922;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.15s;
+}
+
+.addBtn:hover {
+  background: #3B6D11;
+}
+
+/* Table header */
+.tableHeader {
+  display: grid;
+  grid-template-columns: 2fr 55px 55px 55px 55px 80px 80px;
+  gap: 0;
+  font-size: 11px;
+  color: #A09F9A;
+  padding: 0 0 8px;
+  border-bottom: 0.5px solid rgba(0, 0, 0, 0.08);
+  font-weight: 500;
+}
+
+.tableHeader span {
+  text-align: center;
+}
+
+.tableHeader span:first-child {
+  text-align: left;
+}
+
+.tableHeader span:last-child,
+.tableHeader span:nth-child(6) {
+  text-align: right;
+}
+
+/* Product row */
+.productRow {
+  display: grid;
+  grid-template-columns: 2fr 55px 55px 55px 55px 80px 80px;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 0.5px solid rgba(0, 0, 0, 0.05);
+  font-size: 13px;
+}
+
+.productRow:hover {
+  background: #F1EFE8;
+}
+
+.productName {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #1A1916;
+  font-weight: 500;
+}
+
+.categoryBadge {
+  font-size: 10px;
+  padding: 1px 6px;
+  border-radius: 4px;
+  background: #F1EFE8;
+  color: #6B6A65;
+  white-space: nowrap;
+}
+
+.macro {
+  text-align: center;
+  color: #6B6A65;
+}
+
+.price {
+  text-align: right;
+  color: #1A1916;
+  font-size: 12px;
+}
+
+.actions {
+  display: flex;
+  gap: 6px;
+  justify-content: flex-end;
+}
+
+.editBtn,
+.deleteBtn {
+  padding: 4px 8px;
+  border-radius: 6px;
+  border: 0.5px solid rgba(0, 0, 0, 0.14);
+  background: none;
+  cursor: pointer;
+  font-size: 12px;
+  color: #6B6A65;
+  transition: all 0.15s;
+}
+
+.editBtn:hover {
+  background: #E6F1FB;
+  color: #185FA5;
+  border-color: #378ADD;
+}
+
+.deleteBtn:hover {
+  background: #FAECE7;
+  color: #993C1D;
+  border-color: #D85A30;
+}
+
+/* Empty state */
+.empty {
+  text-align: center;
+  padding: 40px 0;
+  color: #6B6A65;
+  font-size: 14px;
+}
+
+.emptyBtn {
+  margin-top: 12px;
+  padding: 8px 20px;
+  background: #639922;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.emptyBtn:hover {
+  background: #3B6D11;
+}
+
+/* Form */
+.form {
+  margin-bottom: 20px;
+  padding: 20px;
+  background: #F1EFE8;
+  border-radius: 10px;
+}
+
+.formTitle {
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0 0 14px;
+  color: #1A1916;
+}
+
+.formGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.formField {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.formField label {
+  font-size: 12px;
+  color: #6B6A65;
+  font-weight: 500;
+}
+
+.formField input,
+.formField select {
+  padding: 7px 10px;
+  border: 0.5px solid rgba(0, 0, 0, 0.14);
+  border-radius: 6px;
+  font-size: 13px;
+  outline: none;
+  background: #FFFFFF;
+  color: #1A1916;
+  transition: border-color 0.15s;
+}
+
+.formField input:focus,
+.formField select:focus {
+  border-color: #639922;
+}
+
+.formFieldFull {
+  grid-column: 1 / -1;
+}
+
+.formActions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.saveBtn {
+  padding: 7px 16px;
+  background: #639922;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.saveBtn:hover {
+  background: #3B6D11;
+}
+
+.cancelBtn {
+  padding: 7px 16px;
+  background: none;
+  border: 0.5px solid rgba(0, 0, 0, 0.14);
+  border-radius: 6px;
+  font-size: 13px;
+  color: #6B6A65;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.cancelBtn:hover {
+  background: #F1EFE8;
+}

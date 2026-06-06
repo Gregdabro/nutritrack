@@ -3,6 +3,7 @@ import useAuthStore from './store/authStore';
 import Login from './pages/Login';
 import LoginToken from './pages/LoginToken';
 import Settings from './pages/Settings';
+import Products from './pages/Products';
 
 function ProtectedRoute({ children }) {
   const token = useAuthStore((s) => s.token);
@@ -29,6 +30,14 @@ export default function App() {
         element={
           <ProtectedRoute>
             <Settings />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/products"
+        element={
+          <ProtectedRoute>
+            <Products />
           </ProtectedRoute>
         }
       />

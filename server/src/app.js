@@ -8,6 +8,7 @@ const requestLogger = require('./middleware/requestLogger');
 const errorHandler = require('./middleware/errorHandler');
 const authRoutes = require('./routes/auth');
 const goalRoutes = require('./routes/goals');
+const productRoutes = require('./routes/products');
 const bot = require('./bot');
 
 async function main() {
@@ -24,6 +25,7 @@ async function main() {
 
   app.use('/api/auth', authRoutes.router);
   app.use('/api/goals', goalRoutes);
+  app.use('/api/products', productRoutes);
 
   app.use(errorHandler);
 
