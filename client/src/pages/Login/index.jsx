@@ -4,8 +4,8 @@ import useAuthStore from '../../store/authStore';
 import api from '../../api';
 import styles from './Login.module.css';
 
-// URL колбэка на бэкенде — виджет с data-auth-url делает редирект сюда
-const CALLBACK_URL = `${import.meta.env.VITE_API_URL}/auth/oidc/callback`;
+// URL колбэка — через Vercel (прокси → Railway). Тот же домен что и виджет.
+const CALLBACK_URL = `${window.location.origin}/api/auth/oidc/callback`;
 
 export default function Login() {
   const navigate = useNavigate();
