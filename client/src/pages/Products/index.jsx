@@ -54,6 +54,7 @@ export default function Products() {
   const [form, setForm] = useState(EMPTY_FORM);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(null);
+  const [fetchError, setFetchError] = useState(null);
 
   // Redirect if not logged in
   useEffect(() => {
@@ -71,14 +72,19 @@ export default function Products() {
   // Fetch products
   const fetchProducts = useCallback(async () => {
     setLoading(true);
+    setFetchError(null);
     try {
       const params = { limit: 100 };
       if (debouncedSearch) params.search = debouncedSearch;
       const res = await api.products.list(params);
       setProducts(res.data.products);
       setTotal(res.data.total);
-    } catch {
-      // error is handled by axios interceptor
+    } catch (err) {
+      const msg =
+        err.response
+          ? err.response.data?.message || 'Ошибка сервера при загрузке продуктов'
+          : 'Не удалось подключиться к серверу. Проверьте, что сервер запущен.';
+      setFetchError(msg);
     } finally {
       setLoading(false);
     }
@@ -156,12 +162,16 @@ export default function Products() {
       cancelForm();
       fetchProducts();
     } catch (err) {
-      const msg =
-        err.response?.data?.error === 'VALIDATION_ERROR'
-          ? 'Проверьте заполнение полей: ' +
-            err.response.data.details?.map((d) => d.message).join(', ')
-          : err.response?.data?.message ||
-            'Не удалось сохранить продукт. Попробуйте ещё раз.';
+      let msg;
+      if (!err.response) {
+        msg = 'Не удалось подключиться к серверу. Проверьте, что сервер запущен.';
+      } else if (err.response?.data?.error === 'VALIDATION_ERROR') {
+        msg = 'Проверьте заполнение полей: ' +
+          err.response.data.details?.map((d) => d.message).join(', ');
+      } else {
+        msg = err.response?.data?.message ||
+          'Не удалось сохранить продукт. Попробуйте ещё раз.';
+      }
       setError(msg);
     } finally {
       setSaving(false);
@@ -170,8 +180,16 @@ export default function Products() {
 
   async function handleDelete(product) {
     if (!window.confirm(`Удалить "${product.name}"?`)) return;
-    await api.products.remove(product._id);
-    fetchProducts();
+    setError(null);
+    try {
+      await api.products.remove(product._id);
+      fetchProducts();
+    } catch (err) {
+      const msg = err.response
+        ? err.response.data?.message || 'Не удалось удалить продукт'
+        : 'Не удалось подключиться к серверу';
+      setError(msg);
+    }
   }
 
   if (loading && products.length === 0) {
@@ -195,6 +213,21 @@ export default function Products() {
             + Добавить
           </button>
         </div>
+
+        {/* Fetch error */}
+        {fetchError && (
+          <div className={styles.fetchError}>
+            <span>{fetchError}</span>
+            <button className={styles.retryBtn} onClick={fetchProducts}>
+              Повторить
+            </button>
+          </div>
+        )}
+
+        {/* General error (e.g. delete failure) */}
+        {error && !showForm && (
+          <div className={styles.fetchError}>{error}</div>
+        )}
 
         {/* Create / Edit form */}
         {showForm && (
