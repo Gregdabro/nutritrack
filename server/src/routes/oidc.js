@@ -2,7 +2,6 @@ const { Router } = require('express');
 const crypto = require('crypto');
 const jwt = require('jsonwebtoken');
 const axios = require('axios');
-const { createRemoteJWKSet, jwtVerify } = require('jose');
 const User = require('../models/User');
 const { AuthenticationError } = require('../errors/AppError');
 const logger = require('../logger');
@@ -14,9 +13,21 @@ const CLIENT_ID = process.env.TELEGRAM_CLIENT_ID;
 const CLIENT_SECRET = process.env.TELEGRAM_CLIENT_SECRET;
 const REDIRECT_URI = process.env.OIDC_REDIRECT_URI
   || `${process.env.WEBAPP_URL || ''}/api/auth/oidc/callback`;
-const TELEGRAM_JWKS = createRemoteJWKSet(
-  new URL('https://oauth.telegram.org/.well-known/jwks.json'),
-);
+
+// Ленивая инициализация jose (ESM-пакет, нужен динамический import)
+let _joseJWKS = null;
+async function getJoseJWKS() {
+  if (!_joseJWKS) {
+    const jose = await import('jose');
+    _joseJWKS = {
+      jwtVerify: jose.jwtVerify,
+      jwks: jose.createRemoteJWKSet(
+        new URL('https://oauth.telegram.org/.well-known/jwks.json'),
+      ),
+    };
+  }
+  return _joseJWKS;
+}
 
 // In-memory хранилище PKCE и state (с TTL)
 const pendingAuth = new Map();
@@ -120,7 +131,8 @@ router.get('/callback', async (req, res) => {
     }
 
     // Валидируем id_token через JWKS
-    const { payload } = await jwtVerify(id_token, TELEGRAM_JWKS, {
+    const { jwtVerify, jwks } = await getJoseJWKS();
+    const { payload } = await jwtVerify(id_token, jwks, {
       issuer: 'https://oauth.telegram.org',
       audience: CLIENT_ID,
     });
