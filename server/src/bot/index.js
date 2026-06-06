@@ -11,7 +11,8 @@ bot.start(startHandler);
 
 bot.on('text', async (ctx) => {
   const user = ctx.user;
-  if (user && user.botState !== 'idle') {
+  // Онбординг: состояние не-idle (шаги), ИЛИ idle но без weightKg (ещё не проходил настройку)
+  if (user && (user.botState !== 'idle' || !user.weightKg)) {
     return handleOnboarding(ctx);
   }
 });
