@@ -3,7 +3,7 @@ const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
 const User = require('../models/User');
 const { AuthenticationError, NotFoundError } = require('../errors/AppError');
-const validate = require('../middleware/validate');
+const { validate } = require('../middleware/validate');
 const { TelegramAuthSchema, BotLoginSchema } = require('../validation/authSchemas');
 const logger = require('../logger');
 
@@ -145,6 +145,10 @@ router.get('/login-token/:rawToken', async (req, res, next) => {
 // DEV-only: упрощённый вход для локального тестирования
 router.post('/dev-login', async (req, res, next) => {
   try {
+    if (process.env.NODE_ENV === 'production') {
+      return res.status(404).json({ error: 'NOT_FOUND', message: 'Route not found' });
+    }
+
     const telegramId = String(req.body.telegramId || `dev_${Date.now()}`);
     const firstName = req.body.firstName || 'DevUser';
 

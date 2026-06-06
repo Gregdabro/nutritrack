@@ -31,8 +31,8 @@ class NotFoundError extends AppError {
 }
 
 class ExternalServiceError extends AppError {
-  constructor(message = 'External service error') {
-    super('EXTERNAL_SERVICE_ERROR', message, 502);
+  constructor(service, message) {
+    super('EXTERNAL_SERVICE_ERROR', `${service}: ${message}`, 502);
   }
 }
 

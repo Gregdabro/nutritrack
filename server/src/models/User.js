@@ -12,6 +12,11 @@ const UserSchema = new mongoose.Schema({
   heightCm:     { type: Number },
   botState:     { type: String, default: 'idle' },
   botStateData: { type: mongoose.Schema.Types.Mixed },
+  reminders:    {
+    morning:  { type: Boolean, default: true },
+    evening:  { type: Boolean, default: false },
+    morningTime: { type: String, default: '08:00' },
+  },
   createdAt:    { type: Date, default: Date.now },
 });
 

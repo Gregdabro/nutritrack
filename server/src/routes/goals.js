@@ -1,7 +1,7 @@
 const { Router } = require('express');
 const Goal = require('../models/Goal');
 const auth = require('../middleware/auth');
-const validate = require('../middleware/validate');
+const { validate } = require('../middleware/validate');
 const { UpdateGoalSchema } = require('../validation/goalSchemas');
 const logger = require('../logger');
 
