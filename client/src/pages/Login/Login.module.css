@@ -33,3 +33,47 @@
   display: flex;
   justify-content: center;
 }
+
+.help {
+  margin: 16px 0 0;
+  font-size: 12px;
+  color: #888;
+  line-height: 1.5;
+}
+
+.divider {
+  margin: 24px 0;
+  border: none;
+  border-top: 1px solid #eee;
+}
+
+.devToggle {
+  background: none;
+  border: none;
+  color: #aaa;
+  font-size: 12px;
+  cursor: pointer;
+  padding: 4px 8px;
+}
+
+.devToggle:hover {
+  color: #666;
+}
+
+.devBtn {
+  display: block;
+  width: 100%;
+  margin-top: 12px;
+  padding: 10px;
+  background: #ff9800;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.devBtn:hover {
+  background: #e68900;
+}

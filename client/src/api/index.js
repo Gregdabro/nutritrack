@@ -16,6 +16,7 @@ api.interceptors.request.use((config) => {
 api.auth = {
   telegram: (data) => api.post('/auth/telegram', data),
   botLogin: (data) => api.post('/auth/bot-login', data),
+  devLogin: (data) => api.post('/auth/dev-login', data),
 };
 
 api.goals = {

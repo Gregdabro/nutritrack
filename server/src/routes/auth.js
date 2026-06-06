@@ -90,4 +90,28 @@ router.post('/bot-login', validate(BotLoginSchema), async (req, res, next) => {
   }
 });
 
+// DEV-only: упрощённый вход для локального тестирования
+router.post('/dev-login', async (req, res, next) => {
+  try {
+    const telegramId = String(req.body.telegramId || `dev_${Date.now()}`);
+    const firstName = req.body.firstName || 'DevUser';
+
+    let user = await User.findOne({ telegramId });
+    if (!user) {
+      user = await User.create({ telegramId, firstName });
+    }
+
+    const token = generateToken(user);
+
+    logger.info({ userId: user._id.toString() }, 'Dev login');
+
+    res.json({
+      token,
+      user: { id: user._id, firstName: user.firstName, telegramId: user.telegramId },
+    });
+  } catch (err) {
+    next(err);
+  }
+});
+
 module.exports = router;
