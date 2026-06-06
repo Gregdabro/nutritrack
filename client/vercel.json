@@ -1,8 +1,8 @@
 {
   "rewrites": [
     {
-      "source": "/api/auth/oidc/callback",
-      "destination": "https://spectacular-empathy-production-0670.up.railway.app/api/auth/oidc/callback"
+      "source": "/api/auth/oidc/callback(.*)",
+      "destination": "https://spectacular-empathy-production-0670.up.railway.app/api/auth/oidc/callback$1"
     },
     { "source": "/(.*)", "destination": "/index.html" }
   ]
