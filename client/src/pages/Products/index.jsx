@@ -82,13 +82,17 @@ export default function Products() {
       const params = { limit: 100 };
       if (debouncedSearch) params.search = debouncedSearch;
       const res = await api.products.list(params);
-      setProducts(res.data.products);
-      setTotal(res.data.total);
+      if (res.data && Array.isArray(res.data.products)) {
+        setProducts(res.data.products);
+        setTotal(res.data.total ?? 0);
+      } else {
+        throw new Error('Некорректный ответ сервера (ожидался список продуктов)');
+      }
     } catch (err) {
       const msg =
         err.response
           ? err.response.data?.message || 'Ошибка сервера при загрузке продуктов'
-          : 'Не удалось подключиться к серверу. Проверьте, что сервер запущен.';
+          : err.message || 'Не удалось подключиться к серверу. Проверьте, что сервер запущен.';
       setFetchError(msg);
     } finally {
       setLoading(false);
