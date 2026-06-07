@@ -30,7 +30,8 @@ class ClaudeProvider extends AIProvider {
     });
 
     const raw = response.content[0].text.trim();
-    return JSON.parse(raw);
+    const cleaned = raw.replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/, '').trim();
+    return JSON.parse(cleaned);
   }
 }
 

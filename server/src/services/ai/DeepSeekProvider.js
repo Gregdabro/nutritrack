@@ -35,7 +35,9 @@ class DeepSeekProvider extends AIProvider {
     );
 
     const raw = response.data.choices[0].message.content.trim();
-    return JSON.parse(raw);
+    // Strip markdown code fences if present (```json ... ```)
+    const cleaned = raw.replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/, '').trim();
+    return JSON.parse(cleaned);
   }
 }
 
