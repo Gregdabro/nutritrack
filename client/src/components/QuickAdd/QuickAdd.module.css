@@ -1,0 +1,241 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+  animation: fadeIn 0.15s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.modal {
+  background: #1a1d2e;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 16px;
+  width: 100%;
+  max-width: 480px;
+  max-height: 90vh;
+  overflow-y: auto;
+  animation: slideUp 0.2s ease;
+}
+
+@keyframes slideUp {
+  from { transform: translateY(20px); opacity: 0; }
+  to   { transform: translateY(0);    opacity: 1; }
+}
+
+.modalHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 20px 0;
+}
+
+.title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #e2e8f0;
+  margin: 0;
+}
+
+.closeBtn {
+  background: none;
+  border: none;
+  color: #a0aec0;
+  font-size: 1.6rem;
+  cursor: pointer;
+  line-height: 1;
+  padding: 0;
+  transition: color 0.2s;
+}
+
+.closeBtn:hover { color: #e2e8f0; }
+
+.tabs {
+  display: flex;
+  gap: 4px;
+  padding: 16px 20px 0;
+}
+
+.tab {
+  flex: 1;
+  padding: 9px 10px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  background: none;
+  color: #a0aec0;
+  font-size: 0.82rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: center;
+}
+
+.tab:hover {
+  border-color: rgba(255, 255, 255, 0.2);
+  color: #e2e8f0;
+}
+
+.tabActive {
+  border-color: #4f8ef7;
+  color: #4f8ef7;
+  background: rgba(79, 142, 247, 0.08);
+}
+
+.tabContent {
+  padding: 16px 20px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.input {
+  width: 100%;
+  padding: 10px 14px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  color: #e2e8f0;
+  font-size: 0.9rem;
+  outline: none;
+  transition: border-color 0.2s;
+  box-sizing: border-box;
+}
+
+.input:focus {
+  border-color: #4f8ef7;
+}
+
+.textarea {
+  composes: input;
+  resize: vertical;
+  font-family: inherit;
+  line-height: 1.5;
+}
+
+.hint {
+  font-size: 0.82rem;
+  color: #a0aec0;
+  margin: 0;
+}
+
+.resultList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.resultItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 14px;
+  cursor: pointer;
+  transition: background 0.15s;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.resultItem:last-child { border-bottom: none; }
+.resultItem:hover { background: rgba(79, 142, 247, 0.1); }
+
+.resultName {
+  font-size: 0.9rem;
+  color: #e2e8f0;
+}
+
+.resultMacros {
+  font-size: 0.78rem;
+  color: #a0aec0;
+}
+
+.selectedCard {
+  background: rgba(79, 142, 247, 0.1);
+  border: 1px solid rgba(79, 142, 247, 0.3);
+  border-radius: 8px;
+  padding: 10px 14px;
+}
+
+.selectedName {
+  display: block;
+  font-weight: 600;
+  color: #e2e8f0;
+  margin-bottom: 4px;
+}
+
+.selectedMeta {
+  font-size: 0.8rem;
+  color: #a0aec0;
+}
+
+.gramsRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.gramsLabel {
+  font-size: 0.88rem;
+  color: #a0aec0;
+  white-space: nowrap;
+}
+
+.gramsInput {
+  width: 100px;
+  flex: none;
+}
+
+.error {
+  font-size: 0.84rem;
+  color: #f06060;
+  margin: 0;
+}
+
+.saveBtn {
+  padding: 11px 20px;
+  background: linear-gradient(135deg, #4f8ef7, #6f58e8);
+  border: none;
+  border-radius: 8px;
+  color: #fff;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s, transform 0.15s;
+}
+
+.saveBtn:hover:not(:disabled) {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+.saveBtn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.parseBtn {
+  composes: saveBtn;
+  background: linear-gradient(135deg, #38b2ac, #4f8ef7);
+}
+
+.parsedTitle {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #a0aec0;
+  margin: 0;
+}
+
+.parsedList {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
