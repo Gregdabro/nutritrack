@@ -139,7 +139,7 @@ async function foodHandler(ctx) {
       {
         reply_markup: {
           inline_keyboard: [[
-            { text: '📝 Ввести вручную на сайте', url: `${webappUrl}/diary` },
+            { text: '📝 Добавить продукт на сайте', url: `${webappUrl}/products` },
             { text: '❌ Пропустить', callback_data: 'skip_unrecognized' },
           ]],
         },
