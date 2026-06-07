@@ -1665,22 +1665,22 @@ if (process.env.NODE_ENV === 'production') {
 
 ### Спринт 3 — Питание (7-10 дней) ← ЯДРО
 
-- [ ] Mongoose схемы: FoodLog, Recipe
-- [ ] AI Layer: DeepSeekProvider + ClaudeProvider + AIProviderFactory + aiClient
-- [ ] services/aiParser.js
-- [ ] services/nutritionCalc.js
-- [ ] **Unit-тесты для `nutritionCalc.js`** — 10-15 кейсов: расчёт БЖУ на порцию, суммирование totals, расчёт стоимости, граничные значения (0г, null цена). Инструмент: `node:test` (встроен в Node 20, без зависимостей)
-- [ ] Zod-схемы: foodLogSchemas.js
-- [ ] POST /food-logs/parse (с graceful degradation)
-- [ ] POST /food-logs
-- [ ] GET /food-logs (по дате и неделе)
-- [ ] PUT/DELETE /food-logs/:id
-- [ ] POST /food-logs/repeat
-- [ ] **Telegram-бот: парсинг свободного текста еды** — главная фича
-- [ ] Telegram-бот: ответ с нутриентами и прогрессом
-- [ ] Telegram-бот: сценарий graceful degradation при недоступности AI
-- [ ] Страница /diary — дневник питания
-- [ ] Компоненты: NutrientBar, FoodEntry, QuickAdd (модальное окно)
+- [x] Mongoose схемы: FoodLog, Recipe
+- [x] AI Layer: DeepSeekProvider + ClaudeProvider + AIProviderFactory + aiClient
+- [x] services/aiParser.js
+- [x] services/nutritionCalc.js
+- [x] **Unit-тесты для `nutritionCalc.js`** — 10-15 кейсов: расчёт БЖУ на порцию, суммирование totals, расчёт стоимости, граничные значения (0г, null цена). Инструмент: `node:test` (встроен в Node 20, без зависимостей)
+- [x] Zod-схемы: foodLogSchemas.js
+- [x] POST /food-logs/parse (с graceful degradation)
+- [x] POST /food-logs
+- [x] GET /food-logs (по дате и неделе)
+- [x] PUT/DELETE /food-logs/:id
+- [x] POST /food-logs/repeat
+- [x] **Telegram-бот: парсинг свободного текста еды** — главная фича
+- [x] Telegram-бот: ответ с нутриентами и прогрессом
+- [x] Telegram-бот: сценарий graceful degradation при недоступности AI
+- [x] Страница /diary — дневник питания
+- [x] Компоненты: NutrientBar, FoodEntry, QuickAdd (модальное окно)
 
 ### Спринт 4 — Тренировки (4-5 дней)
 
