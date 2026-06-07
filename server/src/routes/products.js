@@ -24,20 +24,56 @@ router.get('/', validateQuery(ListProductsSchema), async (req, res, next) => {
     // Lazy seed: если у пользователя ещё нет продуктов — наполняем стартовыми
     await seedProducts(req.user.userId);
 
-    let filter = { userId: req.user.userId };
+    let products;
+    let total;
 
     if (search) {
-      filter.$text = { $search: search };
-    }
+      // Короткие запросы (<4 символов) — сразу regex, текстовый индекс не ищет по частичным словам
+      if (search.length < 4) {
+        const regexFilter = {
+          userId: req.user.userId,
+          $or: [
+            { name:    { $regex: search, $options: 'i' } },
+            { aliases: { $regex: search, $options: 'i' } },
+          ],
+        };
+        [products, total] = await Promise.all([
+          Product.find(regexFilter).sort({ name: 1 }).skip(offset).limit(limit).lean(),
+          Product.countDocuments(regexFilter),
+        ]);
+      } else {
+        // Длинные запросы — текстовый индекс, затем fallback на regex если 0 результатов
+        const textFilter = { userId: req.user.userId, $text: { $search: search } };
+        const textResults = await Product.find(textFilter)
+          .sort({ score: { $meta: 'textScore' } })
+          .skip(offset)
+          .limit(limit)
+          .lean();
 
-    const [products, total] = await Promise.all([
-      Product.find(filter)
-        .sort(search ? { score: { $meta: 'textScore' } } : { name: 1 })
-        .skip(offset)
-        .limit(limit)
-        .lean(),
-      Product.countDocuments(filter),
-    ]);
+        if (textResults.length > 0) {
+          products = textResults;
+          total = await Product.countDocuments(textFilter);
+        } else {
+          const regexFilter = {
+            userId: req.user.userId,
+            $or: [
+              { name:    { $regex: search, $options: 'i' } },
+              { aliases: { $regex: search, $options: 'i' } },
+            ],
+          };
+          [products, total] = await Promise.all([
+            Product.find(regexFilter).sort({ name: 1 }).skip(offset).limit(limit).lean(),
+            Product.countDocuments(regexFilter),
+          ]);
+        }
+      }
+    } else {
+      const filter = { userId: req.user.userId };
+      [products, total] = await Promise.all([
+        Product.find(filter).sort({ name: 1 }).skip(offset).limit(limit).lean(),
+        Product.countDocuments(filter),
+      ]);
+    }
 
     res.json({ products, total });
   } catch (err) {
