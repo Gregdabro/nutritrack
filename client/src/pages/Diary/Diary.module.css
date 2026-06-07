@@ -1,0 +1,181 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+.page {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #0d1117 0%, #161b27 60%, #1a1d35 100%);
+  color: #e2e8f0;
+  font-family: 'Inter', sans-serif;
+  padding: 24px 20px 60px;
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+/* ── Date navigation ─────────────────────────────────────────────────────── */
+.dateNav {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin-bottom: 28px;
+}
+
+.navBtn {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.05);
+  color: #e2e8f0;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.navBtn:hover:not(:disabled) {
+  background: rgba(79, 142, 247, 0.15);
+  border-color: #4f8ef7;
+  color: #4f8ef7;
+}
+
+.navBtn:disabled {
+  opacity: 0.25;
+  cursor: not-allowed;
+}
+
+.dateLabel {
+  font-size: 1.1rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: #e2e8f0;
+  min-width: 200px;
+  text-align: center;
+}
+
+/* ── Meal sections ───────────────────────────────────────────────────────── */
+.sections {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  margin-bottom: 32px;
+}
+
+.mealSection {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 16px;
+  padding: 18px 20px;
+}
+
+.mealHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.mealTitle {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #e2e8f0;
+  margin: 0;
+}
+
+.mealMeta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.mealTotals {
+  font-size: 0.78rem;
+  color: #a0aec0;
+  font-variant-numeric: tabular-nums;
+}
+
+.addBtn {
+  padding: 6px 14px;
+  border: 1px solid rgba(79, 142, 247, 0.4);
+  border-radius: 8px;
+  background: rgba(79, 142, 247, 0.08);
+  color: #4f8ef7;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.addBtn:hover {
+  background: rgba(79, 142, 247, 0.18);
+  border-color: #4f8ef7;
+}
+
+.emptyHint {
+  font-size: 0.85rem;
+  color: rgba(160, 174, 192, 0.5);
+  text-align: center;
+  padding: 16px 0 4px;
+  margin: 0;
+}
+
+/* ── Summary section ─────────────────────────────────────────────────────── */
+.summarySection {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 16px;
+  padding: 20px 22px;
+}
+
+.summaryTitle {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #e2e8f0;
+  margin: 0 0 18px;
+}
+
+.nutrientBars {
+  margin-bottom: 18px;
+}
+
+.caloriesRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  padding-top: 14px;
+}
+
+.caloriesLabel {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: #a0aec0;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.caloriesValue {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #e2e8f0;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── Misc ────────────────────────────────────────────────────────────────── */
+.hint {
+  text-align: center;
+  color: #a0aec0;
+  font-size: 0.88rem;
+  margin: 20px 0;
+}
+
+.errorMsg {
+  text-align: center;
+  color: #f06060;
+  font-size: 0.88rem;
+  margin: 12px 0;
+}
