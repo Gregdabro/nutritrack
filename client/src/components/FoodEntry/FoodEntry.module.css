@@ -80,3 +80,9 @@
   color: var(--color-accent, #4f8ef7);
   font-variant-numeric: tabular-nums;
 }
+
+.deleteError {
+  margin: 6px 0 0;
+  font-size: 0.8rem;
+  color: #f06060;
+}

@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import styles from './FoodEntry.module.css';
 import api from '../../api';
 
@@ -6,6 +7,8 @@ import api from '../../api';
  * Props: { entry: FoodLog, onDelete: (id) => void }
  */
 export default function FoodEntry({ entry, onDelete }) {
+  const [deleteError, setDeleteError] = useState(null);
+
   const time = entry.loggedAt
     ? new Date(entry.loggedAt).toLocaleTimeString('ru-RU', {
         hour: '2-digit',
@@ -14,11 +17,12 @@ export default function FoodEntry({ entry, onDelete }) {
     : '';
 
   async function handleDelete() {
+    setDeleteError(null);
     try {
       await api.foodLogs.remove(entry._id);
       onDelete(entry._id);
     } catch (err) {
-      console.error('Failed to delete food log:', err);
+      setDeleteError('Не удалось удалить запись. Попробуй ещё раз.');
     }
   }
 
@@ -54,6 +58,10 @@ export default function FoodEntry({ entry, onDelete }) {
           Итого: Б{entry.totals.protein} Ж{entry.totals.fat} У{entry.totals.carbs} |{' '}
           {entry.totals.calories} ккал
         </div>
+      )}
+
+      {deleteError && (
+        <p className={styles.deleteError}>{deleteError}</p>
       )}
     </div>
   );
