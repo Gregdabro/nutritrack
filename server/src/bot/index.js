@@ -31,6 +31,45 @@ bot.command('login', async (ctx) => {
   );
 });
 
+// Обработчики callback-кнопок
+bot.action('manual_entry', async (ctx) => {
+  try {
+    await ctx.answerCbQuery();
+    const webappUrl = process.env.WEBAPP_URL || 'https://nutritrack-topaz.vercel.app';
+    await ctx.reply(`Для ручного ввода продуктов используй веб-приложение:\n${webappUrl}/diary`);
+  } catch (err) {
+    logger.error({ err }, 'Error answering manual_entry callback query');
+  }
+});
+
+bot.action('retry_parse', async (ctx) => {
+  try {
+    await ctx.answerCbQuery();
+    await ctx.reply('Попробуй ввести описание еды ещё раз. Например:\n"яйцо 3 шт, огурец 100г"');
+  } catch (err) {
+    logger.error({ err }, 'Error answering retry_parse callback query');
+  }
+});
+
+bot.action('add_food', async (ctx) => {
+  try {
+    await ctx.answerCbQuery();
+    await ctx.reply('Просто напиши мне в чат, что ты съел, например:\n"съел 3 яйца и 150г гречки"');
+  } catch (err) {
+    logger.error({ err }, 'Error answering add_food callback query');
+  }
+});
+
+bot.action('log_weight', async (ctx) => {
+  try {
+    await ctx.answerCbQuery();
+    await ctx.reply('Ввод веса будет доступен в следующем обновлении (Спринт 5).');
+  } catch (err) {
+    logger.error({ err }, 'Error answering log_weight callback query');
+  }
+});
+
+
 // bot.on('text') — должен быть зарегистрирован ПОСЛЕ всех команд
 bot.on('text', async (ctx) => {
   const user = ctx.user;
