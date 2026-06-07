@@ -2,24 +2,7 @@ const { Markup } = require('telegraf');
 const FoodLog = require('../../models/FoodLog');
 const Goal = require('../../models/Goal');
 const logger = require('../../logger');
-
-/** Returns today's date string in Europe/Rome timezone (YYYY-MM-DD) */
-function getTodayDate() {
-  return new Date().toLocaleDateString('sv-SE', { timeZone: 'Europe/Rome' });
-}
-
-/**
- * Build a 10-char progress bar string.
- * @param {number} current
- * @param {number} goal
- * @returns {string}
- */
-function progressBar(current, goal) {
-  if (!goal || goal <= 0) return '░░░░░░░░░░';
-  const ratio = Math.min(current / goal, 1);
-  const filled = Math.round(ratio * 10);
-  return '█'.repeat(filled) + '░'.repeat(10 - filled);
-}
+const { getTodayDate, progressBar } = require('../utils');
 
 /**
  * Format a date for human display (e.g. "31 мая")

@@ -5,11 +5,7 @@ const Goal = require('../../models/Goal');
 const aiParser = require('../../services/aiParser');
 const { calcItemNutrients, calcTotals } = require('../../services/nutritionCalc');
 const logger = require('../../logger');
-
-/** Returns today's date string in Europe/Rome timezone (YYYY-MM-DD) */
-function getTodayDate() {
-  return new Date().toLocaleDateString('sv-SE', { timeZone: 'Europe/Rome' });
-}
+const { getTodayDate, progressBar } = require('../utils');
 
 /**
  * Detect meal type from free-form Russian text.
@@ -22,19 +18,6 @@ function detectMealType(text) {
   if (/обед|в обед|на обед/.test(lower))        return 'lunch';
   if (/ужин|на ужин|вечером/.test(lower))        return 'dinner';
   return 'snack';
-}
-
-/**
- * Build a 10-char progress bar string.
- * @param {number} current
- * @param {number} goal
- * @returns {string}
- */
-function progressBar(current, goal) {
-  if (!goal || goal <= 0) return '░░░░░░░░░░';
-  const ratio = Math.min(current / goal, 1);
-  const filled = Math.round(ratio * 10);
-  return '█'.repeat(filled) + '░'.repeat(10 - filled);
 }
 
 /**
