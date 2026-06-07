@@ -1,0 +1,895 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --g:#3B6D11;--gm:#639922;--gb:#EAF3DE;--gc:#C0DD97;
+  --am:#BA7517;--ab:#FAEEDA;
+  --cm:#D85A30;--cb:#FAECE7;
+  --bm:#378ADD;--bb:#E6F1FB;--bd:#185FA5;
+  --tm:#1D9E75;--tb:#E1F5EE;--tg:#0F6E56;
+  --pm:#7F77DD;--pb:#EEEDFE;--pd:#3C3489;
+  --t1:var(--color-text-primary);
+  --t2:var(--color-text-secondary);
+  --t3:var(--color-text-tertiary);
+  --s1:var(--color-background-primary);
+  --s2:var(--color-background-secondary);
+  --s3:var(--color-background-tertiary);
+  --b1:var(--color-border-tertiary);
+  --b2:var(--color-border-secondary);
+  --r:var(--border-radius-md);
+  --rl:var(--border-radius-lg);
+}
+body{font-family:var(--font-sans,system-ui);font-size:14px;line-height:1.5;color:var(--t1)}
+
+.screens-nav{display:flex;gap:6px;flex-wrap:wrap;padding:0 0 16px;border-bottom:0.5px solid var(--b1);margin-bottom:20px}
+.snav-btn{border:0.5px solid var(--b2);background:var(--s1);border-radius:var(--r);padding:5px 12px;font-size:12px;cursor:pointer;color:var(--t2);transition:all .15s}
+.snav-btn:hover{background:var(--s2);color:var(--t1)}
+.snav-btn.active{background:var(--gb);border-color:var(--gm);color:var(--g);font-weight:500}
+
+.screen{display:none}.screen.active{display:block}
+
+.card{background:var(--s1);border:0.5px solid var(--b1);border-radius:var(--rl);padding:14px 16px}
+.card-sm{padding:10px 12px}
+.ch{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.ct{font-size:12px;font-weight:500;color:var(--t2)}
+.g2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px}
+.g3{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr) minmax(0,1fr);gap:10px}
+.g4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.gap{margin-bottom:14px}
+
+.pill{display:inline-flex;align-items:center;gap:3px;font-size:11px;padding:2px 8px;border-radius:20px;font-weight:500}
+.pg{background:var(--gb);color:var(--g)}
+.pa{background:var(--ab);color:#633806}
+.pc{background:var(--cb);color:#712B13}
+.pb{background:var(--bb);color:var(--bd)}
+.pt{background:var(--tb);color:var(--tg)}
+.pp{background:var(--pb);color:var(--pd)}
+
+.btn{background:var(--gm);color:#fff;border:none;border-radius:var(--r);padding:6px 14px;font-size:13px;font-weight:500;cursor:pointer;display:inline-flex;align-items:center;gap:5px}
+.btn:hover{background:var(--g)}
+.btn-o{background:none;border:0.5px solid var(--b2);border-radius:var(--r);padding:6px 12px;font-size:12px;color:var(--t2);cursor:pointer;display:inline-flex;align-items:center;gap:5px}
+.btn-o:hover{background:var(--s2);color:var(--t1)}
+.btn-sm{padding:4px 10px;font-size:12px}
+
+.inp{width:100%;border:0.5px solid var(--b2);border-radius:var(--r);padding:7px 10px;font-size:13px;color:var(--t1);background:var(--s1);outline:none}
+.inp:focus{border-color:var(--gm);box-shadow:0 0 0 2px var(--gb)}
+.lbl{font-size:12px;color:var(--t2);margin-bottom:4px}
+
+.stat{background:var(--s2);border-radius:var(--r);padding:10px 12px}
+.stat-l{font-size:11px;color:var(--t3);margin-bottom:3px;text-transform:uppercase;letter-spacing:.05em}
+.stat-v{font-size:20px;font-weight:500}
+.stat-s{font-size:11px;color:var(--t3);margin-top:2px}
+
+.nb{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.nl{font-size:12px;color:var(--t2);width:68px;flex-shrink:0}
+.nw{flex:1;height:7px;background:var(--s2);border-radius:20px;overflow:hidden}
+.nf{height:100%;border-radius:20px}
+.nn{font-size:11px;color:var(--t2);min-width:66px;text-align:right}
+.nn span{color:var(--t1);font-weight:500}
+
+.row{display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:0.5px solid var(--b1)}
+.row:last-child{border-bottom:none}
+
+.tag{display:inline-flex;align-items:center;gap:3px;font-size:11px;padding:3px 8px;border-radius:20px;border:0.5px solid var(--b2);color:var(--t2);cursor:pointer;margin:2px;transition:all .15s}
+.tag.on{background:var(--gb);border-color:var(--gm);color:var(--g);font-weight:500}
+
+.divider{height:0.5px;background:var(--b1);margin:12px 0}
+
+.insight-card{border-left:3px solid var(--gm);background:var(--gb);border-radius:0 var(--r) var(--r) 0;padding:10px 12px;margin-bottom:8px}
+.insight-card.amber{border-left-color:var(--am);background:var(--ab)}
+.insight-card.coral{border-left-color:var(--cm);background:var(--cb)}
+.insight-card.purple{border-left-color:var(--pm);background:var(--pb)}
+.insight-title{font-size:12px;font-weight:500;margin-bottom:3px}
+.insight-text{font-size:12px;color:var(--t2)}
+
+.tg-bubble{max-width:72%;padding:8px 12px;border-radius:14px;margin-bottom:6px;font-size:13px;line-height:1.45}
+.tg-in{background:var(--s2);color:var(--t1);border-radius:14px 14px 14px 3px;align-self:flex-start}
+.tg-out{background:#3B6D11;color:#fff;border-radius:14px 14px 3px 14px;align-self:flex-end}
+.tg-ts{font-size:10px;color:var(--t3);margin-bottom:2px}
+.tg-ts-r{font-size:10px;color:rgba(255,255,255,.6);margin-bottom:2px;text-align:right}
+
+.exercise-inp{display:flex;align-items:center;gap:6px;padding:6px 0;border-bottom:0.5px solid var(--b1)}
+.exercise-inp:last-child{border-bottom:none}
+
+.recipe-ing-row{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:0.5px solid var(--b1)}
+.recipe-ing-row:last-child{border-bottom:none}
+
+.cost-rank-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:0.5px solid var(--b1)}
+.cost-rank-row:last-child{border-bottom:none}
+.rank-num{width:20px;font-size:11px;font-weight:500;color:var(--t3);text-align:center}
+.rank-bar-wrap{flex:1;height:6px;background:var(--s2);border-radius:10px;overflow:hidden}
+.rank-bar{height:100%;border-radius:10px}
+
+.feel-btn{border:0.5px solid var(--b2);background:var(--s1);border-radius:var(--r);padding:7px 12px;cursor:pointer;font-size:12px;display:flex;flex-direction:column;align-items:center;gap:3px;min-width:60px;color:var(--t2);transition:all .15s}
+.feel-btn.on{background:var(--gb);border-color:var(--gm);color:var(--g);font-weight:500}
+.feel-btn:hover{border-color:var(--gm)}
+</style>
+
+<h2 class="sr-only">NutriTrack — дополнительные экраны прототипа: рецепты, настройки, стоимость БЖУ, аналитика, Telegram-симулятор, онбординг.</h2>
+
+<div class="screens-nav" role="tablist" aria-label="Навигация по экранам">
+  <button class="snav-btn active" onclick="showScreen('recipes',this)" role="tab">Рецепты</button>
+  <button class="snav-btn" onclick="showScreen('cost',this)" role="tab">Стоимость БЖУ</button>
+  <button class="snav-btn" onclick="showScreen('analytics',this)" role="tab">Аналитика</button>
+  <button class="snav-btn" onclick="showScreen('workout-form',this)" role="tab">Форма тренировки</button>
+  <button class="snav-btn" onclick="showScreen('settings',this)" role="tab">Настройки</button>
+  <button class="snav-btn" onclick="showScreen('telegram',this)" role="tab">Telegram-бот</button>
+  <button class="snav-btn" onclick="showScreen('onboarding',this)" role="tab">Онбординг</button>
+</div>
+
+<!-- ===== RECIPES ===== -->
+<div id="s-recipes" class="screen active">
+  <div class="g2 gap">
+    <div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+        <span style="font-size:13px;font-weight:500;color:var(--t2)">Мои рецепты</span>
+        <button class="btn btn-sm"><i class="ti ti-plus" aria-hidden="true"></i>Создать</button>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <div class="card card-sm" style="cursor:pointer;border-color:var(--gm)" onclick="selectRecipe('borsch')">
+          <div style="display:flex;align-items:center;justify-content:space-between">
+            <span style="font-size:13px;font-weight:500">Борщ</span>
+            <span class="pill pg">6 порций</span>
+          </div>
+          <div style="font-size:11px;color:var(--t3);margin-top:4px">Говядина, свёкла, капуста, картофель</div>
+          <div style="display:flex;gap:6px;margin-top:6px">
+            <span class="pill pb">Б 20г/пор</span>
+            <span class="pill pa">208 ккал</span>
+            <span style="font-size:11px;color:var(--t2);margin-left:auto">1.03€/пор</span>
+          </div>
+        </div>
+        <div class="card card-sm" style="cursor:pointer" onclick="selectRecipe('zapek')">
+          <div style="display:flex;align-items:center;justify-content:space-between">
+            <span style="font-size:13px;font-weight:500">Творожная запеканка</span>
+            <span class="pill pg">4 порции</span>
+          </div>
+          <div style="font-size:11px;color:var(--t3);margin-top:4px">Творог, яйцо, манка, сахар</div>
+          <div style="display:flex;gap:6px;margin-top:6px">
+            <span class="pill pb">Б 18г/пор</span>
+            <span class="pill pa">245 ккал</span>
+            <span style="font-size:11px;color:var(--t2);margin-left:auto">0.72€/пор</span>
+          </div>
+        </div>
+        <div class="card card-sm" style="cursor:pointer" onclick="selectRecipe('salad')">
+          <div style="display:flex;align-items:center;justify-content:space-between">
+            <span style="font-size:13px;font-weight:500">Салат с тунцом</span>
+            <span class="pill pg">2 порции</span>
+          </div>
+          <div style="font-size:11px;color:var(--t3);margin-top:4px">Тунец, огурец, помидор, оливки</div>
+          <div style="display:flex;gap:6px;margin-top:6px">
+            <span class="pill pb">Б 24г/пор</span>
+            <span class="pill pa">180 ккал</span>
+            <span style="font-size:11px;color:var(--t2);margin-left:auto">2.10€/пор</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="recipe-detail">
+      <div style="font-size:13px;font-weight:500;color:var(--t2);margin-bottom:10px">Борщ — детали</div>
+      <div class="card">
+        <div class="ch">
+          <span style="font-size:14px;font-weight:500">Борщ</span>
+          <div style="display:flex;gap:6px">
+            <button class="btn-o btn-sm"><i class="ti ti-edit" style="font-size:12px" aria-hidden="true"></i>Изм.</button>
+            <button class="btn btn-sm"><i class="ti ti-plus" style="font-size:12px" aria-hidden="true"></i>В дневник</button>
+          </div>
+        </div>
+
+        <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px">
+          <span class="pill pg">6 порций</span>
+          <span class="pill pb">Б 120г общ.</span>
+          <span style="font-size:11px;color:var(--t2);padding:2px 0">Итого 6.20€ · 1.03€/пор</span>
+        </div>
+
+        <div style="font-size:12px;font-weight:500;color:var(--t2);margin-bottom:8px">Ингредиенты</div>
+        <div class="recipe-ing-row">
+          <span style="flex:1;font-size:13px">Говядина</span>
+          <span style="font-size:12px;color:var(--t3);min-width:50px;text-align:right">400 г</span>
+          <span style="font-size:11px;color:var(--bd);min-width:50px;text-align:right">Б 76г</span>
+          <span style="font-size:11px;color:var(--t3);min-width:44px;text-align:right">3.40€</span>
+        </div>
+        <div class="recipe-ing-row">
+          <span style="flex:1;font-size:13px">Свёкла</span>
+          <span style="font-size:12px;color:var(--t3);min-width:50px;text-align:right">300 г</span>
+          <span style="font-size:11px;color:var(--bd);min-width:50px;text-align:right">Б 5г</span>
+          <span style="font-size:11px;color:var(--t3);min-width:44px;text-align:right">0.45€</span>
+        </div>
+        <div class="recipe-ing-row">
+          <span style="flex:1;font-size:13px">Капуста свежая</span>
+          <span style="font-size:12px;color:var(--t3);min-width:50px;text-align:right">200 г</span>
+          <span style="font-size:11px;color:var(--bd);min-width:50px;text-align:right">Б 3г</span>
+          <span style="font-size:11px;color:var(--t3);min-width:44px;text-align:right">0.18€</span>
+        </div>
+        <div class="recipe-ing-row">
+          <span style="flex:1;font-size:13px">Картофель</span>
+          <span style="font-size:12px;color:var(--t3);min-width:50px;text-align:right">250 г</span>
+          <span style="font-size:11px;color:var(--bd);min-width:50px;text-align:right">Б 5г</span>
+          <span style="font-size:11px;color:var(--t3);min-width:44px;text-align:right">0.28€</span>
+        </div>
+        <div class="recipe-ing-row">
+          <span style="flex:1;font-size:13px">Морковь</span>
+          <span style="font-size:12px;color:var(--t3);min-width:50px;text-align:right">100 г</span>
+          <span style="font-size:11px;color:var(--bd);min-width:50px;text-align:right">Б 1г</span>
+          <span style="font-size:11px;color:var(--t3);min-width:44px;text-align:right">0.12€</span>
+        </div>
+        <div style="height:0.5px;background:var(--b1);margin:8px 0"></div>
+        <div style="font-size:12px;font-weight:500;color:var(--t2);margin-bottom:8px">На 1 порцию</div>
+        <div class="nb" style="margin-bottom:6px"><span class="nl">Белки</span><div class="nw"><div class="nf" style="width:80%;background:var(--bm)"></div></div><span class="nn"><span>20</span> г</span></div>
+        <div class="nb" style="margin-bottom:6px"><span class="nl">Жиры</span><div class="nw"><div class="nf" style="width:55%;background:#BA7517"></div></div><span class="nn"><span>7.5</span> г</span></div>
+        <div class="nb" style="margin-bottom:0"><span class="nl">Углеводы</span><div class="nw"><div class="nf" style="width:60%;background:var(--gm)"></div></div><span class="nn"><span>15</span> г</span></div>
+
+        <div class="divider"></div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <span style="font-size:12px;color:var(--t2)">Добавить в дневник — порций:</span>
+          <input type="number" value="1" min="1" max="6" step="1" style="width:52px;text-align:center;border:0.5px solid var(--b2);border-radius:var(--r);padding:5px;font-size:13px;font-weight:500;background:var(--s1);color:var(--t1);outline:none" aria-label="Количество порций"/>
+          <button class="btn btn-sm">Добавить</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== СТОИМОСТЬ БЖУ ===== -->
+<div id="s-cost" class="screen">
+  <div class="g4 gap">
+    <div class="stat"><div class="stat-l">Бюджет / нед</div><div class="stat-v">47.2€</div><div class="stat-s">план 80€</div></div>
+    <div class="stat"><div class="stat-l">Осталось</div><div class="stat-v" style="color:var(--gm)">32.8€</div><div class="stat-s">до конца недели</div></div>
+    <div class="stat"><div class="stat-l">Ср. €/день</div><div class="stat-v">9.44€</div><div class="stat-s">за 5 дней</div></div>
+    <div class="stat"><div class="stat-l">Самый дешёв.</div><div class="stat-v" style="font-size:14px;padding-top:4px"><span class="pill pg">Тунец</span></div><div class="stat-s">1.12€/100г Б</div></div>
+  </div>
+
+  <div class="g2 gap">
+    <div class="card">
+      <div class="ch"><span class="ct">Рейтинг: €/100г белка</span><span style="font-size:11px;color:var(--t3)">чем меньше — лучше</span></div>
+      <div id="rank-protein"></div>
+    </div>
+    <div class="card">
+      <div class="ch"><span class="ct">Рейтинг: €/10г клетчатки</span><span style="font-size:11px;color:var(--t3)">чем меньше — лучше</span></div>
+      <div id="rank-fiber"></div>
+    </div>
+  </div>
+
+  <div class="g2 gap">
+    <div class="card">
+      <div class="ch"><span class="ct">Сравнение цен по магазинам</span></div>
+      <div style="font-size:12px;color:var(--t2);margin-bottom:10px">Куриная грудка (€/кг)</div>
+      <div style="display:flex;flex-direction:column;gap:6px" id="store-compare"></div>
+      <div class="divider"></div>
+      <div style="font-size:12px;color:var(--t2);margin-bottom:10px">Творог 9% (€/кг)</div>
+      <div style="display:flex;flex-direction:column;gap:6px">
+        <div style="display:flex;align-items:center;gap:8px">
+          <span style="font-size:12px;width:56px;color:var(--t2)">Conad</span>
+          <div style="flex:1;height:6px;background:var(--s2);border-radius:4px;overflow:hidden"><div style="width:80%;height:100%;background:var(--am);border-radius:4px"></div></div>
+          <span style="font-size:12px;font-weight:500">3.80€</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <span style="font-size:12px;width:56px;color:var(--t2)">Lidl</span>
+          <div style="flex:1;height:6px;background:var(--s2);border-radius:4px;overflow:hidden"><div style="width:60%;height:100%;background:var(--gm);border-radius:4px"></div></div>
+          <span style="font-size:12px;font-weight:500;color:var(--g)">2.99€ <span class="pill pg" style="font-size:10px">дешевле</span></span>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="ch"><span class="ct">Расходы по неделям</span></div>
+      <svg viewBox="0 0 280 110" width="100%" aria-label="График расходов на питание по неделям">
+        <line x1="20" y1="10" x2="270" y2="10" stroke="var(--b1)" stroke-width="0.5" stroke-dasharray="3,3"/>
+        <line x1="20" y1="55" x2="270" y2="55" stroke="var(--b1)" stroke-width="0.5" stroke-dasharray="3,3"/>
+        <line x1="20" y1="95" x2="270" y2="95" stroke="var(--b1)" stroke-width="0.5" stroke-dasharray="3,3"/>
+        <text x="2" y="13" font-size="9" fill="#A09F9A">80€</text>
+        <text x="2" y="58" font-size="9" fill="#A09F9A">50€</text>
+        <text x="2" y="98" font-size="9" fill="#A09F9A">20€</text>
+        <g transform="translate(28,0)">
+          <rect x="0" y="32" width="28" height="63" rx="3" fill="#639922" opacity="0.7"/>
+          <text x="14" y="28" text-anchor="middle" font-size="9" fill="#3B6D11">62€</text>
+          <text x="14" y="108" text-anchor="middle" font-size="9" fill="#A09F9A">нед 1</text>
+        </g>
+        <g transform="translate(88,0)">
+          <rect x="0" y="20" width="28" height="75" rx="3" fill="#639922" opacity="0.7"/>
+          <text x="14" y="16" text-anchor="middle" font-size="9" fill="#3B6D11">71€</text>
+          <text x="14" y="108" text-anchor="middle" font-size="9" fill="#A09F9A">нед 2</text>
+        </g>
+        <g transform="translate(148,0)">
+          <rect x="0" y="38" width="28" height="57" rx="3" fill="#639922" opacity="0.7"/>
+          <text x="14" y="34" text-anchor="middle" font-size="9" fill="#3B6D11">55€</text>
+          <text x="14" y="108" text-anchor="middle" font-size="9" fill="#A09F9A">нед 3</text>
+        </g>
+        <g transform="translate(208,0)">
+          <rect x="0" y="50" width="28" height="45" rx="3" fill="#EF9F27" opacity="0.8"/>
+          <text x="14" y="46" text-anchor="middle" font-size="9" fill="#633806">47€</text>
+          <text x="14" y="108" text-anchor="middle" font-size="9" fill="#A09F9A">тек</text>
+        </g>
+        <line x1="20" y1="18" x2="270" y2="18" stroke="#D85A30" stroke-width="1" stroke-dasharray="5,3" opacity="0.6"/>
+        <text x="230" y="14" font-size="9" fill="#993C1D">план 80€</text>
+      </svg>
+    </div>
+  </div>
+</div>
+
+<!-- ===== АНАЛИТИКА ПАТТЕРНОВ ===== -->
+<div id="s-analytics" class="screen">
+  <div class="gap" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+    <span style="font-size:12px;color:var(--t2)">Период анализа:</span>
+    <button class="snav-btn active" style="font-size:11px;padding:3px 10px">30 дней</button>
+    <button class="snav-btn" style="font-size:11px;padding:3px 10px">3 месяца</button>
+    <span style="font-size:11px;color:var(--t3);margin-left:auto">Данных: 28 дней · достаточно для анализа</span>
+  </div>
+
+  <div class="gap">
+    <div style="font-size:12px;font-weight:500;color:var(--t2);margin-bottom:8px">Найденные закономерности</div>
+    <div class="insight-card amber">
+      <div class="insight-title" style="color:#633806"><i class="ti ti-moon" style="font-size:13px" aria-hidden="true"></i> Питание → Качество сна</div>
+      <div class="insight-text" style="color:#854F0B">В 7 из 9 случаев, когда ты ел после 21:00, качество сна было оценено ниже 3/5. Последний раз: 29 мая.</div>
+      <div style="display:flex;gap:6px;margin-top:7px">
+        <span class="pill pa">9 наблюдений</span>
+        <span class="pill pa">78% совпадений</span>
+      </div>
+    </div>
+    <div class="insight-card coral">
+      <div class="insight-title" style="color:#712B13"><i class="ti ti-spine" style="font-size:13px" aria-hidden="true"></i> Тренировка → Боль в спине</div>
+      <div class="insight-text" style="color:#993C1D">После приседаний с гирей 32 кг в 5 из 8 тренировок на следующий день ты отмечал боль в спине. Рассмотри снижение веса или технику.</div>
+      <div style="display:flex;gap:6px;margin-top:7px">
+        <span class="pill pc">8 тренировок</span>
+        <span class="pill pc">63% совпадений</span>
+      </div>
+    </div>
+    <div class="insight-card" style="border-left-color:var(--gm)">
+      <div class="insight-title" style="color:#27500A"><i class="ti ti-trending-up" style="font-size:13px" aria-hidden="true"></i> Тренировки → Энергия</div>
+      <div class="insight-text" style="color:#3B6D11">В дни после тренировки уровень энергии в среднем на 0.9 балла выше (4.1 vs 3.2). Тренировки явно помогают самочувствию.</div>
+      <div style="display:flex;gap:6px;margin-top:7px">
+        <span class="pill pg">18 тренировок</span>
+        <span class="pill pg">позитивная связь</span>
+      </div>
+    </div>
+    <div class="insight-card purple">
+      <div class="insight-title" style="color:#3C3489"><i class="ti ti-scale" style="font-size:13px" aria-hidden="true"></i> Белок → Вес</div>
+      <div class="insight-text" style="color:#534AB7">В недели с выполнением плана по белку ≥80% скользящее среднее веса снижалось. В недели ниже 60% — вес стоял или рос.</div>
+      <div style="display:flex;gap:6px;margin-top:7px">
+        <span class="pill pp">4 недели данных</span>
+        <span class="pill pp">корреляция</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="g2">
+    <div class="card">
+      <div class="ch"><span class="ct">Питание → Самочувствие</span></div>
+      <svg viewBox="0 0 280 120" width="100%" aria-label="Матрица паттернов питание и самочувствие">
+        <text x="0" y="25" font-size="9" fill="#A09F9A">Сон</text>
+        <text x="0" y="55" font-size="9" fill="#A09F9A">Энергия</text>
+        <text x="0" y="85" font-size="9" fill="#A09F9A">Настроение</text>
+        <text x="58" y="115" font-size="9" fill="#A09F9A">Белок &lt;60%</text>
+        <text x="128" y="115" font-size="9" fill="#A09F9A">Белок 60-80%</text>
+        <text x="200" y="115" font-size="9" fill="#A09F9A">Белок &gt;80%</text>
+        <rect x="45" y="13" width="50" height="18" rx="3" fill="#F09595" opacity="0.8"/>
+        <text x="70" y="25" text-anchor="middle" font-size="9" fill="#791F1F">2.8</text>
+        <rect x="115" y="13" width="50" height="18" rx="3" fill="#FAC775" opacity="0.8"/>
+        <text x="140" y="25" text-anchor="middle" font-size="9" fill="#633806">3.4</text>
+        <rect x="185" y="13" width="50" height="18" rx="3" fill="#97C459" opacity="0.8"/>
+        <text x="210" y="25" text-anchor="middle" font-size="9" fill="#27500A">4.1</text>
+        <rect x="45" y="43" width="50" height="18" rx="3" fill="#FAC775" opacity="0.8"/>
+        <text x="70" y="55" text-anchor="middle" font-size="9" fill="#633806">3.2</text>
+        <rect x="115" y="43" width="50" height="18" rx="3" fill="#FAC775" opacity="0.8"/>
+        <text x="140" y="55" text-anchor="middle" font-size="9" fill="#633806">3.6</text>
+        <rect x="185" y="43" width="50" height="18" rx="3" fill="#97C459" opacity="0.8"/>
+        <text x="210" y="55" text-anchor="middle" font-size="9" fill="#27500A">4.1</text>
+        <rect x="45" y="73" width="50" height="18" rx="3" fill="#FAC775" opacity="0.8"/>
+        <text x="70" y="85" text-anchor="middle" font-size="9" fill="#633806">3.4</text>
+        <rect x="115" y="73" width="50" height="18" rx="3" fill="#97C459" opacity="0.8"/>
+        <text x="140" y="85" text-anchor="middle" font-size="9" fill="#27500A">3.8</text>
+        <rect x="185" y="73" width="50" height="18" rx="3" fill="#639922" opacity="0.9"/>
+        <text x="210" y="85" text-anchor="middle" font-size="9" fill="#EAF3DE">4.4</text>
+      </svg>
+    </div>
+    <div class="card">
+      <div class="ch"><span class="ct">Выполнение белка по неделям</span></div>
+      <svg viewBox="0 0 280 120" width="100%" aria-label="График выполнения плана по белку и самочувствие по неделям">
+        <line x1="20" y1="10" x2="270" y2="10" stroke="var(--b1)" stroke-width="0.5" stroke-dasharray="2,2"/>
+        <line x1="20" y1="60" x2="270" y2="60" stroke="var(--b1)" stroke-width="0.5" stroke-dasharray="2,2"/>
+        <line x1="20" y1="95" x2="270" y2="95" stroke="var(--b1)" stroke-width="0.5" stroke-dasharray="2,2"/>
+        <text x="0" y="14" font-size="9" fill="#A09F9A">100%</text>
+        <text x="0" y="64" font-size="9" fill="#A09F9A">50%</text>
+        <text x="0" y="99" font-size="9" fill="#A09F9A">20%</text>
+        <path d="M30,65 L80,40 L130,72 L180,30 L230,20" fill="none" stroke="#639922" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M30,72 L80,58 L130,68 L180,45 L230,38" fill="none" stroke="#EF9F27" stroke-width="1.5" stroke-dasharray="4,3" stroke-linecap="round"/>
+        <circle cx="30" cy="65" r="3" fill="#639922"/>
+        <circle cx="80" cy="40" r="3" fill="#639922"/>
+        <circle cx="130" cy="72" r="3" fill="#639922"/>
+        <circle cx="180" cy="30" r="3" fill="#639922"/>
+        <circle cx="230" cy="20" r="3" fill="#639922"/>
+        <text x="24" y="115" font-size="9" fill="#A09F9A">нед 1</text>
+        <text x="74" y="115" font-size="9" fill="#A09F9A">нед 2</text>
+        <text x="124" y="115" font-size="9" fill="#A09F9A">нед 3</text>
+        <text x="174" y="115" font-size="9" fill="#A09F9A">нед 4</text>
+        <text x="218" y="115" font-size="9" fill="#A09F9A">нед 5</text>
+        <text x="142" y="8" font-size="8" fill="#3B6D11">— % белка</text>
+        <text x="176" y="8" font-size="8" fill="#854F0B">- - ср. самочувствие</text>
+      </svg>
+    </div>
+  </div>
+</div>
+
+<!-- ===== ФОРМА ТРЕНИРОВКИ ===== -->
+<div id="s-workout-form" class="screen">
+  <div class="g2">
+    <div class="card gap">
+      <div class="ch"><span style="font-size:14px;font-weight:500">Новая тренировка</span></div>
+      <div style="margin-bottom:10px">
+        <div class="lbl">Название</div>
+        <input class="inp" value="Базовая домашняя" aria-label="Название тренировки"/>
+      </div>
+      <div style="margin-bottom:10px">
+        <div class="lbl">Тип</div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap">
+          <button class="feel-btn on" onclick="selType(this)"><i class="ti ti-home" style="font-size:16px" aria-hidden="true"></i><span>Домашняя</span></button>
+          <button class="feel-btn" onclick="selType(this)"><i class="ti ti-barbell" style="font-size:16px" aria-hidden="true"></i><span>Зал</span></button>
+          <button class="feel-btn" onclick="selType(this)"><i class="ti ti-run" style="font-size:16px" aria-hidden="true"></i><span>Бег</span></button>
+        </div>
+      </div>
+      <div class="g2" style="margin-bottom:10px">
+        <div>
+          <div class="lbl">Длительность (мин)</div>
+          <input class="inp" type="number" value="45" min="5" max="180" step="5" id="dur-inp" oninput="updCal()" aria-label="Длительность тренировки в минутах"/>
+        </div>
+        <div>
+          <div class="lbl">Сложность (1-10)</div>
+          <input class="inp" type="number" value="7" min="1" max="10" step="1" aria-label="Субъективная сложность"/>
+        </div>
+      </div>
+      <div style="background:var(--gb);border-radius:var(--r);padding:10px 12px;margin-bottom:10px;display:flex;align-items:center;gap:8px">
+        <i class="ti ti-flame" style="font-size:18px;color:var(--gm)" aria-hidden="true"></i>
+        <div>
+          <div style="font-size:12px;color:var(--g)">Расход калорий</div>
+          <div style="font-size:18px;font-weight:500;color:var(--g)" id="kcal-out">310 ккал</div>
+        </div>
+        <div style="margin-left:auto;font-size:11px;color:var(--tg)">Норма скорр. +310 ккал</div>
+      </div>
+      <div style="margin-bottom:0">
+        <div class="lbl">Заметки</div>
+        <textarea class="inp" rows="2" placeholder="Ощущения, особенности тренировки..." style="resize:none;font-family:inherit" aria-label="Заметки к тренировке"></textarea>
+      </div>
+    </div>
+
+    <div class="card">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+        <span style="font-size:14px;font-weight:500">Упражнения</span>
+        <button class="btn btn-sm"><i class="ti ti-plus" aria-hidden="true"></i>Упражнение</button>
+      </div>
+
+      <div style="margin-bottom:12px;padding-bottom:12px;border-bottom:0.5px solid var(--b1)">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+          <span style="font-size:13px;font-weight:500;flex:1">Подтягивания</span>
+          <span class="pill pg" style="font-size:10px">ПР 10 повт.</span>
+          <button class="btn-o" style="padding:2px 6px;font-size:11px"><i class="ti ti-trash" style="font-size:11px" aria-hidden="true"></i></button>
+        </div>
+        <div style="display:grid;grid-template-columns:auto auto 1fr auto;gap:6px;align-items:center;font-size:11px;color:var(--t3);margin-bottom:5px;padding:0 2px">
+          <span>Подход</span><span>Повт.</span><span>Вес (кг)</span><span></span>
+        </div>
+        <div class="exercise-inp">
+          <span style="font-size:11px;color:var(--t3);width:52px">Подход 1</span>
+          <input type="number" value="10" min="1" max="100" step="1" style="width:52px;border:0.5px solid var(--b2);border-radius:6px;padding:4px 6px;font-size:13px;font-weight:500;text-align:center;background:var(--s1);color:var(--t1);outline:none" aria-label="Повторений"/>
+          <span style="font-size:11px;color:var(--t3)">повт</span>
+          <input type="number" value="0" min="0" max="200" step="2.5" style="width:52px;border:0.5px solid var(--b2);border-radius:6px;padding:4px 6px;font-size:13px;text-align:center;background:var(--s1);color:var(--t1);outline:none" aria-label="Вес"/>
+          <span style="font-size:11px;color:var(--t3)">кг</span>
+        </div>
+        <div class="exercise-inp">
+          <span style="font-size:11px;color:var(--t3);width:52px">Подход 2</span>
+          <input type="number" value="9" min="1" max="100" step="1" style="width:52px;border:0.5px solid var(--b2);border-radius:6px;padding:4px 6px;font-size:13px;font-weight:500;text-align:center;background:var(--s1);color:var(--t1);outline:none" aria-label="Повторений"/>
+          <span style="font-size:11px;color:var(--t3)">повт</span>
+          <input type="number" value="0" min="0" max="200" step="2.5" style="width:52px;border:0.5px solid var(--b2);border-radius:6px;padding:4px 6px;font-size:13px;text-align:center;background:var(--s1);color:var(--t1);outline:none" aria-label="Вес"/>
+          <span style="font-size:11px;color:var(--t3)">кг</span>
+        </div>
+        <button class="btn-o" style="font-size:11px;margin-top:6px"><i class="ti ti-plus" style="font-size:11px" aria-hidden="true"></i>Подход</button>
+      </div>
+
+      <div style="margin-bottom:10px;padding-bottom:10px;border-bottom:0.5px solid var(--b1)">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+          <span style="font-size:13px;font-weight:500;flex:1">Приседания с гирей</span>
+          <button class="btn-o" style="padding:2px 6px;font-size:11px"><i class="ti ti-trash" style="font-size:11px" aria-hidden="true"></i></button>
+        </div>
+        <div class="exercise-inp">
+          <span style="font-size:11px;color:var(--t3);width:52px">Подход 1</span>
+          <input type="number" value="15" min="1" max="100" step="1" style="width:52px;border:0.5px solid var(--b2);border-radius:6px;padding:4px 6px;font-size:13px;font-weight:500;text-align:center;background:var(--s1);color:var(--t1);outline:none" aria-label="Повторений"/>
+          <span style="font-size:11px;color:var(--t3)">повт</span>
+          <input type="number" value="32" min="0" max="200" step="2" style="width:52px;border:0.5px solid var(--b2);border-radius:6px;padding:4px 6px;font-size:13px;text-align:center;background:var(--s1);color:var(--t1);outline:none" aria-label="Вес"/>
+          <span style="font-size:11px;color:var(--t3)">кг</span>
+        </div>
+      </div>
+
+      <button class="btn" style="width:100%;justify-content:center"><i class="ti ti-device-floppy" aria-hidden="true"></i>Сохранить тренировку</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== НАСТРОЙКИ ===== -->
+<div id="s-settings" class="screen">
+  <div class="g2 gap">
+    <div class="card">
+      <div class="ch"><span style="font-size:14px;font-weight:500">Профиль</span></div>
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px">
+        <div style="width:44px;height:44px;border-radius:50%;background:var(--tb);display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:500;color:var(--tg)">АЛ</div>
+        <div>
+          <div style="font-size:14px;font-weight:500">Алексей</div>
+          <div style="font-size:11px;color:var(--t3)">@username · Telegram</div>
+        </div>
+      </div>
+      <div class="g2" style="gap:8px;margin-bottom:8px">
+        <div>
+          <div class="lbl">Вес (кг)</div>
+          <input class="inp" type="number" value="82.4" step="0.1" aria-label="Текущий вес"/>
+        </div>
+        <div>
+          <div class="lbl">Рост (см)</div>
+          <input class="inp" type="number" value="178" step="1" aria-label="Рост"/>
+        </div>
+      </div>
+      <div>
+        <div class="lbl">Часовой пояс</div>
+        <select class="inp" aria-label="Часовой пояс"><option>Europe/Rome (UTC+2)</option></select>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="ch"><span style="font-size:14px;font-weight:500">Цели на день</span></div>
+      <div style="display:flex;flex-direction:column;gap:8px" id="goals-form">
+        <div><div class="lbl">Белки (г/день)</div><input class="inp" type="number" value="100" step="5" id="g-prot" oninput="recalcCal()" aria-label="Цель по белкам"/></div>
+        <div><div class="lbl">Жиры (г/день)</div><input class="inp" type="number" value="100" step="5" id="g-fat" oninput="recalcCal()" aria-label="Цель по жирам"/></div>
+        <div><div class="lbl">Углеводы (г/день)</div><input class="inp" type="number" value="200" step="5" id="g-carb" oninput="recalcCal()" aria-label="Цель по углеводам"/></div>
+        <div><div class="lbl">Клетчатка (г/день)</div><input class="inp" type="number" value="30" step="2" aria-label="Цель по клетчатке"/></div>
+        <div style="background:var(--gb);border-radius:var(--r);padding:8px 12px;display:flex;align-items:center;justify-content:space-between">
+          <span style="font-size:12px;color:var(--g)">Калории (авто)</span>
+          <span style="font-size:16px;font-weight:500;color:var(--g)" id="cal-auto">2100 ккал</span>
+        </div>
+        <div><div class="lbl">Вода (мл/день)</div><input class="inp" type="number" value="2000" step="100" aria-label="Цель по воде"/></div>
+        <div><div class="lbl">Бюджет на питание (€/нед)</div><input class="inp" type="number" value="80" step="5" aria-label="Бюджет на питание в неделю"/></div>
+      </div>
+      <div class="divider"></div>
+      <button class="btn" style="width:100%;justify-content:center"><i class="ti ti-check" aria-hidden="true"></i>Сохранить цели</button>
+    </div>
+  </div>
+
+  <div class="card gap">
+    <div class="ch"><span style="font-size:14px;font-weight:500">Напоминания</span></div>
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <div class="row">
+        <i class="ti ti-sun" style="font-size:16px;color:var(--am)" aria-hidden="true"></i>
+        <span style="flex:1;font-size:13px">Утреннее напоминание</span>
+        <input type="time" value="08:00" style="border:0.5px solid var(--b2);border-radius:var(--r);padding:4px 8px;font-size:13px;background:var(--s1);color:var(--t1);outline:none" aria-label="Время утреннего напоминания"/>
+        <label style="display:flex;align-items:center;gap:4px;cursor:pointer">
+          <input type="checkbox" checked aria-label="Включить утреннее напоминание"/>
+          <span style="font-size:12px;color:var(--t2)">вкл</span>
+        </label>
+      </div>
+      <div class="row">
+        <i class="ti ti-moon" style="font-size:16px;color:var(--bm)" aria-hidden="true"></i>
+        <span style="flex:1;font-size:13px">Вечерняя оценка самочувствия</span>
+        <input type="time" value="21:00" style="border:0.5px solid var(--b2);border-radius:var(--r);padding:4px 8px;font-size:13px;background:var(--s1);color:var(--t1);outline:none" aria-label="Время вечернего напоминания"/>
+        <label style="display:flex;align-items:center;gap:4px;cursor:pointer">
+          <input type="checkbox" checked aria-label="Включить вечернее напоминание"/>
+          <span style="font-size:12px;color:var(--t2)">вкл</span>
+        </label>
+      </div>
+      <div class="row" style="border-bottom:none">
+        <i class="ti ti-droplet" style="font-size:16px;color:var(--bm)" aria-hidden="true"></i>
+        <span style="flex:1;font-size:13px">Напоминание о воде</span>
+        <span style="font-size:12px;color:var(--t3)">каждые 2 часа</span>
+        <label style="display:flex;align-items:center;gap:4px;cursor:pointer">
+          <input type="checkbox" aria-label="Включить напоминание о воде"/>
+          <span style="font-size:12px;color:var(--t2)">вкл</span>
+        </label>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== TELEGRAM СИМУЛЯТОР ===== -->
+<div id="s-telegram" class="screen">
+  <div class="g2">
+    <div>
+      <div style="font-size:12px;font-weight:500;color:var(--t2);margin-bottom:8px">Сценарии</div>
+      <div style="display:flex;flex-direction:column;gap:6px">
+        <button class="card card-sm" style="text-align:left;cursor:pointer;width:100%;border:0.5px solid var(--b1)" onclick="showChat('food')">
+          <div style="font-size:13px;font-weight:500;color:var(--t1)">Ввод еды (свободный текст)</div>
+          <div style="font-size:11px;color:var(--t3);margin-top:3px">Парсинг и расчёт БЖУ</div>
+        </button>
+        <button class="card card-sm" style="text-align:left;cursor:pointer;width:100%;border:0.5px solid var(--b1)" onclick="showChat('today')">
+          <div style="font-size:13px;font-weight:500;color:var(--t1)">Команда /today</div>
+          <div style="font-size:11px;color:var(--t3);margin-top:3px">Прогресс за день</div>
+        </button>
+        <button class="card card-sm" style="text-align:left;cursor:pointer;width:100%;border:0.5px solid var(--b1)" onclick="showChat('unknown')">
+          <div style="font-size:13px;font-weight:500;color:var(--t1)">Нераспознанный продукт</div>
+          <div style="font-size:11px;color:var(--t3);margin-top:3px">Уточняющий диалог</div>
+        </button>
+        <button class="card card-sm" style="text-align:left;cursor:pointer;width:100%;border:0.5px solid var(--b1)" onclick="showChat('remind')">
+          <div style="font-size:13px;font-weight:500;color:var(--t1)">Утреннее напоминание</div>
+          <div style="font-size:11px;color:var(--t3);margin-top:3px">Автоматическое сообщение</div>
+        </button>
+        <button class="card card-sm" style="text-align:left;cursor:pointer;width:100%;border:0.5px solid var(--b1)" onclick="showChat('simple')">
+          <div style="font-size:13px;font-weight:500;color:var(--t1)">Простой режим (2-й польз.)</div>
+          <div style="font-size:11px;color:var(--t3);margin-top:3px">Кнопки вместо команд</div>
+        </button>
+      </div>
+    </div>
+
+    <div style="background:var(--s2);border-radius:var(--rl);padding:12px;min-height:320px;display:flex;flex-direction:column">
+      <div style="font-size:11px;font-weight:500;color:var(--t3);text-align:center;padding-bottom:8px;border-bottom:0.5px solid var(--b1);margin-bottom:10px">NutriTrackBot</div>
+      <div style="flex:1;display:flex;flex-direction:column;gap:2px;overflow-y:auto" id="chat-window"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== ОНБОРДИНГ ===== -->
+<div id="s-onboarding" class="screen">
+  <div style="max-width:360px;margin:0 auto">
+    <div style="text-align:center;margin-bottom:20px">
+      <div style="width:48px;height:48px;background:var(--gm);border-radius:12px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:22px;margin:0 auto 10px"><i class="ti ti-leaf" aria-hidden="true"></i></div>
+      <div style="font-size:18px;font-weight:500">Добро пожаловать в NutriTrack</div>
+      <div style="font-size:13px;color:var(--t2);margin-top:4px">Настроим твои цели — это займёт 2 минуты</div>
+    </div>
+
+    <div style="display:flex;align-items:center;gap:6px;margin-bottom:20px;justify-content:center">
+      <div id="step-dot-1" style="width:28px;height:5px;border-radius:3px;background:var(--gm)"></div>
+      <div id="step-dot-2" style="width:8px;height:5px;border-radius:3px;background:var(--s2)"></div>
+      <div id="step-dot-3" style="width:8px;height:5px;border-radius:3px;background:var(--s2)"></div>
+      <div id="step-dot-4" style="width:8px;height:5px;border-radius:3px;background:var(--s2)"></div>
+    </div>
+
+    <div id="ob-step-1">
+      <div class="card" style="margin-bottom:12px">
+        <div style="font-size:14px;font-weight:500;margin-bottom:14px">Шаг 1 — Данные о себе</div>
+        <div class="g2" style="gap:10px;margin-bottom:10px">
+          <div><div class="lbl">Вес (кг)</div><input class="inp" type="number" value="82" step="0.1" id="ob-weight" aria-label="Вес"/></div>
+          <div><div class="lbl">Рост (см)</div><input class="inp" type="number" value="178" step="1" aria-label="Рост"/></div>
+        </div>
+        <div>
+          <div class="lbl">Цель</div>
+          <div style="display:flex;gap:6px;flex-wrap:wrap">
+            <button class="feel-btn on" onclick="selGoal(this)"><i class="ti ti-trending-down" style="font-size:15px" aria-hidden="true"></i><span>Похудеть</span></button>
+            <button class="feel-btn" onclick="selGoal(this)"><i class="ti ti-minus" style="font-size:15px" aria-hidden="true"></i><span>Держать вес</span></button>
+            <button class="feel-btn" onclick="selGoal(this)"><i class="ti ti-trending-up" style="font-size:15px" aria-hidden="true"></i><span>Набрать</span></button>
+          </div>
+        </div>
+      </div>
+      <button class="btn" style="width:100%;justify-content:center" onclick="obNext(2)">Далее <i class="ti ti-arrow-right" aria-hidden="true"></i></button>
+    </div>
+
+    <div id="ob-step-2" style="display:none">
+      <div class="card" style="margin-bottom:12px">
+        <div style="font-size:14px;font-weight:500;margin-bottom:14px">Шаг 2 — Цели по нутриентам</div>
+        <div style="background:var(--gb);border-radius:var(--r);padding:10px 12px;margin-bottom:12px;font-size:12px;color:var(--g)">
+          <i class="ti ti-info-circle" style="font-size:14px" aria-hidden="true"></i> Рассчитано на основе твоих данных. Можно изменить позже в настройках.
+        </div>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <div><div class="lbl">Белки (г/день)</div><input class="inp" type="number" value="100" step="5" aria-label="Цель белки"/></div>
+          <div><div class="lbl">Жиры (г/день)</div><input class="inp" type="number" value="100" step="5" aria-label="Цель жиры"/></div>
+          <div><div class="lbl">Углеводы (г/день)</div><input class="inp" type="number" value="200" step="5" aria-label="Цель углеводы"/></div>
+          <div style="background:var(--s2);border-radius:var(--r);padding:8px 12px;display:flex;align-items:center;justify-content:space-between">
+            <span style="font-size:12px;color:var(--t2)">Итого калорий:</span>
+            <span style="font-size:16px;font-weight:500">2100 ккал</span>
+          </div>
+        </div>
+      </div>
+      <div style="display:flex;gap:8px">
+        <button class="btn-o" style="flex:1;justify-content:center" onclick="obNext(1)"><i class="ti ti-arrow-left" aria-hidden="true"></i> Назад</button>
+        <button class="btn" style="flex:2;justify-content:center" onclick="obNext(3)">Далее <i class="ti ti-arrow-right" aria-hidden="true"></i></button>
+      </div>
+    </div>
+
+    <div id="ob-step-3" style="display:none">
+      <div class="card" style="margin-bottom:12px">
+        <div style="font-size:14px;font-weight:500;margin-bottom:14px">Шаг 3 — Бюджет и напоминания</div>
+        <div style="margin-bottom:10px"><div class="lbl">Бюджет на питание (€/нед, опционально)</div><input class="inp" type="number" value="80" step="5" aria-label="Бюджет на питание"/></div>
+        <div style="margin-bottom:10px">
+          <div class="lbl">Утреннее напоминание</div>
+          <div style="display:flex;gap:6px">
+            <input type="time" value="08:00" style="border:0.5px solid var(--b2);border-radius:var(--r);padding:7px 10px;font-size:13px;background:var(--s1);color:var(--t1);outline:none;flex:1" aria-label="Время утреннего напоминания"/>
+            <button class="feel-btn on" style="min-width:auto;padding:6px 12px;font-size:12px">Вкл</button>
+          </div>
+        </div>
+        <div>
+          <div class="lbl">Вечернее напоминание</div>
+          <div style="display:flex;gap:6px">
+            <input type="time" value="21:00" style="border:0.5px solid var(--b2);border-radius:var(--r);padding:7px 10px;font-size:13px;background:var(--s1);color:var(--t1);outline:none;flex:1" aria-label="Время вечернего напоминания"/>
+            <button class="feel-btn on" style="min-width:auto;padding:6px 12px;font-size:12px">Вкл</button>
+          </div>
+        </div>
+      </div>
+      <div style="display:flex;gap:8px">
+        <button class="btn-o" style="flex:1;justify-content:center" onclick="obNext(2)"><i class="ti ti-arrow-left" aria-hidden="true"></i> Назад</button>
+        <button class="btn" style="flex:2;justify-content:center" onclick="obNext(4)">Далее <i class="ti ti-arrow-right" aria-hidden="true"></i></button>
+      </div>
+    </div>
+
+    <div id="ob-step-4" style="display:none">
+      <div class="card" style="margin-bottom:12px;text-align:center;padding:24px">
+        <div style="width:52px;height:52px;background:var(--gb);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;font-size:24px;color:var(--gm)"><i class="ti ti-check" aria-hidden="true"></i></div>
+        <div style="font-size:15px;font-weight:500;margin-bottom:8px">Всё готово!</div>
+        <div style="font-size:13px;color:var(--t2);margin-bottom:16px">Просто пиши боту что съел — например: <span style="font-family:var(--font-mono);background:var(--s2);padding:2px 6px;border-radius:4px;font-size:12px">«съел 200г курицы и 150г риса»</span></div>
+        <div style="display:flex;flex-direction:column;gap:6px;text-align:left;margin-bottom:16px">
+          <div class="row" style="padding:5px 0"><i class="ti ti-check" style="color:var(--gm);font-size:14px" aria-hidden="true"></i><span style="font-size:13px">Цели настроены</span></div>
+          <div class="row" style="padding:5px 0"><i class="ti ti-check" style="color:var(--gm);font-size:14px" aria-hidden="true"></i><span style="font-size:13px">Напоминания включены</span></div>
+          <div class="row" style="padding:5px 0;border-bottom:none"><i class="ti ti-check" style="color:var(--gm);font-size:14px" aria-hidden="true"></i><span style="font-size:13px">Telegram-бот активен</span></div>
+        </div>
+        <button class="btn" style="width:100%;justify-content:center">Открыть дашборд <i class="ti ti-arrow-right" aria-hidden="true"></i></button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+function showScreen(id, btn) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.snav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('s-' + id).classList.add('active');
+  btn.classList.add('active');
+}
+
+function selectRecipe(r) {
+  const d = document.getElementById('recipe-detail');
+  const names = {borsch:'Борщ — детали', zapek:'Творожная запеканка — детали', salad:'Салат с тунцом — детали'};
+  d.querySelector('.ct, [style*="font-size:13px"]') && (d.querySelectorAll('span')[0].textContent = names[r] || '');
+}
+
+function selType(btn) {
+  document.querySelectorAll('#s-workout-form .feel-btn').forEach(b => b.classList.remove('on'));
+  btn.classList.add('on');
+  updCal();
+}
+function updCal() {
+  const dur = parseInt(document.getElementById('dur-inp').value) || 45;
+  const kcal = Math.round(4.5 * 82 * dur / 60);
+  document.getElementById('kcal-out').textContent = kcal + ' ккал';
+}
+
+function recalcCal() {
+  const p = parseFloat(document.getElementById('g-prot').value) || 0;
+  const f = parseFloat(document.getElementById('g-fat').value) || 0;
+  const c = parseFloat(document.getElementById('g-carb').value) || 0;
+  const cal = Math.round(p * 4 + f * 9 + c * 4);
+  document.getElementById('cal-auto').textContent = cal + ' ккал';
+}
+
+function selGoal(btn) {
+  btn.closest('.card').querySelectorAll('.feel-btn').forEach(b => b.classList.remove('on'));
+  btn.classList.add('on');
+}
+
+function obNext(step) {
+  [1,2,3,4].forEach(i => {
+    const el = document.getElementById('ob-step-' + i);
+    if (el) el.style.display = i === step ? 'block' : 'none';
+    const dot = document.getElementById('step-dot-' + i);
+    if (dot) {
+      dot.style.background = i === step ? 'var(--gm)' : (i < step ? '#97C459' : 'var(--s2)');
+      dot.style.width = i === step ? '28px' : '8px';
+    }
+  });
+}
+
+const chats = {
+  food: [
+    {side:'out', ts:'16:42', text:'съел 200г куриной грудки и 150г риса'},
+    {side:'in',  ts:'16:42', text:'✅ Записано:\n• Куриная грудка 200г — Б:47г Ж:4г У:1г 226 ккал\n• Рис белый 150г — Б:4г Ж:1г У:51г 195 ккал\n──────────\nИтого: Б:51г Ж:5г У:52г | 421 ккал\n\nПрогресс сегодня:\nБелки:    ████████░░ 78г/100г\nЖиры:     ████░░░░░░ 52г/100г\nУглеводы: ██████░░░░ 124г/200г'},
+  ],
+  today: [
+    {side:'out', ts:'09:00', text:'/today'},
+    {side:'in',  ts:'09:00', text:'📅 31 мая, пятница\n\n🍽 Питание:\nБелки:    ████████░░ 78г/100г (78%)\nЖиры:     ████░░░░░░ 52г/100г (52%)\nУглеводы: ██████░░░░ 124г/200г (62%)\nКлетчатка:████░░░░░░ 12г/30г (40%)\nКалории:  1597/2100 ккал\n\n💪 Тренировка: ✅ 45 мин\n⚖️ Вес: 82.4 кг\n😊 Самочувствие: Хорошо'},
+  ],
+  unknown: [
+    {side:'out', ts:'13:10', text:'поел творожной запеканки'},
+    {side:'in',  ts:'13:10', text:'Не нашёл «творожная запеканка» в твоих продуктах. Это:',
+     btns:['🍽 Мой рецепт','📝 Ввести вручную','❌ Пропустить']},
+    {side:'out', ts:'13:11', text:'🍽 Мой рецепт'},
+    {side:'in',  ts:'13:11', text:'Сколько порций борща?\nБорщ: 6 порций · 208 ккал/пор · Б:20г Ж:7.5г У:15г',
+     btns:['1 порцию','2 порции']},
+    {side:'out', ts:'13:11', text:'1 порцию'},
+    {side:'in',  ts:'13:12', text:'✅ Записано: Борщ 1 порция\nБ:20г Ж:7.5г У:15г · 208 ккал · 1.03€'},
+  ],
+  remind: [
+    {side:'in', ts:'08:00', text:'☀️ Доброе утро!\n\nВчера (30 мая):\nБелки: ████████░░ 82%\nЖиры: ████████░░ 79%\nУглеводы: ████████░░ 91%\nКалории: 1940/2100 ккал\n\nСегодня цели прежние:\nБ 100г / Ж 100г / У 200г\n\nУдачного дня! 💪'},
+  ],
+  simple: [
+    {side:'in', ts:'07:00', text:'Привет! Что сделаем сегодня?',
+     btns:['🍽 Добавить еду','💪 Тренировка','⚖️ Взвеситься','😊 Самочувствие']},
+    {side:'out', ts:'07:01', text:'🍽 Добавить еду'},
+    {side:'in',  ts:'07:01', text:'Что ты ел? Выбери или напиши:',
+     btns:['Куриная грудка','Рис','Гречка','Яйца','Другое...']},
+    {side:'out', ts:'07:02', text:'Гречка'},
+    {side:'in',  ts:'07:02', text:'Сколько граммов гречки?'},
+    {side:'out', ts:'07:02', text:'200'},
+    {side:'in',  ts:'07:03', text:'✅ Гречка 200г\nБ:25г Ж:7г У:114г · 626 ккал'},
+  ],
+};
+
+function showChat(key) {
+  const win = document.getElementById('chat-window');
+  win.innerHTML = '';
+  const msgs = chats[key] || [];
+  msgs.forEach(m => {
+    const wrap = document.createElement('div');
+    wrap.style.cssText = 'display:flex;flex-direction:column;align-items:' + (m.side==='out'?'flex-end':'flex-start') + ';margin-bottom:6px';
+    const ts = document.createElement('div');
+    ts.className = m.side==='out' ? 'tg-ts-r' : 'tg-ts';
+    ts.textContent = m.ts;
+    wrap.appendChild(ts);
+    const bub = document.createElement('div');
+    bub.className = 'tg-bubble ' + (m.side==='out'?'tg-out':'tg-in');
+    bub.style.whiteSpace = 'pre-wrap';
+    bub.textContent = m.text;
+    wrap.appendChild(bub);
+    if (m.btns) {
+      const row = document.createElement('div');
+      row.style.cssText = 'display:flex;flex-wrap:wrap;gap:5px;margin-top:5px;max-width:72%';
+      m.btns.forEach(b => {
+        const btn = document.createElement('button');
+        btn.className = 'btn-o';
+        btn.style.cssText = 'font-size:11px;padding:4px 9px;border-radius:10px;background:var(--bb);border-color:var(--bm);color:var(--bd)';
+        btn.textContent = b;
+        row.appendChild(btn);
+      });
+      wrap.appendChild(row);
+    }
+    win.appendChild(wrap);
+  });
+  win.scrollTop = win.scrollHeight;
+}
+
+const proteinRanks = [
+  ['Тунец конс.','1.12','100'],
+  ['Творог 9%','1.88','88'],
+  ['Гречка','1.92','87'],
+  ['Рис белый','1.92','87'],
+  ['Яйцо','2.51','66'],
+  ['Куриная грудка','2.83','60'],
+  ['Говядина','4.50','38'],
+  ['Лосось','6.26','27'],
+];
+const pList = document.getElementById('rank-protein');
+proteinRanks.forEach((r,i) => {
+  const row = document.createElement('div');
+  row.className = 'cost-rank-row';
+  const col = parseInt(r[2]) > 75 ? 'var(--gm)' : parseInt(r[2]) > 50 ? '#BA7517' : 'var(--cm)';
+  row.innerHTML = `<span class="rank-num">${i+1}</span>
+    <span style="flex:1;font-size:12px;font-weight:500">${r[0]}</span>
+    <div class="rank-bar-wrap"><div class="rank-bar" style="width:${r[2]}%;background:${col}"></div></div>
+    <span style="font-size:12px;font-weight:500;min-width:44px;text-align:right;color:${col}">${r[1]}€</span>`;
+  pList.appendChild(row);
+});
+
+const fiberRanks = [
+  ['Гречка','0.18','100'],
+  ['Капуста','0.22','82'],
+  ['Рис','0.31','58'],
+  ['Морковь','0.44','41'],
+  ['Банан','0.65','28'],
+];
+const fList = document.getElementById('rank-fiber');
+fiberRanks.forEach((r,i) => {
+  const row = document.createElement('div');
+  row.className = 'cost-rank-row';
+  const col = parseInt(r[2]) > 75 ? 'var(--gm)' : parseInt(r[2]) > 45 ? '#BA7517' : 'var(--cm)';
+  row.innerHTML = `<span class="rank-num">${i+1}</span>
+    <span style="flex:1;font-size:12px;font-weight:500">${r[0]}</span>
+    <div class="rank-bar-wrap"><div class="rank-bar" style="width:${r[2]}%;background:${col}"></div></div>
+    <span style="font-size:12px;font-weight:500;min-width:44px;text-align:right;color:${col}">${r[1]}€</span>`;
+  fList.appendChild(row);
+});
+
+const storeData = [
+  {store:'Lidl',price:4.80,pct:77,best:true},
+  {store:'Conad',price:5.90,pct:95,best:false},
+  {store:'Pan',price:6.20,pct:100,best:false},
+];
+const sc = document.getElementById('store-compare');
+storeData.forEach(s => {
+  const row = document.createElement('div');
+  row.style.cssText='display:flex;align-items:center;gap:8px';
+  row.innerHTML=`<span style="font-size:12px;width:56px;color:var(--t2)">${s.store}</span>
+    <div style="flex:1;height:6px;background:var(--s2);border-radius:4px;overflow:hidden"><div style="width:${s.pct}%;height:100%;background:${s.best?'var(--gm)':'#BA7517'};border-radius:4px"></div></div>
+    <span style="font-size:12px;font-weight:500;color:${s.best?'var(--g)':'var(--t1)'}">${s.price.toFixed(2)}€${s.best?' <span class="pill pg" style="font-size:10px">дешевле</span>':''}</span>`;
+  sc.appendChild(row);
+});
+
+showChat('food');
+</script>
