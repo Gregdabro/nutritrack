@@ -4,6 +4,7 @@ import Login from './pages/Login';
 import LoginToken from './pages/LoginToken';
 import Settings from './pages/Settings';
 import Products from './pages/Products';
+import Diary from './pages/Diary';
 
 function ProtectedRoute({ children }) {
   const token = useAuthStore((s) => s.token);
@@ -41,7 +42,16 @@ export default function App() {
           </ProtectedRoute>
         }
       />
+      <Route
+        path="/diary"
+        element={
+          <ProtectedRoute>
+            <Diary />
+          </ProtectedRoute>
+        }
+      />
       <Route path="/" element={<Dashboard />} />
     </Routes>
   );
 }
+

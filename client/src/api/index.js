@@ -20,17 +20,36 @@ api.auth = {
 };
 
 api.goals = {
-  get: () => api.get('/goals'),
+  get:    ()     => api.get('/goals'),
   update: (data) => api.put('/goals', data),
 };
 
 api.products = {
-  list: (params) => api.get('/products', { params }),
-  get: (id) => api.get(`/products/${id}`),
-  create: (data) => api.post('/products', data),
-  update: (id, data) => api.put(`/products/${id}`, data),
-  remove: (id) => api.delete(`/products/${id}`),
-  addPrice: (id, data) => api.post(`/products/${id}/price`, data),
+  list:     (params)     => api.get('/products', { params }),
+  get:      (id)         => api.get(`/products/${id}`),
+  create:   (data)       => api.post('/products', data),
+  update:   (id, data)   => api.put(`/products/${id}`, data),
+  remove:   (id)         => api.delete(`/products/${id}`),
+  addPrice: (id, data)   => api.post(`/products/${id}/price`, data),
+};
+
+api.foodLogs = {
+  list:   (params)     => api.get('/food-logs', { params }),
+  week:   (params)     => api.get('/food-logs/week', { params }),
+  create: (data)       => api.post('/food-logs', data),
+  parse:  (text)       => api.post('/food-logs/parse', { text }),
+  repeat: (data)       => api.post('/food-logs/repeat', data),
+  update: (id, data)   => api.put(`/food-logs/${id}`, data),
+  remove: (id)         => api.delete(`/food-logs/${id}`),
+};
+
+api.recipes = {
+  list:   (params)     => api.get('/recipes', { params }),
+  get:    (id)         => api.get(`/recipes/${id}`),
+  create: (data)       => api.post('/recipes', data),
+  update: (id, data)   => api.put(`/recipes/${id}`, data),
+  remove: (id)         => api.delete(`/recipes/${id}`),
 };
 
 export default api;
+

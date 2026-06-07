@@ -3,12 +3,17 @@ const logger = require('../logger');
 const userContext = require('./middleware/userContext');
 const { startHandler, handleOnboarding } = require('./handlers/start');
 const { createLoginToken } = require('../routes/auth');
+const foodHandler  = require('./handlers/food');
+const todayHandler = require('./handlers/today');
 
 const bot = new Telegraf(process.env.BOT_TOKEN);
 
 bot.use(userContext);
 
 bot.start(startHandler);
+
+// Команда /today — прогресс за день
+bot.command('today', todayHandler);
 
 // Команда /login — генерирует одноразовую ссылку для входа в веб
 bot.command('login', async (ctx) => {
@@ -26,8 +31,10 @@ bot.command('login', async (ctx) => {
   );
 });
 
+// bot.on('text') — должен быть зарегистрирован ПОСЛЕ всех команд
 bot.on('text', async (ctx) => {
   const user = ctx.user;
+
   // Онбординг: состояние не-idle (шаги), ИЛИ idle но без weightKg (ещё не проходил настройку)
   if (user && (user.botState !== 'idle' || !user.weightKg)) {
     return handleOnboarding(ctx);
@@ -44,6 +51,9 @@ bot.on('text', async (ctx) => {
       `${process.env.WEBAPP_URL || 'https://nutritrack-topaz.vercel.app'}/settings`
     );
   }
+
+  // Свободный текст → парсинг еды через AI
+  return foodHandler(ctx);
 });
 
 module.exports = bot;
