@@ -5,6 +5,8 @@ const auth = require('../middleware/auth');
 const { NotFoundError, AuthorizationError } = require('../errors/AppError');
 const { calcItemNutrients, calcTotals } = require('../services/nutritionCalc');
 const logger = require('../logger');
+const { validate } = require('../middleware/validate');
+const { CreateRecipeSchema, UpdateRecipeSchema } = require('../validation/recipeSchemas');
 
 const router = Router();
 
@@ -94,7 +96,7 @@ router.get('/:id', async (req, res, next) => {
 });
 
 // POST /api/recipes
-router.post('/', async (req, res, next) => {
+router.post('/', validate(CreateRecipeSchema), async (req, res, next) => {
   try {
     const { name, totalServings, ingredients } = req.body;
 
@@ -122,7 +124,7 @@ router.post('/', async (req, res, next) => {
 });
 
 // PUT /api/recipes/:id
-router.put('/:id', async (req, res, next) => {
+router.put('/:id', validate(UpdateRecipeSchema), async (req, res, next) => {
   try {
     const existing = await Recipe.findOne({ _id: req.params.id, userId: req.user.userId });
     if (!existing) throw new NotFoundError('Recipe');

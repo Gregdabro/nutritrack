@@ -32,6 +32,12 @@ const FoodLogWeekQuerySchema = z.object({
   startDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
 });
 
+
+const UpdateFoodLogSchema = z.object({
+  mealType: z.enum(['breakfast', 'lunch', 'dinner', 'snack']).optional(),
+  items:    z.array(FoodItemSchema).min(1).optional(),
+});
+
 module.exports = {
   FoodItemSchema,
   CreateFoodLogSchema,
@@ -39,4 +45,5 @@ module.exports = {
   RepeatFoodSchema,
   FoodLogDateQuerySchema,
   FoodLogWeekQuerySchema,
+  UpdateFoodLogSchema,
 };

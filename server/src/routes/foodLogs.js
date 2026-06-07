@@ -10,20 +10,17 @@ const {
   RepeatFoodSchema,
   FoodLogDateQuerySchema,
   FoodLogWeekQuerySchema,
+  UpdateFoodLogSchema,
 } = require('../validation/foodLogSchemas');
 const { NotFoundError } = require('../errors/AppError');
 const aiParser = require('../services/aiParser');
 const { calcItemNutrients, calcTotals } = require('../services/nutritionCalc');
 const logger = require('../logger');
+const { getTodayDate } = require('../bot/utils');
 
 const router = Router();
 
 router.use(auth);
-
-/** Returns today's date string in Europe/Rome timezone */
-function getTodayDate() {
-  return new Date().toLocaleDateString('sv-SE', { timeZone: 'Europe/Rome' });
-}
 
 /**
  * Sum totals across an array of FoodLog documents.
@@ -237,7 +234,7 @@ router.post('/', validate(CreateFoodLogSchema), async (req, res, next) => {
 });
 
 // PUT /api/food-logs/:id
-router.put('/:id', async (req, res, next) => {
+router.put('/:id', validate(UpdateFoodLogSchema), async (req, res, next) => {
   try {
     const { items: rawItems, mealType } = req.body;
 
