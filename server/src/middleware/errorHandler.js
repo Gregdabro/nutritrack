@@ -2,6 +2,13 @@ const logger = require('../logger');
 const { AppError } = require('../errors/AppError');
 
 function errorHandler(err, req, res, _next) {
+  if (err.name === 'CastError') {
+    return res.status(404).json({
+      error: 'NOT_FOUND',
+      message: 'Resource not found',
+    });
+  }
+
   if (err instanceof AppError) {
     logger.warn(
       { code: err.code, statusCode: err.statusCode, method: req.method, path: req.path },

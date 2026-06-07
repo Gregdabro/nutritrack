@@ -441,7 +441,6 @@ export default function Products() {
               <span>У</span>
               <span>Ккал</span>
               <span>Цена</span>
-              <span></span>
             </div>
 
             {products.map((p) => (
@@ -485,17 +484,19 @@ export default function Products() {
                   </div>
                 ) : (
                   <>
-                    <div className={styles.productName}>
-                      {p.name}
-                      <span className={styles.categoryBadge}>
-                        {CATEGORIES.find((c) => c.value === p.category)?.label || p.category}
-                      </span>
+                    <div className={styles.productData}>
+                      <div className={styles.productName}>
+                        {p.name}
+                        <span className={styles.categoryBadge}>
+                          {CATEGORIES.find((c) => c.value === p.category)?.label || p.category}
+                        </span>
+                      </div>
+                      <span className={styles.macro}>{formatMacro(p.per100g?.protein)}</span>
+                      <span className={styles.macro}>{formatMacro(p.per100g?.fat)}</span>
+                      <span className={styles.macro}>{formatMacro(p.per100g?.carbs)}</span>
+                      <span className={styles.macro}>{formatMacro(p.per100g?.calories)}</span>
+                      <span className={styles.price}>{formatPrice(p.currentPriceEur)}</span>
                     </div>
-                    <span className={styles.macro}>{formatMacro(p.per100g?.protein)}</span>
-                    <span className={styles.macro}>{formatMacro(p.per100g?.fat)}</span>
-                    <span className={styles.macro}>{formatMacro(p.per100g?.carbs)}</span>
-                    <span className={styles.macro}>{formatMacro(p.per100g?.calories)}</span>
-                    <span className={styles.price}>{formatPrice(p.currentPriceEur)}</span>
                     <div className={styles.actions}>
                       <button className={styles.priceBtn} onClick={() => handleOpenPriceForm(p)}>
                         + Цена

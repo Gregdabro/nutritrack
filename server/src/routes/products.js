@@ -22,9 +22,7 @@ router.get('/', validateQuery(ListProductsSchema), async (req, res, next) => {
     const { search, limit, offset } = req.query;
 
     // Lazy seed: если у пользователя ещё нет продуктов — наполняем стартовыми
-    if (!search) {
-      await seedProducts(req.user.userId);
-    }
+    await seedProducts(req.user.userId);
 
     let filter = { userId: req.user.userId };
 
@@ -86,7 +84,7 @@ router.put('/:id', validate(UpdateProductSchema), async (req, res, next) => {
   try {
     const product = await Product.findOneAndUpdate(
       { _id: req.params.id, userId: req.user.userId },
-      req.body,
+      { $set: req.body },
       { new: true },
     );
 
