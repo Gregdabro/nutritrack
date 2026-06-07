@@ -51,6 +51,15 @@ bot.action('retry_parse', async (ctx) => {
   }
 });
 
+bot.action('skip_unrecognized', async (ctx) => {
+  try {
+    await ctx.answerCbQuery();
+    await ctx.reply('Хорошо, пропускаем. Напиши что-нибудь другое 👍');
+  } catch (err) {
+    logger.error({ err }, 'Error answering skip_unrecognized callback query');
+  }
+});
+
 bot.action('add_food', async (ctx) => {
   try {
     await ctx.answerCbQuery();

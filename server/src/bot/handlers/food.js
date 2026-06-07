@@ -12,6 +12,19 @@ function getTodayDate() {
 }
 
 /**
+ * Detect meal type from free-form Russian text.
+ * @param {string} text
+ * @returns {'breakfast'|'lunch'|'dinner'|'snack'}
+ */
+function detectMealType(text) {
+  const lower = text.toLowerCase();
+  if (/завтрак|утром|на завтра\b/.test(lower)) return 'breakfast';
+  if (/обед|в обед|на обед/.test(lower))        return 'lunch';
+  if (/ужин|на ужин|вечером/.test(lower))        return 'dinner';
+  return 'snack';
+}
+
+/**
  * Build a 10-char progress bar string.
  * @param {number} current
  * @param {number} goal
@@ -58,6 +71,8 @@ async function foodHandler(ctx) {
 
   if (!input) return;
 
+  const mealType = detectMealType(input);
+
   await ctx.sendChatAction('typing');
 
   let parsed;
@@ -87,7 +102,7 @@ async function foodHandler(ctx) {
   // ── Enrich parsed items with product data ─────────────────────────────────
   const today = getTodayDate();
   const enrichedItems = [];
-  const uncertainItems = [];
+  const unrecognized = [];
 
   for (const item of parsed) {
     // Try to find matching product via text search
@@ -110,19 +125,27 @@ async function foodHandler(ctx) {
         ...nutrients,
       });
     } else {
-      // No product match or uncertain — record with zero nutrients
-      uncertainItems.push(item);
-      enrichedItems.push({
-        name:     item.name,
-        grams:    item.grams,
-        protein:  0,
-        fat:      0,
-        carbs:    0,
-        fiber:    0,
-        calories: 0,
-        costEur:  null,
-      });
+      // No product match or uncertain — ask user instead of saving zeros
+      unrecognized.push(item);
     }
+  }
+
+  // ── Unrecognized products: do NOT save, prompt user ──────────────────────
+  if (unrecognized.length > 0) {
+    const names = unrecognized.map((i) => `• ${i.name}`).join('\n');
+    const webappUrl = process.env.WEBAPP_URL || 'https://nutritrack-topaz.vercel.app';
+    await ctx.reply(
+      `❓ Не нашёл в твоей базе:\n${names}\n\nЧто делаем?`,
+      {
+        reply_markup: {
+          inline_keyboard: [[
+            { text: '📝 Ввести вручную на сайте', url: `${webappUrl}/diary` },
+            { text: '❌ Пропустить', callback_data: 'skip_unrecognized' },
+          ]],
+        },
+      },
+    );
+    return;
   }
 
   const totals = calcTotals(enrichedItems);
@@ -131,7 +154,7 @@ async function foodHandler(ctx) {
   await FoodLog.create({
     userId:   user._id,
     date:     today,
-    mealType: 'snack',
+    mealType,
     items:    enrichedItems,
     totals,
     source:   'telegram',
@@ -166,11 +189,7 @@ async function foodHandler(ctx) {
     `Жиры:     ${progressBar(dayTotals.fat, g.fat)} ${dayTotals.fat}г / ${g.fat}г\n` +
     `Углеводы: ${progressBar(dayTotals.carbs, g.carbs)} ${dayTotals.carbs}г / ${g.carbs}г`;
 
-  if (uncertainItems.length > 0) {
-    const uncertainNames = uncertainItems.map((i) => `• ${i.name}`).join('\n');
-    message +=
-      `\n\n⚠️ Не распознано точно — введи вручную:\n${uncertainNames}`;
-  }
+
 
   logger.info(
     { userId: user._id.toString(), itemCount: enrichedItems.length, date: today },
