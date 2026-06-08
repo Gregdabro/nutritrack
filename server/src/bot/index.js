@@ -1,10 +1,12 @@
 const { Telegraf } = require('telegraf');
+const User = require('../models/User');
 const logger = require('../logger');
 const userContext = require('./middleware/userContext');
 const { startHandler, handleOnboarding } = require('./handlers/start');
 const { createLoginToken } = require('../routes/auth');
 const foodHandler  = require('./handlers/food');
 const todayHandler = require('./handlers/today');
+const { trainCommandHandler, handleWorkoutInput } = require('./handlers/workout');
 
 const bot = new Telegraf(process.env.BOT_TOKEN);
 
@@ -14,6 +16,17 @@ bot.start(startHandler);
 
 // Команда /today — прогресс за день
 bot.command('today', todayHandler);
+
+// Команда /train — логирование тренировки
+bot.command('train', trainCommandHandler);
+
+// Команда /cancel — сброс состояния диалога
+bot.command('cancel', async (ctx) => {
+  const user = ctx.user;
+  if (!user) return;
+  await User.updateOne({ _id: user._id }, { botState: 'idle' });
+  return ctx.reply('Действие отменено.', { reply_markup: { remove_keyboard: true } });
+});
 
 // Команда /login — генерирует одноразовую ссылку для входа в веб
 bot.command('login', async (ctx) => {
@@ -85,6 +98,10 @@ bot.on('text', async (ctx) => {
 
   // Онбординг: состояние не-idle (шаги), ИЛИ idle но без weightKg (ещё не проходил настройку)
   if (user && (user.botState !== 'idle' || !user.weightKg)) {
+    // Ожидание описания тренировки
+    if (user.botState === 'awaiting_workout') {
+      return handleWorkoutInput(ctx);
+    }
     return handleOnboarding(ctx);
   }
 
