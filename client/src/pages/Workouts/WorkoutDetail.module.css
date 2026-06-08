@@ -1,5 +1,6 @@
 .page {
   max-width: 720px;
+  padding: 24px;
 }
 
 /* ── State ─────────────────────────────────────────── */
@@ -167,14 +168,15 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 20px;
-  height: 20px;
+  width: 22px;
+  height: 22px;
   background: var(--nt-surface2);
   border: 0.5px solid var(--nt-border);
-  border-radius: 6px;
+  border-radius: 50%;
   font-size: 11px;
   color: var(--nt-text2);
   font-weight: 500;
+  flex-shrink: 0;
 }
 
 .noExercises {

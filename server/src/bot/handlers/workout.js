@@ -48,10 +48,11 @@ async function handleWorkoutInput(ctx) {
   await User.updateOne({ _id: user._id }, { botState: 'idle' });
 
   if (parsed === null) {
+    const webappUrl = process.env.WEBAPP_URL || 'https://nutritrack-topaz.vercel.app';
     return ctx.reply(
       '😕 Не удалось разобрать тренировку. Попробуй описать её подробнее.\n' +
       'Например: «Жим лёжа 3×10 80кг, бег 30 минут, сложность 8»\n\n' +
-      'Или запиши тренировку вручную в приложении.',
+      `Или запиши тренировку вручную: ${webappUrl}/workouts`,
     );
   }
 
