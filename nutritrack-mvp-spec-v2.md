@@ -1684,14 +1684,14 @@ if (process.env.NODE_ENV === 'production') {
 
 ### Спринт 4 — Тренировки (4-5 дней)
 
-- [ ] Mongoose схема: Workout
-- [ ] services/caloriesBurned.js
-- [ ] **Unit-тесты для `caloriesBurned.js`** — 5-8 кейсов: разные типы тренировок (home/run/gym), граничные значения длительности, корректность MET-формулы
-- [ ] CRUD /workouts
-- [ ] Zod-схема: workoutSchemas.js
-- [ ] Telegram-бот: /train, парсинг результатов свободным текстом
-- [ ] Страница /workouts — список и просмотр тренировки
-- [ ] Форма ручного ввода тренировки
+- [x] Mongoose схема: Workout
+- [x] services/caloriesBurned.js
+- [x] **Unit-тесты для `caloriesBurned.js`** — 5-8 кейсов: разные типы тренировок (home/run/gym), граничные значения длительности, корректность MET-формулы
+- [x] CRUD /workouts
+- [x] Zod-схема: workoutSchemas.js
+- [x] Telegram-бот: /train, парсинг результатов свободным текстом
+- [x] Страница /workouts — список и просмотр тренировки
+- [x] Форма ручного ввода тренировки
 
 ### Спринт 5 — Самочувствие и вес (3-4 дня)
 
