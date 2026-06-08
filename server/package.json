@@ -5,7 +5,8 @@
   "private": true,
   "scripts": {
     "start": "node src/app.js",
-    "dev": "node --watch src/app.js"
+    "dev": "node --watch src/app.js",
+    "test:calories": "node --test src/__tests__/caloriesBurned.test.js"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.102.0",
