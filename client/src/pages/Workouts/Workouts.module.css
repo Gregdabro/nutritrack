@@ -1,0 +1,279 @@
+.page {
+  max-width: 900px;
+}
+
+/* ── Toolbar ─────────────────────────────────────────── */
+.toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.toolbar h1 {
+  font-size: 18px;
+  font-weight: 500;
+  color: var(--nt-text);
+}
+
+.addBtn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--nt-green-mid);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 7px 14px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.addBtn:hover {
+  background: var(--nt-green);
+}
+
+/* ── Week group ──────────────────────────────────────── */
+.weekGroup {
+  margin-bottom: 20px;
+}
+
+.weekLabel {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--nt-text3);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: 8px;
+  padding: 0 2px;
+}
+
+/* ── Workout card ────────────────────────────────────── */
+.workoutCard {
+  background: var(--nt-surface);
+  border: 0.5px solid var(--nt-border);
+  border-radius: var(--nt-radius-lg);
+  padding: 14px 16px;
+  margin-bottom: 8px;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+}
+
+.workoutCard:hover {
+  border-color: var(--nt-green-mid);
+  background: var(--nt-green-bg);
+}
+
+.cardTop {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.workoutName {
+  font-size: 14px;
+  font-weight: 500;
+  flex: 1;
+  color: var(--nt-text);
+}
+
+.workoutDate {
+  font-size: 12px;
+  color: var(--nt-text3);
+}
+
+.cardMeta {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 20px;
+  font-weight: 500;
+}
+
+.pillGreen {
+  background: var(--nt-green-bg);
+  color: var(--nt-green);
+}
+
+.pillAmber {
+  background: var(--nt-amber-bg);
+  color: var(--nt-amber);
+}
+
+.pillBlue {
+  background: var(--nt-blue-bg);
+  color: var(--nt-blue);
+}
+
+.metaDot {
+  color: var(--nt-text3);
+  font-size: 11px;
+}
+
+/* ── States ──────────────────────────────────────────── */
+.loading,
+.empty,
+.error {
+  text-align: center;
+  padding: 48px 20px;
+  color: var(--nt-text3);
+  font-size: 13px;
+}
+
+.emptyIcon {
+  font-size: 32px;
+  display: block;
+  margin-bottom: 10px;
+}
+
+.error {
+  color: var(--nt-coral);
+}
+
+/* ── Add form modal ──────────────────────────────────── */
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(26, 25, 22, 0.35);
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal {
+  background: var(--nt-surface);
+  border: 0.5px solid var(--nt-border);
+  border-radius: var(--nt-radius-lg);
+  padding: 20px;
+  width: 420px;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.modalHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.modalTitle {
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.closeBtn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--nt-text3);
+  font-size: 18px;
+  line-height: 1;
+  padding: 2px 4px;
+  border-radius: 4px;
+  transition: color 0.15s;
+}
+
+.closeBtn:hover {
+  color: var(--nt-text);
+}
+
+.formGroup {
+  margin-bottom: 14px;
+}
+
+.formLabel {
+  display: block;
+  font-size: 12px;
+  color: var(--nt-text2);
+  margin-bottom: 5px;
+}
+
+.formInput,
+.formSelect {
+  width: 100%;
+  border: 0.5px solid var(--nt-border2);
+  border-radius: 8px;
+  padding: 8px 10px;
+  font-size: 13px;
+  color: var(--nt-text);
+  background: var(--nt-surface);
+  outline: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.formInput:focus,
+.formSelect:focus {
+  border-color: var(--nt-green-mid);
+  box-shadow: 0 0 0 2px var(--nt-green-bg);
+}
+
+.formRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.modalFooter {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 0.5px solid var(--nt-border);
+}
+
+.cancelBtn {
+  background: none;
+  border: 0.5px solid var(--nt-border2);
+  border-radius: 8px;
+  padding: 6px 14px;
+  font-size: 13px;
+  color: var(--nt-text2);
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.cancelBtn:hover {
+  background: var(--nt-surface2);
+}
+
+.submitBtn {
+  background: var(--nt-green-mid);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 6px 18px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.submitBtn:hover:not(:disabled) {
+  background: var(--nt-green);
+}
+
+.submitBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.formError {
+  font-size: 12px;
+  color: var(--nt-coral);
+  margin-top: 10px;
+}

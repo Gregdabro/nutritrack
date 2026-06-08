@@ -5,6 +5,8 @@ import LoginToken from './pages/LoginToken';
 import Settings from './pages/Settings';
 import Products from './pages/Products';
 import Diary from './pages/Diary';
+import Workouts from './pages/Workouts';
+import WorkoutDetail from './pages/Workouts/WorkoutDetail';
 
 function ProtectedRoute({ children }) {
   const token = useAuthStore((s) => s.token);
@@ -47,6 +49,22 @@ export default function App() {
         element={
           <ProtectedRoute>
             <Diary />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/workouts"
+        element={
+          <ProtectedRoute>
+            <Workouts />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/workouts/:id"
+        element={
+          <ProtectedRoute>
+            <WorkoutDetail />
           </ProtectedRoute>
         }
       />

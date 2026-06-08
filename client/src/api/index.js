@@ -51,5 +51,13 @@ api.recipes = {
   remove: (id)         => api.delete(`/recipes/${id}`),
 };
 
+api.workouts = {
+  list:   (params)     => api.get('/workouts', { params }),
+  get:    (id)         => api.get(`/workouts/${id}`),
+  create: (data)       => api.post('/workouts', data),
+  update: (id, data)   => api.put(`/workouts/${id}`, data),
+  remove: (id)         => api.delete(`/workouts/${id}`),
+};
+
 export default api;
 

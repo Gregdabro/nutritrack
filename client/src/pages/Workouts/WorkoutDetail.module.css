@@ -1,0 +1,185 @@
+.page {
+  max-width: 720px;
+}
+
+/* ── State ─────────────────────────────────────────── */
+.state {
+  padding: 48px 20px;
+  text-align: center;
+  color: var(--nt-text3);
+  font-size: 13px;
+}
+
+.stateError {
+  color: var(--nt-coral);
+}
+
+/* ── Header ─────────────────────────────────────────── */
+.header {
+  margin-bottom: 16px;
+}
+
+.backBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: none;
+  border: 0.5px solid var(--nt-border2);
+  border-radius: 8px;
+  padding: 5px 12px;
+  font-size: 13px;
+  color: var(--nt-text2);
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+
+.backBtn:hover {
+  background: var(--nt-surface2);
+  color: var(--nt-text);
+}
+
+/* ── Card ───────────────────────────────────────────── */
+.card {
+  background: var(--nt-surface);
+  border: 0.5px solid var(--nt-border);
+  border-radius: var(--nt-radius-lg);
+  padding: 16px;
+  margin-bottom: 12px;
+}
+
+/* ── Summary ────────────────────────────────────────── */
+.summaryTop {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.typeIcon {
+  font-size: 24px;
+  line-height: 1;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.summaryInfo {
+  flex: 1;
+}
+
+.workoutName {
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--nt-text);
+  margin: 0 0 4px;
+}
+
+.workoutDate {
+  font-size: 12px;
+  color: var(--nt-text3);
+}
+
+.pills {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  padding: 3px 9px;
+  border-radius: 20px;
+  font-weight: 500;
+}
+
+.pillGreen {
+  background: var(--nt-green-bg);
+  color: var(--nt-green);
+}
+
+.pillAmber {
+  background: var(--nt-amber-bg);
+  color: var(--nt-amber);
+}
+
+.pillBlue {
+  background: var(--nt-blue-bg);
+  color: var(--nt-blue);
+}
+
+.notes {
+  margin-top: 12px;
+  font-size: 13px;
+  color: var(--nt-text2);
+  border-top: 0.5px solid var(--nt-border);
+  padding-top: 10px;
+}
+
+/* ── Section title ──────────────────────────────────── */
+.sectionTitle {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--nt-text2);
+  margin-bottom: 12px;
+}
+
+/* ── Table ──────────────────────────────────────────── */
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.th {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--nt-text3);
+  text-align: left;
+  padding: 0 8px 8px;
+  border-bottom: 0.5px solid var(--nt-border);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.tr {
+  border-bottom: 0.5px solid var(--nt-border);
+}
+
+.tr:last-child {
+  border-bottom: none;
+}
+
+.td {
+  font-size: 13px;
+  color: var(--nt-text);
+  padding: 8px;
+  vertical-align: middle;
+}
+
+.exName {
+  font-weight: 500;
+  color: var(--nt-text);
+  max-width: 200px;
+}
+
+.setPill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  background: var(--nt-surface2);
+  border: 0.5px solid var(--nt-border);
+  border-radius: 6px;
+  font-size: 11px;
+  color: var(--nt-text2);
+  font-weight: 500;
+}
+
+.noExercises {
+  font-size: 13px;
+  color: var(--nt-text3);
+  text-align: center;
+  padding: 16px 0;
+}
