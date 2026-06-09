@@ -1,7 +1,6 @@
 const User = require('../../models/User');
 const WeightLog = require('../../models/WeightLog');
 const logger = require('../../logger');
-const dayjs = require('dayjs');
 
 async function handleWeightCommand(ctx) {
   const text = ctx.message.text.trim();
@@ -43,7 +42,7 @@ async function handleWeightInput(ctx) {
 async function saveWeight(ctx, weightKg) {
   try {
     const user = ctx.user;
-    const date = dayjs().format('YYYY-MM-DD');
+    const date = new Date().toISOString().split('T')[0];
 
     await WeightLog.findOneAndUpdate(
       { userId: user._id, date },

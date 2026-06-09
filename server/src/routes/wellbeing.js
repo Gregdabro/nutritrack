@@ -1,9 +1,9 @@
 const express = require('express');
 const WellbeingLog = require('../models/WellbeingLog');
-const requireAuth = require('../middleware/requireAuth');
-const validate = require('../middleware/validate');
+const requireAuth = require('../middleware/auth');
+const { validate } = require('../middleware/validate');
 const { CreateWellbeingSchema } = require('../validation/wellbeingSchemas');
-const { AppError, AuthorizationError, NotFoundError } = require('../utils/errors');
+const { AppError, AuthorizationError, NotFoundError } = require('../errors/AppError');
 
 const router = express.Router();
 

@@ -1,7 +1,6 @@
 const User = require('../../models/User');
 const WellbeingLog = require('../../models/WellbeingLog');
 const logger = require('../../logger');
-const dayjs = require('dayjs');
 
 const FEEL_EMOJIS = {
   great: '😁',
@@ -57,7 +56,7 @@ async function handleFeelOverallAction(ctx) {
     { _id: user._id },
     { 
       botState: 'awaiting_feel_detail',
-      botStateData: { overall, date: dayjs().format('YYYY-MM-DD') }
+      botStateData: { overall, date: new Date().toISOString().split('T')[0] }
     }
   );
 

@@ -1,9 +1,9 @@
 const express = require('express');
 const WeightLog = require('../models/WeightLog');
-const requireAuth = require('../middleware/requireAuth');
-const validate = require('../middleware/validate');
+const requireAuth = require('../middleware/auth');
+const { validate } = require('../middleware/validate');
 const { CreateWeightSchema } = require('../validation/weightSchemas');
-const { AuthorizationError, NotFoundError } = require('../utils/errors');
+const { AuthorizationError, NotFoundError } = require('../errors/AppError');
 
 const router = express.Router();
 
