@@ -7,6 +7,15 @@ const { createLoginToken } = require('../routes/auth');
 const foodHandler  = require('./handlers/food');
 const todayHandler = require('./handlers/today');
 const { trainCommandHandler, handleWorkoutInput } = require('./handlers/workout');
+const {
+  handleFeelCommand,
+  handleFeelOverallAction,
+  handleFeelDetailAction,
+  handleFeelValueAction,
+  handleFeelDetailCancel,
+  handleDetailInputText
+} = require('./handlers/wellbeing');
+const { handleWeightCommand, handleWeightInput } = require('./handlers/weight');
 
 const bot = new Telegraf(process.env.BOT_TOKEN);
 
@@ -19,6 +28,12 @@ bot.command('today', todayHandler);
 
 // Команда /train — логирование тренировки
 bot.command('train', trainCommandHandler);
+
+// Команда /feel — самочувствие
+bot.command('feel', handleFeelCommand);
+
+// Команда /weight — вес
+bot.command('weight', handleWeightCommand);
 
 // Команда /cancel — сброс состояния диалога
 bot.command('cancel', async (ctx) => {
@@ -85,16 +100,33 @@ bot.action('add_food', async (ctx) => {
 bot.action('log_weight', async (ctx) => {
   try {
     await ctx.answerCbQuery();
-    await ctx.reply('Ввод веса будет доступен в следующем обновлении (Спринт 5).');
+    await User.updateOne({ _id: ctx.user._id }, { botState: 'awaiting_weight' });
+    await ctx.reply('Введи свой текущий вес в кг (например, 82.4):', {
+      reply_markup: { force_reply: true }
+    });
   } catch (err) {
     logger.error({ err }, 'Error answering log_weight callback query');
   }
 });
 
+// Wellbeing callbacks
+bot.action(/^feel_(great|good|ok|bad|sick)$/, handleFeelOverallAction);
+bot.action(/^feel_detail_(energy|sleep|stress|mood|skip)$/, handleFeelDetailAction);
+bot.action(/^feel_val_[1-5]$/, handleFeelValueAction);
+bot.action('feel_detail_cancel', handleFeelDetailCancel);
+
 
 // bot.on('text') — должен быть зарегистрирован ПОСЛЕ всех команд
 bot.on('text', async (ctx) => {
   const user = ctx.user;
+
+  if (user && user.botState === 'awaiting_weight') {
+    return handleWeightInput(ctx);
+  }
+
+  if (user && user.botState === 'awaiting_feel_detail') {
+    return handleDetailInputText(ctx);
+  }
 
   // Онбординг: состояние не-idle (шаги), ИЛИ idle но без weightKg (ещё не проходил настройку)
   if (user && (user.botState !== 'idle' || !user.weightKg)) {

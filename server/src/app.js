@@ -12,6 +12,8 @@ const productRoutes = require('./routes/products');
 const foodLogRoutes = require('./routes/foodLogs');
 const recipeRoutes   = require('./routes/recipes');
 const workoutRoutes  = require('./routes/workouts');
+const wellbeingRoutes = require('./routes/wellbeing');
+const weightRoutes   = require('./routes/weight');
 const bot = require('./bot');
 
 async function main() {
@@ -32,6 +34,8 @@ async function main() {
   app.use('/api/food-logs', foodLogRoutes);
   app.use('/api/recipes',   recipeRoutes);
   app.use('/api/workouts',  workoutRoutes);
+  app.use('/api/wellbeing', wellbeingRoutes);
+  app.use('/api/weight',    weightRoutes);
 
   app.use(errorHandler);
 

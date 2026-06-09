@@ -8,6 +8,8 @@ import Products from './pages/Products';
 import Diary from './pages/Diary';
 import Workouts from './pages/Workouts';
 import WorkoutDetail from './pages/Workouts/WorkoutDetail';
+import Wellbeing from './pages/Wellbeing';
+import Weight from './pages/Weight';
 
 function ProtectedRoute({ children }) {
   const token = useAuthStore((s) => s.token);
@@ -44,6 +46,8 @@ export default function App() {
         <Route path="/diary" element={<Diary />} />
         <Route path="/workouts" element={<Workouts />} />
         <Route path="/workouts/:id" element={<WorkoutDetail />} />
+        <Route path="/wellbeing" element={<Wellbeing />} />
+        <Route path="/weight" element={<Weight />} />
       </Route>
     </Routes>
   );

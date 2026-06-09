@@ -1,0 +1,153 @@
+.page {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.title {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--nt-text);
+  margin: 0;
+}
+
+.periodToggle {
+  display: flex;
+  background: var(--nt-surface2);
+  border-radius: 8px;
+  padding: 4px;
+}
+
+.periodBtn {
+  background: none;
+  border: none;
+  color: var(--nt-text2);
+  padding: 6px 12px;
+  font-size: 13px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.periodBtnActive {
+  background: var(--nt-surface);
+  color: var(--nt-text);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  font-weight: 500;
+}
+
+.card {
+  background: var(--nt-surface);
+  border: 0.5px solid var(--nt-border);
+  border-radius: var(--nt-radius-lg);
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+.emptyState {
+  text-align: center;
+  color: var(--nt-text3);
+  padding: 40px 0;
+  font-size: 14px;
+}
+
+.chartContainer {
+  height: 300px;
+  width: 100%;
+}
+
+.addForm {
+  display: flex;
+  gap: 12px;
+  align-items: flex-end;
+  flex-wrap: wrap;
+}
+
+.inputGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.label {
+  font-size: 12px;
+  color: var(--nt-text2);
+  font-weight: 500;
+}
+
+.input {
+  padding: 10px 14px;
+  background: var(--nt-surface);
+  border: 0.5px solid var(--nt-border2);
+  border-radius: 8px;
+  color: var(--nt-text);
+  font-size: 14px;
+  outline: none;
+  min-width: 140px;
+}
+
+.input:focus {
+  border-color: var(--nt-green-mid);
+}
+
+.btn {
+  padding: 10px 20px;
+  background: var(--nt-green-mid);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: opacity 0.2s;
+  height: 40px;
+}
+
+.btn:hover {
+  opacity: 0.9;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table th, .table td {
+  padding: 12px;
+  text-align: left;
+  border-bottom: 0.5px solid var(--nt-border);
+  font-size: 14px;
+  color: var(--nt-text);
+}
+
+.table th {
+  font-weight: 500;
+  color: var(--nt-text2);
+  font-size: 12px;
+  text-transform: uppercase;
+}
+
+.table tr:last-child td {
+  border-bottom: none;
+}
+
+.diffPos {
+  color: var(--nt-coral);
+  font-size: 12px;
+}
+
+.diffNeg {
+  color: var(--nt-green);
+  font-size: 12px;
+}
+
+.diffZero {
+  color: var(--nt-text3);
+  font-size: 12px;
+}

@@ -59,5 +59,16 @@ api.workouts = {
   remove: (id)         => api.delete(`/workouts/${id}`),
 };
 
-export default api;
+api.wellbeing = {
+  get:    (params)     => api.get('/wellbeing', { params }), // params: { date } or { startDate, endDate }
+  create: (data)       => api.post('/wellbeing', data),
+  update: (id, data)   => api.put(`/wellbeing/${id}`, data),
+};
 
+api.weight = {
+  get:    (params)     => api.get('/weight', { params }), // params: { limit }
+  create: (data)       => api.post('/weight', data),
+  update: (id, data)   => api.put(`/weight/${id}`, data),
+};
+
+export default api;
