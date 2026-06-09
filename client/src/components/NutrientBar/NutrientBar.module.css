@@ -1,36 +1,43 @@
 .wrapper {
-  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 7px;
 }
 
-.header {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 4px;
+.wrapper:last-child {
+  margin-bottom: 0;
 }
 
 .label {
-  font-size: 0.85rem;
-  font-weight: 600;
-  color: var(--color-text-secondary, #a0aec0);
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
+  font-size: 13px;
+  color: var(--nt-text2);
+  width: 70px;
+  flex-shrink: 0;
 }
 
-.values {
-  font-size: 0.85rem;
-  color: var(--color-text, #e2e8f0);
-  font-variant-numeric: tabular-nums;
+.trackWrap {
+  flex: 1;
 }
 
 .track {
-  height: 8px;
-  border-radius: 4px;
-  background: rgba(255, 255, 255, 0.08);
+  height: 6px;
+  border-radius: 3px;
+  background: var(--nt-surface2);
   overflow: hidden;
+  width: 100%;
 }
 
 .fill {
   height: 100%;
-  border-radius: 4px;
+  border-radius: 3px;
   transition: width 0.4s ease, background-color 0.3s ease;
+}
+
+.values {
+  font-size: 13px;
+  color: var(--nt-text3);
+  width: 50px;
+  text-align: right;
+  flex-shrink: 0;
 }
