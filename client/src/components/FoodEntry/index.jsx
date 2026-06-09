@@ -2,19 +2,8 @@ import { useState } from 'react';
 import styles from './FoodEntry.module.css';
 import api from '../../api';
 
-/**
- * Displays one FoodLog entry.
- * Props: { entry: FoodLog, onDelete: (id) => void }
- */
 export default function FoodEntry({ entry, onDelete }) {
   const [deleteError, setDeleteError] = useState(null);
-
-  const time = entry.loggedAt
-    ? new Date(entry.loggedAt).toLocaleTimeString('ru-RU', {
-        hour: '2-digit',
-        minute: '2-digit',
-      })
-    : '';
 
   async function handleDelete() {
     setDeleteError(null);
@@ -22,47 +11,46 @@ export default function FoodEntry({ entry, onDelete }) {
       await api.foodLogs.remove(entry._id);
       onDelete(entry._id);
     } catch (err) {
-      setDeleteError('Не удалось удалить запись. Попробуй ещё раз.');
+      setDeleteError('Не удалось удалить');
     }
   }
 
   return (
-    <div className={styles.card}>
-      <div className={styles.header}>
-        <span className={styles.time}>{time}</span>
-        <button
-          className={styles.deleteBtn}
-          onClick={handleDelete}
-          title="Удалить запись"
-          aria-label="Удалить запись"
-        >
-          ×
-        </button>
-      </div>
-
-      <ul className={styles.itemList}>
-        {entry.items.map((item, idx) => (
-          <li key={idx} className={styles.item}>
-            <span className={styles.itemName}>
-              {item.name} <span className={styles.itemGrams}>{item.grams}г</span>
-            </span>
-            <span className={styles.itemMacros}>
-              Б{item.protein || 0} Ж{item.fat || 0} У{item.carbs || 0} | {item.calories || 0} ккал
-            </span>
-          </li>
-        ))}
-      </ul>
-
-      {entry.totals && (
-        <div className={styles.totals}>
-          Итого: Б{entry.totals.protein} Ж{entry.totals.fat} У{entry.totals.carbs} |{' '}
-          {entry.totals.calories} ккал
+    <>
+      {entry.items.map((item, idx) => (
+        <div key={idx} className={styles.foodItem}>
+          <div className={styles.foodName}>
+            {item.name}
+            {idx === 0 && entry.product?.pricePer100g && (
+              <span className={styles.costBadge}>
+                {((entry.product.pricePer100g * item.grams) / 100).toFixed(2)}€
+              </span>
+            )}
+          </div>
+          <div className={styles.foodGrams}>{item.grams} г</div>
+          <div className={styles.foodMacros}>
+            <span className={`${styles.macroChip} ${styles.chipP}`}>Б {item.protein || 0}г</span>
+            <span className={`${styles.macroChip} ${styles.chipF}`}>Ж {item.fat || 0}г</span>
+            <span className={`${styles.macroChip} ${styles.chipC}`}>У {item.carbs || 0}г</span>
+          </div>
+          <div className={styles.foodCal}>{item.calories || 0} ккал</div>
+          <div className={styles.foodActions}>
+            {idx === 0 && (
+              <button
+                className={styles.iconBtn}
+                onClick={handleDelete}
+                title="Удалить запись"
+                aria-label="Удалить запись"
+              >
+                <i className="ti ti-trash" aria-hidden="true" />
+              </button>
+            )}
+          </div>
         </div>
-      )}
-
+      ))}
       {deleteError && (
-        <p className={styles.deleteError}>{deleteError}</p>
+        <div className={styles.deleteError}>{deleteError}</div>
       )}
-    </div>
+    </>
   );
 }

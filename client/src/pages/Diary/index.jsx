@@ -92,9 +92,59 @@ export default function Diary() {
       {loading && <p className={styles.hint}>Загружаю...</p>}
       {error   && <p className={styles.errorMsg}>{error}</p>}
 
-      {/* Meal sections */}
-      <div className={styles.sections}>
-        {MEAL_TYPES.map((meal) => {
+      {/* Daily totals (TOP) */}
+      <div className={styles.summaryCard}>
+        <div className={styles.summaryContent}>
+          <div className={styles.summaryBars}>
+            <NutrientBar
+              label="Белки"
+              current={dailyTotals.protein || 0}
+              goal={g.protein}
+              color="var(--nt-blue-mid)"
+            />
+            <NutrientBar
+              label="Жиры"
+              current={dailyTotals.fat || 0}
+              goal={g.fat}
+              color="var(--nt-amber-mid)"
+            />
+            <NutrientBar
+              label="Углеводы"
+              current={dailyTotals.carbs || 0}
+              goal={g.carbs}
+              color="var(--nt-green-mid)"
+            />
+            <NutrientBar
+              label="Клетчатка"
+              current={dailyTotals.fiber || 0}
+              goal={g.fiber}
+              color="var(--nt-teal-mid)"
+            />
+          </div>
+          
+          <div className={styles.summaryStats}>
+            <div className={styles.statCard}>
+              <div className={styles.statLabel}>Ккал</div>
+              <div className={styles.statValue}>{dailyTotals.calories || 0}</div>
+              <div className={styles.statSub}>/ {g.calories}</div>
+            </div>
+            
+            {logs.some(l => l.product && l.product.pricePer100g) && (
+              <div className={styles.statCard}>
+                <div className={styles.statLabel}>Стоимость</div>
+                <div className={styles.statValue}>
+                  {logs.reduce((sum, log) => sum + (log.product?.pricePer100g ? (log.product.pricePer100g * log.amountG / 100) : 0), 0).toFixed(2)}
+                </div>
+                <div className={styles.statSub}>€ за день</div>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* Meal sections container */}
+      <div className={styles.mealsCard}>
+        {MEAL_TYPES.map((meal, index) => {
           const mealLogs = logs.filter((l) => l.mealType === meal.id);
           const mealTotals = mealLogs.reduce(
             (acc, log) => {
@@ -113,84 +163,57 @@ export default function Diary() {
             { protein: 0, fat: 0, carbs: 0, calories: 0, cost: 0 },
           );
 
+          // Get icon based on meal type
+          let icon = 'ti-sun';
+          let iconColor = 'var(--nt-amber-mid)';
+          if (meal.id === 'lunch') { icon = 'ti-tools-kitchen-2'; iconColor = 'var(--nt-green-mid)'; }
+          if (meal.id === 'dinner') { icon = 'ti-moon'; iconColor = 'var(--nt-blue-mid)'; }
+          if (meal.id === 'snack') { icon = 'ti-apple'; iconColor = 'var(--nt-coral-mid)'; }
+
+          // Remove emoji from label if it exists (assuming label has emoji like '🌅 Завтрак')
+          const cleanLabel = meal.label.replace(/^(\p{Emoji_Presentation}|\p{Emoji}\uFE0F)\s*/u, '');
+
           return (
-            <section key={meal.id} className={styles.mealSection}>
+            <div key={meal.id} className={`${styles.mealSection} ${index === MEAL_TYPES.length - 1 ? styles.lastMealSection : ''}`}>
               <div className={styles.mealHeader}>
-                <h2 className={styles.mealTitle}>{meal.label}</h2>
-                <div className={styles.mealMeta}>
-                  {mealLogs.length > 0 && (
-                    <span className={styles.mealTotals}>
-                      Б{mealTotals.protein} Ж{mealTotals.fat} У{mealTotals.carbs} |{' '}
-                      {mealTotals.calories} ккал {mealTotals.cost > 0 && `| €${mealTotals.cost}`}
-                    </span>
-                  )}
-                  <button
-                    id={`add-${meal.id}`}
-                    className={styles.addBtn}
-                    onClick={() => setQuickAdd({ mealType: meal.id })}
-                  >
-                    + Добавить
-                  </button>
-                </div>
+                <span className={styles.mealName}>
+                  <i className={`ti ${icon}`} style={{ fontSize: '14px', color: iconColor }} aria-hidden="true" />
+                  {cleanLabel}
+                </span>
+                <span className={styles.mealTotal}>
+                  Б:{mealTotals.protein}г Ж:{mealTotals.fat}г У:{mealTotals.carbs}г · {mealTotals.calories} ккал {mealTotals.cost > 0 && `· ${mealTotals.cost}€`}
+                </span>
               </div>
 
               {mealLogs.length === 0 ? (
-                <p className={styles.emptyHint}>Ничего не добавлено</p>
+                <div className={styles.emptyHint}>Ничего не добавлено</div>
               ) : (
                 mealLogs.map((log) => (
                   <FoodEntry key={log._id} entry={log} onDelete={handleLogDeleted} />
                 ))
               )}
-            </section>
+              
+              <div className={styles.addFoodRow} onClick={() => setQuickAdd({ mealType: meal.id })}>
+                <i className="ti ti-plus" style={{ fontSize: '14px' }} aria-hidden="true" />
+                Добавить продукт
+              </div>
+            </div>
           );
         })}
-      </div>
 
-      {/* Daily totals */}
-      <section className={styles.summarySection}>
-        <h2 className={styles.summaryTitle}>Итого за день</h2>
-        <div className={styles.nutrientBars}>
-          <NutrientBar
-            label="Белки"
-            current={dailyTotals.protein || 0}
-            goal={g.protein}
-            color="var(--nt-blue-mid)"
-          />
-          <NutrientBar
-            label="Жиры"
-            current={dailyTotals.fat || 0}
-            goal={g.fat}
-            color="var(--nt-amber-mid)"
-          />
-          <NutrientBar
-            label="Углеводы"
-            current={dailyTotals.carbs || 0}
-            goal={g.carbs}
-            color="var(--nt-green-mid)"
-          />
-          <NutrientBar
-            label="Клетчатка"
-            current={dailyTotals.fiber || 0}
-            goal={g.fiber}
-            color="var(--nt-teal-mid)"
-          />
-        </div>
-        <div className={styles.caloriesRow}>
-          <span className={styles.caloriesLabel}>Калории</span>
-          <span className={styles.caloriesValue}>
-            {dailyTotals.calories || 0} / {g.calories} ккал
-          </span>
-        </div>
-        {logs.some(l => l.product && l.product.pricePer100g) && (
-          <div className={styles.caloriesRow} style={{ marginTop: '8px', paddingTop: '8px', borderTop: 'none' }}>
-            <span className={styles.caloriesLabel}>Стоимость</span>
-            <span className={styles.caloriesValue}>
-              €{logs.reduce((sum, log) => sum + (log.product?.pricePer100g ? (log.product.pricePer100g * log.amountG / 100) : 0), 0).toFixed(2)}
-              {g.weeklyBudget ? ` / €${(g.weeklyBudget / 7).toFixed(2)}` : ''}
-            </span>
+        <div className={styles.divider}></div>
+        <div className={styles.totalsFooter}>
+          <div className={styles.totalsFooterText}>
+            Итого за день: Б:{dailyTotals.protein || 0}г Ж:{dailyTotals.fat || 0}г У:{dailyTotals.carbs || 0}г Кл:{dailyTotals.fiber || 0}г
           </div>
-        )}
-      </section>
+          <div className={styles.totalsFooterNums}>
+            {dailyTotals.calories || 0} ккал
+            {logs.some(l => l.product && l.product.pricePer100g) && 
+              ` · €${logs.reduce((sum, log) => sum + (log.product?.pricePer100g ? (log.product.pricePer100g * log.amountG / 100) : 0), 0).toFixed(2)}`
+            }
+          </div>
+        </div>
+      </div>
 
       {/* QuickAdd modal */}
       {quickAdd && (
