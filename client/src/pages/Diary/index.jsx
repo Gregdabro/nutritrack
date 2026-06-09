@@ -74,7 +74,7 @@ export default function Diary() {
           onClick={() => navigate(-1)}
           aria-label="Предыдущий день"
         >
-          ←
+          <i className="ti ti-chevron-left" aria-hidden="true" />
         </button>
         <span className={styles.dateLabel}>
           {isToday ? `Сегодня, ${formatDate(currentDate)}` : formatDate(currentDate)}
@@ -85,7 +85,7 @@ export default function Diary() {
           disabled={isToday}
           aria-label="Следующий день"
         >
-          →
+          <i className="ti ti-chevron-right" aria-hidden="true" />
         </button>
       </div>
 
@@ -99,14 +99,18 @@ export default function Diary() {
           const mealTotals = mealLogs.reduce(
             (acc, log) => {
               const t = log.totals || {};
+              const cost = log.product && log.product.pricePer100g 
+                ? (log.product.pricePer100g * log.amountG / 100)
+                : 0;
               return {
                 protein:  parseFloat(((acc.protein  || 0) + (t.protein  || 0)).toFixed(1)),
                 fat:      parseFloat(((acc.fat      || 0) + (t.fat      || 0)).toFixed(1)),
                 carbs:    parseFloat(((acc.carbs    || 0) + (t.carbs    || 0)).toFixed(1)),
                 calories: parseFloat(((acc.calories || 0) + (t.calories || 0)).toFixed(0)),
+                cost:     parseFloat(((acc.cost     || 0) + cost).toFixed(2)),
               };
             },
-            { protein: 0, fat: 0, carbs: 0, calories: 0 },
+            { protein: 0, fat: 0, carbs: 0, calories: 0, cost: 0 },
           );
 
           return (
@@ -117,7 +121,7 @@ export default function Diary() {
                   {mealLogs.length > 0 && (
                     <span className={styles.mealTotals}>
                       Б{mealTotals.protein} Ж{mealTotals.fat} У{mealTotals.carbs} |{' '}
-                      {mealTotals.calories} ккал
+                      {mealTotals.calories} ккал {mealTotals.cost > 0 && `| €${mealTotals.cost}`}
                     </span>
                   )}
                   <button
@@ -150,25 +154,25 @@ export default function Diary() {
             label="Белки"
             current={dailyTotals.protein || 0}
             goal={g.protein}
-            color="#4f8ef7"
+            color="var(--nt-blue-mid)"
           />
           <NutrientBar
             label="Жиры"
             current={dailyTotals.fat || 0}
             goal={g.fat}
-            color="#f6ad55"
+            color="var(--nt-amber-mid)"
           />
           <NutrientBar
             label="Углеводы"
             current={dailyTotals.carbs || 0}
             goal={g.carbs}
-            color="#68d391"
+            color="var(--nt-green-mid)"
           />
           <NutrientBar
             label="Клетчатка"
             current={dailyTotals.fiber || 0}
             goal={g.fiber}
-            color="#9f7aea"
+            color="var(--nt-teal-mid)"
           />
         </div>
         <div className={styles.caloriesRow}>
@@ -177,6 +181,15 @@ export default function Diary() {
             {dailyTotals.calories || 0} / {g.calories} ккал
           </span>
         </div>
+        {logs.some(l => l.product && l.product.pricePer100g) && (
+          <div className={styles.caloriesRow} style={{ marginTop: '8px', paddingTop: '8px', borderTop: 'none' }}>
+            <span className={styles.caloriesLabel}>Стоимость</span>
+            <span className={styles.caloriesValue}>
+              €{logs.reduce((sum, log) => sum + (log.product?.pricePer100g ? (log.product.pricePer100g * log.amountG / 100) : 0), 0).toFixed(2)}
+              {g.weeklyBudget ? ` / €${(g.weeklyBudget / 7).toFixed(2)}` : ''}
+            </span>
+          </div>
+        )}
       </section>
 
       {/* QuickAdd modal */}

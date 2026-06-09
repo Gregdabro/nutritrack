@@ -1,5 +1,6 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
 import useAuthStore from './store/authStore';
+import Layout from './components/Layout';
 import Login from './pages/Login';
 import LoginToken from './pages/LoginToken';
 import Settings from './pages/Settings';
@@ -28,48 +29,22 @@ export default function App() {
     <Routes>
       <Route path="/login" element={<Login />} />
       <Route path="/login/token" element={<LoginToken />} />
+
+      {/* All protected pages share the Layout (Sidebar + Topbar) */}
       <Route
-        path="/settings"
         element={
           <ProtectedRoute>
-            <Settings />
+            <Layout />
           </ProtectedRoute>
         }
-      />
-      <Route
-        path="/products"
-        element={
-          <ProtectedRoute>
-            <Products />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/diary"
-        element={
-          <ProtectedRoute>
-            <Diary />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/workouts"
-        element={
-          <ProtectedRoute>
-            <Workouts />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/workouts/:id"
-        element={
-          <ProtectedRoute>
-            <WorkoutDetail />
-          </ProtectedRoute>
-        }
-      />
-      <Route path="/" element={<Dashboard />} />
+      >
+        <Route path="/" element={<Dashboard />} />
+        <Route path="/settings" element={<Settings />} />
+        <Route path="/products" element={<Products />} />
+        <Route path="/diary" element={<Diary />} />
+        <Route path="/workouts" element={<Workouts />} />
+        <Route path="/workouts/:id" element={<WorkoutDetail />} />
+      </Route>
     </Routes>
   );
 }
-

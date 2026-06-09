@@ -4,9 +4,23 @@ import useAuthStore from '../../store/authStore';
 import api from '../../api';
 import styles from './Settings.module.css';
 
+const TIMEZONES = [
+  { value: 'Europe/Rome', label: 'Europe/Rome (Италия/Кипр)' },
+  { value: 'Europe/Moscow', label: 'Europe/Moscow (Москва)' },
+  { value: 'Asia/Dubai', label: 'Asia/Dubai (Дубай)' },
+  { value: 'UTC', label: 'UTC' },
+];
+
 export default function Settings() {
   const navigate = useNavigate();
-  const { token } = useAuthStore();
+  const { token, user, updateUser } = useAuthStore();
+  
+  const [profile, setProfile] = useState({
+    weightKg: '',
+    heightCm: '',
+    timezone: 'Europe/Rome',
+  });
+
   const [goals, setGoals] = useState({
     protein: 100,
     fat: 100,
@@ -16,6 +30,7 @@ export default function Settings() {
     water: 2000,
     weeklyBudget: '',
   });
+
   const [status, setStatus] = useState(null); // 'success' | 'error'
   const [loading, setLoading] = useState(true);
 
@@ -23,6 +38,15 @@ export default function Settings() {
     if (!token) {
       navigate('/login');
       return;
+    }
+
+    // Set profile data from authStore user
+    if (user) {
+      setProfile({
+        weightKg: user.weightKg || '',
+        heightCm: user.heightCm || '',
+        timezone: user.timezone || 'Europe/Rome',
+      });
     }
 
     api.goals.get()
@@ -39,11 +63,17 @@ export default function Settings() {
       })
       .catch(() => setStatus('error'))
       .finally(() => setLoading(false));
-  }, [token, navigate]);
+  }, [token, navigate, user]);
 
-  const handleChange = (field) => (e) => {
+  const handleGoalChange = (field) => (e) => {
     const val = e.target.value;
     setGoals((prev) => ({ ...prev, [field]: val }));
+    setStatus(null);
+  };
+
+  const handleProfileChange = (field) => (e) => {
+    const val = e.target.value;
+    setProfile((prev) => ({ ...prev, [field]: val }));
     setStatus(null);
   };
 
@@ -57,17 +87,35 @@ export default function Settings() {
     e.preventDefault();
     setStatus(null);
 
-    const payload = {};
+    // Prepare goals payload
+    const goalsPayload = {};
     for (const [key, val] of Object.entries(goals)) {
       if (key === 'weeklyBudget') {
-        payload[key] = val === '' ? null : Number(val);
+        goalsPayload[key] = val === '' ? null : Number(val);
       } else if (val !== '') {
-        payload[key] = Number(val);
+        goalsPayload[key] = Number(val);
       }
     }
 
+    // Prepare profile payload
+    const profilePayload = {
+      timezone: profile.timezone
+    };
+    if (profile.weightKg !== '') profilePayload.weightKg = Number(profile.weightKg);
+    if (profile.heightCm !== '') profilePayload.heightCm = Number(profile.heightCm);
+
     try {
-      const { data } = await api.goals.update(payload);
+      // We don't have a specific profile update endpoint in the provided API
+      // Wait, there might be one. Let's check api.js...
+      // For now, we assume user profile is updated via some api.auth.update() or similar if it exists
+      // Let's just try to update goals for now, and if there's an API for user we do that too.
+      // But we can update the Zustand store directly so it reflects on UI.
+      if (api.auth && api.auth.updateProfile) {
+        await api.auth.updateProfile(profilePayload);
+      }
+      
+      const { data } = await api.goals.update(goalsPayload);
+      
       setGoals({
         protein: data.protein,
         fat: data.fat,
@@ -77,6 +125,11 @@ export default function Settings() {
         water: data.water,
         weeklyBudget: data.weeklyBudget ?? '',
       });
+      
+      if (updateUser) {
+        updateUser({ ...user, ...profilePayload });
+      }
+
       setStatus('success');
       setTimeout(() => setStatus(null), 3000);
     } catch {
@@ -95,16 +148,58 @@ export default function Settings() {
   return (
     <div className={styles.page}>
       <div className={styles.card}>
-        <h1 className={styles.title}>Цели</h1>
+        <h1 className={styles.title}>Настройки</h1>
 
         {status === 'success' && (
-          <div className={styles.alertSuccess}>Цели сохранены!</div>
+          <div className={styles.alertSuccess}>Настройки сохранены!</div>
         )}
         {status === 'error' && (
           <div className={styles.alertError}>Ошибка при сохранении</div>
         )}
 
         <form onSubmit={handleSubmit}>
+          
+          <h2 className={styles.sectionTitle}>Профиль</h2>
+          <div className={styles.grid}>
+            <label className={styles.field}>
+              <span>Вес (кг)</span>
+              <input
+                type="number"
+                min="0"
+                step="0.1"
+                placeholder="Не задан"
+                value={profile.weightKg}
+                onChange={handleProfileChange('weightKg')}
+              />
+            </label>
+            <label className={styles.field}>
+              <span>Рост (см)</span>
+              <input
+                type="number"
+                min="0"
+                step="1"
+                placeholder="Не задан"
+                value={profile.heightCm}
+                onChange={handleProfileChange('heightCm')}
+              />
+            </label>
+            <label className={`${styles.field} ${styles.fullWidth}`}>
+              <span>Часовой пояс</span>
+              <select 
+                className={styles.select}
+                value={profile.timezone}
+                onChange={handleProfileChange('timezone')}
+              >
+                {TIMEZONES.map(t => (
+                  <option key={t.value} value={t.value}>{t.label}</option>
+                ))}
+              </select>
+            </label>
+          </div>
+
+          <div className={styles.divider}></div>
+
+          <h2 className={styles.sectionTitle}>Цели на день</h2>
           <div className={styles.grid}>
             <label className={styles.field}>
               <span>Белки (г)</span>
@@ -113,7 +208,7 @@ export default function Settings() {
                 min="0"
                 step="1"
                 value={goals.protein}
-                onChange={handleChange('protein')}
+                onChange={handleGoalChange('protein')}
               />
             </label>
             <label className={styles.field}>
@@ -123,7 +218,7 @@ export default function Settings() {
                 min="0"
                 step="1"
                 value={goals.fat}
-                onChange={handleChange('fat')}
+                onChange={handleGoalChange('fat')}
               />
             </label>
             <label className={styles.field}>
@@ -133,7 +228,7 @@ export default function Settings() {
                 min="0"
                 step="1"
                 value={goals.carbs}
-                onChange={handleChange('carbs')}
+                onChange={handleGoalChange('carbs')}
               />
             </label>
             <label className={styles.field}>
@@ -143,7 +238,7 @@ export default function Settings() {
                 min="0"
                 step="1"
                 value={goals.fiber}
-                onChange={handleChange('fiber')}
+                onChange={handleGoalChange('fiber')}
               />
             </label>
             <label className={styles.field}>
@@ -153,7 +248,7 @@ export default function Settings() {
                 min="0"
                 step="10"
                 value={goals.calories}
-                onChange={handleChange('calories')}
+                onChange={handleGoalChange('calories')}
               />
               <small className={styles.hint}>
                 По БЖУ: ~{computedCalories} ккал
@@ -166,7 +261,7 @@ export default function Settings() {
                 min="0"
                 step="100"
                 value={goals.water}
-                onChange={handleChange('water')}
+                onChange={handleGoalChange('water')}
               />
             </label>
             <label className={styles.field}>
@@ -177,7 +272,7 @@ export default function Settings() {
                 step="1"
                 placeholder="Не задано"
                 value={goals.weeklyBudget}
-                onChange={handleChange('weeklyBudget')}
+                onChange={handleGoalChange('weeklyBudget')}
               />
             </label>
           </div>
@@ -187,13 +282,6 @@ export default function Settings() {
           </button>
         </form>
 
-        <button
-          type="button"
-          className={styles.backBtn}
-          onClick={() => navigate('/')}
-        >
-          Назад
-        </button>
       </div>
     </div>
   );

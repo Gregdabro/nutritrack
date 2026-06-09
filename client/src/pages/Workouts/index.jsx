@@ -178,12 +178,65 @@ function AddWorkoutModal({ onClose, onCreated }) {
     perceivedEffort: '',
     notes: '',
   });
+  
+  // Exercises state: array of { name: '', sets: [{ reps: '', weightKg: '', durationSec: '' }] }
+  const [exercises, setExercises] = useState([]);
   const [saving, setSaving] = useState(false);
   const [formError, setFormError] = useState(null);
 
   function set(field, value) {
     setForm((prev) => ({ ...prev, [field]: value }));
   }
+
+  // Exercise handlers
+  function addExercise() {
+    setExercises(prev => [...prev, { name: '', sets: [{ reps: '', weightKg: '', durationSec: '' }] }]);
+  }
+
+  function updateExercise(exIdx, field, value) {
+    setExercises(prev => {
+      const next = [...prev];
+      next[exIdx] = { ...next[exIdx], [field]: value };
+      return next;
+    });
+  }
+
+  function removeExercise(exIdx) {
+    setExercises(prev => prev.filter((_, i) => i !== exIdx));
+  }
+
+  function addSet(exIdx) {
+    setExercises(prev => {
+      const next = [...prev];
+      next[exIdx].sets.push({ reps: '', weightKg: '', durationSec: '' });
+      return next;
+    });
+  }
+
+  function updateSet(exIdx, setIdx, field, value) {
+    setExercises(prev => {
+      const next = [...prev];
+      const sets = [...next[exIdx].sets];
+      sets[setIdx] = { ...sets[setIdx], [field]: value };
+      next[exIdx].sets = sets;
+      return next;
+    });
+  }
+
+  function removeSet(exIdx, setIdx) {
+    setExercises(prev => {
+      const next = [...prev];
+      next[exIdx].sets = next[exIdx].sets.filter((_, i) => i !== setIdx);
+      return next;
+    });
+  }
+
+  // Calculate calories approx based on duration & type (using 70kg as avg if not loaded)
+  // Hardcoding MET logic here just for display
+  const MET = { home: 4.5, gym: 5.5, run: 8.0, bike: 7.5, swim: 7.0, other: 4.0 };
+  const caloriesEst = form.durationMinutes 
+    ? Math.round((MET[form.type] || 4.0) * 70 * (Number(form.durationMinutes) / 60))
+    : 0;
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -198,6 +251,24 @@ function AddWorkoutModal({ onClose, onCreated }) {
     if (form.durationMinutes) payload.durationMinutes = Number(form.durationMinutes);
     if (form.perceivedEffort) payload.perceivedEffort = Number(form.perceivedEffort);
     if (form.notes.trim()) payload.notes = form.notes.trim();
+
+    // Add exercises if present and valid
+    const cleanExercises = exercises
+      .filter(ex => ex.name.trim())
+      .map(ex => ({
+        name: ex.name.trim(),
+        sets: ex.sets.map(s => {
+          const set = {};
+          if (s.reps) set.reps = Number(s.reps);
+          if (s.weightKg) set.weightKg = Number(s.weightKg);
+          if (s.durationSec) set.durationSec = Number(s.durationSec);
+          return set;
+        }).filter(s => Object.keys(s).length > 0)
+      }));
+      
+    if (cleanExercises.length > 0) {
+      payload.exercises = cleanExercises;
+    }
 
     try {
       const res = await api.workouts.create(payload);
@@ -217,22 +288,12 @@ function AddWorkoutModal({ onClose, onCreated }) {
       <div className={styles.modal} role="dialog" aria-modal="true" aria-label="Добавить тренировку">
         <div className={styles.modalHeader}>
           <span className={styles.modalTitle}>Добавить тренировку</span>
-          <button className={styles.closeBtn} onClick={onClose} aria-label="Закрыть">×</button>
+          <button type="button" className={styles.closeBtn} onClick={onClose} aria-label="Закрыть">
+            <i className="ti ti-x" aria-hidden="true" />
+          </button>
         </div>
 
         <form onSubmit={handleSubmit}>
-          <div className={styles.formGroup}>
-            <label className={styles.formLabel} htmlFor="workout-date">Дата</label>
-            <input
-              id="workout-date"
-              type="date"
-              className={styles.formInput}
-              value={form.date}
-              onChange={(e) => set('date', e.target.value)}
-              required
-            />
-          </div>
-
           <div className={styles.formGroup}>
             <label className={styles.formLabel} htmlFor="workout-name">Название *</label>
             <input
@@ -248,17 +309,19 @@ function AddWorkoutModal({ onClose, onCreated }) {
           </div>
 
           <div className={styles.formGroup}>
-            <label className={styles.formLabel} htmlFor="workout-type">Тип</label>
-            <select
-              id="workout-type"
-              className={styles.formSelect}
-              value={form.type}
-              onChange={(e) => set('type', e.target.value)}
-            >
+            <label className={styles.formLabel}>Тип</label>
+            <div className={styles.typeChips}>
               {WORKOUT_TYPES.map((t) => (
-                <option key={t.value} value={t.value}>{t.label}</option>
+                <button
+                  type="button"
+                  key={t.value}
+                  className={`${styles.typeChip} ${form.type === t.value ? styles.typeChipActive : ''}`}
+                  onClick={() => set('type', t.value)}
+                >
+                  {t.label}
+                </button>
               ))}
-            </select>
+            </div>
           </div>
 
           <div className={styles.formRow}>
@@ -290,17 +353,80 @@ function AddWorkoutModal({ onClose, onCreated }) {
               />
             </div>
           </div>
+          
+          <div className={styles.caloriesEstBox}>
+            <div className={styles.caloriesEstHeader}>Расход калорий</div>
+            <div className={styles.caloriesEstValue}>{caloriesEst} ккал</div>
+            <div className={styles.caloriesEstHint}>Норма скорр. +{caloriesEst} ккал</div>
+          </div>
+
+          <div className={styles.exercisesSection}>
+            <div className={styles.exercisesHeader}>
+              <span className={styles.formLabel}>Упражнения</span>
+              <button type="button" className={styles.addExBtn} onClick={addExercise}>
+                Упражнение
+              </button>
+            </div>
+            
+            {exercises.map((ex, exIdx) => (
+              <div key={exIdx} className={styles.exCard}>
+                <div className={styles.exTopRow}>
+                  <input
+                    type="text"
+                    className={styles.exNameInput}
+                    placeholder="Название упражнения"
+                    value={ex.name}
+                    onChange={(e) => updateExercise(exIdx, 'name', e.target.value)}
+                    required
+                  />
+                  <button type="button" className={styles.removeBtn} onClick={() => removeExercise(exIdx)}>
+                    <i className="ti ti-trash" aria-hidden="true" />
+                  </button>
+                </div>
+                
+                <div className={styles.setsList}>
+                  {ex.sets.map((set, setIdx) => (
+                    <div key={setIdx} className={styles.setRow}>
+                      <span className={styles.setLabel}>Подход {setIdx + 1}</span>
+                      <input
+                        type="number"
+                        className={styles.setInput}
+                        placeholder="Повт."
+                        value={set.reps}
+                        onChange={(e) => updateSet(exIdx, setIdx, 'reps', e.target.value)}
+                      />
+                      <input
+                        type="number"
+                        className={styles.setInput}
+                        placeholder="Вес (кг)"
+                        value={set.weightKg}
+                        onChange={(e) => updateSet(exIdx, setIdx, 'weightKg', e.target.value)}
+                      />
+                      {ex.sets.length > 1 && (
+                        <button type="button" className={styles.removeBtn} onClick={() => removeSet(exIdx, setIdx)}>
+                          <i className="ti ti-x" aria-hidden="true" />
+                        </button>
+                      )}
+                    </div>
+                  ))}
+                  <button type="button" className={styles.addSetTextBtn} onClick={() => addSet(exIdx)}>
+                    Подход
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
 
           <div className={styles.formGroup}>
             <label className={styles.formLabel} htmlFor="workout-notes">Заметки</label>
-            <input
+            <textarea
               id="workout-notes"
-              type="text"
-              className={styles.formInput}
-              placeholder="Необязательно"
+              className={styles.formTextarea}
+              placeholder="Ощущения, особенности тренировки..."
               value={form.notes}
               onChange={(e) => set('notes', e.target.value)}
               maxLength={1000}
+              rows={3}
             />
           </div>
 
@@ -309,7 +435,7 @@ function AddWorkoutModal({ onClose, onCreated }) {
           <div className={styles.modalFooter}>
             <button type="button" className={styles.cancelBtn} onClick={onClose}>Отмена</button>
             <button type="submit" className={styles.submitBtn} disabled={saving || !form.name.trim()}>
-              {saving ? 'Сохраняю...' : 'Сохранить'}
+              {saving ? 'Сохраняю...' : 'Сохранить тренировку'}
             </button>
           </div>
         </form>

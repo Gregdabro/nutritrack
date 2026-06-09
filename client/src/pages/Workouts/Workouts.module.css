@@ -278,3 +278,211 @@
   color: var(--nt-coral);
   margin-top: 10px;
 }
+
+/* ── Type Chips ────────────────────────────────────────── */
+.typeChips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.typeChip {
+  background: var(--nt-surface2);
+  border: 1px solid transparent;
+  color: var(--nt-text2);
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.typeChip:hover {
+  background: var(--nt-surface);
+  border-color: var(--nt-border2);
+}
+
+.typeChipActive {
+  background: var(--nt-green-bg);
+  color: var(--nt-green);
+  border-color: var(--nt-green-mid);
+  font-weight: 500;
+}
+
+/* ── Textarea ────────────────────────────────────────── */
+.formTextarea {
+  width: 100%;
+  border: 0.5px solid var(--nt-border2);
+  border-radius: 8px;
+  padding: 8px 10px;
+  font-size: 13px;
+  font-family: inherit;
+  color: var(--nt-text);
+  background: var(--nt-surface);
+  outline: none;
+  resize: vertical;
+  min-height: 60px;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.formTextarea:focus {
+  border-color: var(--nt-green-mid);
+  box-shadow: 0 0 0 2px var(--nt-green-bg);
+}
+
+/* ── Calories Estimate ────────────────────────────────────────── */
+.caloriesEstBox {
+  background: var(--nt-green-bg);
+  border: 1px solid rgba(99, 153, 34, 0.2);
+  border-radius: 8px;
+  padding: 12px 16px;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+}
+
+.caloriesEstHeader {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--nt-green);
+  flex: 1;
+}
+
+.caloriesEstValue {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--nt-green);
+  margin-right: 12px;
+}
+
+.caloriesEstHint {
+  font-size: 11px;
+  color: var(--nt-green);
+  opacity: 0.8;
+}
+
+/* ── Exercises Section ────────────────────────────────────────── */
+.exercisesSection {
+  margin-bottom: 16px;
+  border-top: 1px solid var(--nt-border);
+  padding-top: 16px;
+}
+
+.exercisesHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.addExBtn {
+  background: var(--nt-surface2);
+  border: 1px solid var(--nt-border2);
+  color: var(--nt-text);
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.addExBtn:hover {
+  background: var(--nt-surface);
+  border-color: var(--nt-text3);
+}
+
+.exCard {
+  background: var(--nt-surface);
+  border: 1px solid var(--nt-border);
+  border-radius: 8px;
+  padding: 12px;
+  margin-bottom: 12px;
+}
+
+.exTopRow {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.exNameInput {
+  flex: 1;
+  border: none;
+  border-bottom: 1px solid var(--nt-border2);
+  padding: 4px 0;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--nt-text);
+  background: transparent;
+  outline: none;
+}
+
+.exNameInput:focus {
+  border-bottom-color: var(--nt-green-mid);
+}
+
+.removeBtn {
+  background: none;
+  border: none;
+  color: var(--nt-text3);
+  cursor: pointer;
+  padding: 4px;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.15s;
+}
+
+.removeBtn:hover {
+  color: var(--nt-coral);
+}
+
+.setsList {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.setRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.setLabel {
+  font-size: 12px;
+  color: var(--nt-text2);
+  width: 65px;
+}
+
+.setInput {
+  width: 70px;
+  border: 1px solid var(--nt-border2);
+  border-radius: 4px;
+  padding: 4px 8px;
+  font-size: 13px;
+  outline: none;
+}
+
+.setInput:focus {
+  border-color: var(--nt-green-mid);
+}
+
+.addSetTextBtn {
+  background: none;
+  border: none;
+  color: var(--nt-blue-mid);
+  font-size: 12px;
+  font-weight: 500;
+  text-align: left;
+  cursor: pointer;
+  padding: 4px 0;
+  margin-top: 4px;
+  align-self: flex-start;
+}
+
+.addSetTextBtn:hover {
+  text-decoration: underline;
+}
