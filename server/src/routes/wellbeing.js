@@ -14,19 +14,19 @@ router.get('/', async (req, res, next) => {
     const { date, startDate, endDate } = req.query;
 
     if (date) {
-      const log = await WellbeingLog.findOne({ userId: req.user._id, date });
+      const log = await WellbeingLog.findOne({ userId: req.user.userId, date });
       return res.json(log);
     }
 
     if (startDate && endDate) {
       const logs = await WellbeingLog.find({
-        userId: req.user._id,
+        userId: req.user.userId,
         date: { $gte: startDate, $lte: endDate },
       }).sort({ date: 1 });
       return res.json(logs);
     }
 
-    const logs = await WellbeingLog.find({ userId: req.user._id }).sort({ date: 1 });
+    const logs = await WellbeingLog.find({ userId: req.user.userId }).sort({ date: 1 });
     res.json(logs);
   } catch (err) {
     next(err);
@@ -37,20 +37,20 @@ router.post('/', validate(CreateWellbeingSchema), async (req, res, next) => {
   try {
     const { date } = req.body;
 
-    const existing = await WellbeingLog.findOne({ userId: req.user._id, date });
+    const existing = await WellbeingLog.findOne({ userId: req.user.userId, date });
     if (existing) {
-      throw new AppError('Запись за эту дату уже существует', 409, 'ALREADY_EXISTS');
+      throw new AppError('ALREADY_EXISTS', 'Запись за эту дату уже существует', 409);
     }
 
     const log = await WellbeingLog.create({
-      userId: req.user._id,
+      userId: req.user.userId,
       ...req.body,
     });
 
     res.status(201).json(log);
   } catch (err) {
     if (err.code === 11000) {
-      return next(new AppError('Запись за эту дату уже существует', 409, 'ALREADY_EXISTS'));
+      return next(new AppError('ALREADY_EXISTS', 'Запись за эту дату уже существует', 409));
     }
     next(err);
   }
@@ -63,7 +63,7 @@ router.put('/:id', validate(CreateWellbeingSchema), async (req, res, next) => {
       throw new NotFoundError('WellbeingLog');
     }
 
-    if (log.userId.toString() !== req.user._id.toString()) {
+    if (log.userId.toString() !== req.user.userId.toString()) {
       throw new AuthorizationError('Нет прав для изменения этой записи');
     }
 

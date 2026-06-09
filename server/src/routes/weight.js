@@ -22,7 +22,7 @@ router.get('/', async (req, res, next) => {
     const limit = parseInt(req.query.limit, 10) || 30;
     
     // Запрашиваем limit + 6, чтобы окно MA было полным для возвращаемых записей
-    const rawDesc = await WeightLog.find({ userId: req.user._id })
+    const rawDesc = await WeightLog.find({ userId: req.user.userId })
       .sort({ date: -1 })
       .limit(limit + 6);
 
@@ -31,10 +31,9 @@ router.get('/', async (req, res, next) => {
     const withAvg = calcMovingAverage(raw);
     
     // Возвращаем только нужные limit записей
-    const logs = raw.slice(-limit);
-    const movingAverage = withAvg.slice(-limit);
+    const trimmed = withAvg.slice(-limit);
 
-    res.json({ logs, movingAverage });
+    res.json({ logs: raw.slice(-limit), movingAverage: trimmed });
   } catch (err) {
     next(err);
   }
@@ -45,9 +44,9 @@ router.post('/', validate(CreateWeightSchema), async (req, res, next) => {
     const { date, weightKg } = req.body;
 
     const log = await WeightLog.findOneAndUpdate(
-      { userId: req.user._id, date },
+      { userId: req.user.userId, date },
       { weightKg, loggedAt: new Date() },
-      { new: true, upsert: true, setDefaultsOnInsert: true }
+      { upsert: true, new: true, setDefaultsOnInsert: true }
     );
 
     res.status(201).json(log);
@@ -63,7 +62,7 @@ router.put('/:id', validate(CreateWeightSchema), async (req, res, next) => {
       throw new NotFoundError('WeightLog');
     }
 
-    if (log.userId.toString() !== req.user._id.toString()) {
+    if (log.userId.toString() !== req.user.userId.toString()) {
       throw new AuthorizationError('Нет прав для изменения этой записи');
     }
 
