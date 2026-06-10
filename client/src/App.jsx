@@ -1,5 +1,7 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
 import useAuthStore from './store/authStore';
+import Dashboard from './pages/Dashboard';
+import Recipes from './pages/Recipes';
 import Layout from './components/Layout';
 import Login from './pages/Login';
 import LoginToken from './pages/LoginToken';
@@ -16,9 +18,6 @@ function ProtectedRoute({ children }) {
   if (!token) return <Navigate to="/login" replace />;
   return children;
 }
-
-import Dashboard from './pages/Dashboard';
-import Recipes from './pages/Recipes';
 
 export default function App() {
   return (
