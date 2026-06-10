@@ -17,14 +17,8 @@ function ProtectedRoute({ children }) {
   return children;
 }
 
-function Dashboard() {
-  return (
-    <div style={{ padding: 40, textAlign: 'center' }}>
-      <h1>NutriTrack</h1>
-      <p>Dashboard будет здесь (Спринт 6)</p>
-    </div>
-  );
-}
+import Dashboard from './pages/Dashboard';
+import Recipes from './pages/Recipes';
 
 export default function App() {
   return (
@@ -43,6 +37,7 @@ export default function App() {
         <Route path="/" element={<Dashboard />} />
         <Route path="/settings" element={<Settings />} />
         <Route path="/products" element={<Products />} />
+        <Route path="/recipes" element={<Recipes />} />
         <Route path="/diary" element={<Diary />} />
         <Route path="/workouts" element={<Workouts />} />
         <Route path="/workouts/:id" element={<WorkoutDetail />} />

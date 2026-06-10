@@ -13,6 +13,7 @@ const NAV_ITEMS = [
   ]},
   { section: 'Данные', items: [
     { path: '/products', icon: 'ti-eggs',     label: 'Продукты' },
+    { path: '/recipes',  icon: 'ti-receipt',  label: 'Рецепты' },
     { path: '/settings', icon: 'ti-settings', label: 'Настройки' },
   ]},
 ];
@@ -24,6 +25,7 @@ const PAGE_TITLES = {
   '/wellbeing': 'Самочувствие',
   '/weight':    'Вес',
   '/products':  'База продуктов',
+  '/recipes':   'Рецепты',
   '/settings':  'Настройки',
 };
 
