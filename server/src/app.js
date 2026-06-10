@@ -55,18 +55,18 @@ async function main() {
       } catch (webhookErr) {
         logger.error({ err: webhookErr }, 'Webhook setup failed, falling back to polling');
         await bot.telegram.deleteWebhook({ drop_pending_updates: true });
-        bot.launch();
+        bot.launch().catch(err => logger.error({ err: err.message }, 'Bot polling error'));
         logger.info('Bot started in polling mode (fallback)');
       }
     } else {
       logger.warn('No Railway domain found, starting bot in polling mode');
       await bot.telegram.deleteWebhook({ drop_pending_updates: true });
-      bot.launch();
+      bot.launch().catch(err => logger.error({ err: err.message }, 'Bot polling error'));
       logger.info('Bot started in polling mode');
     }
   } else {
     await bot.telegram.deleteWebhook({ drop_pending_updates: true });
-    bot.launch();
+    bot.launch().catch(err => logger.error({ err: err.message }, 'Bot polling error'));
     logger.info('Bot started in polling mode');
   }
 
