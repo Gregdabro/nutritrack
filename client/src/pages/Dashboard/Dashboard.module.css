@@ -1,0 +1,186 @@
+.page {
+  padding: 16px;
+  padding-bottom: 80px; /* space for bottom nav */
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 24px;
+}
+
+.greeting {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--nt-text);
+  margin: 0;
+}
+
+.date {
+  font-size: 14px;
+  color: var(--nt-text2);
+  margin-top: 4px;
+}
+
+.addButton {
+  background: var(--nt-green-mid);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 16px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.card {
+  background: var(--nt-surface);
+  border: 0.5px solid var(--nt-border);
+  border-radius: 14px;
+  padding: 16px;
+  margin-bottom: 16px;
+}
+
+.sectionTitle {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--nt-text);
+  margin-top: 0;
+  margin-bottom: 16px;
+}
+
+.ringSection {
+  display: flex;
+  gap: 24px;
+  align-items: center;
+}
+
+.macros {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.quickActions {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.actionBtn {
+  flex: 1;
+  background: var(--nt-surface);
+  border: 0.5px solid var(--nt-border);
+  border-radius: 10px;
+  padding: 12px 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  color: var(--nt-text);
+  font-weight: 500;
+  font-size: 14px;
+}
+
+.actionIcon {
+  font-size: 24px;
+  color: var(--nt-green-mid);
+}
+
+.mealsList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.repeatBox {
+  margin-top: 16px;
+  background: var(--nt-green-bg);
+  border-radius: 10px;
+  padding: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.repeatText {
+  color: var(--nt-green);
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.repeatBtn {
+  background: var(--nt-green-mid);
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 6px 12px;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.miniCards {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.miniCard {
+  background: var(--nt-surface);
+  border: 0.5px solid var(--nt-border);
+  border-radius: 10px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 4px;
+}
+
+.miniLabel {
+  font-size: 12px;
+  color: var(--nt-text2);
+}
+
+.miniValue {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--nt-text);
+}
+
+.emptyState {
+  color: var(--nt-text3);
+  font-size: 14px;
+  text-align: center;
+  padding: 12px 0;
+}
+
+.skeleton {
+  background: var(--nt-surface2);
+  border-radius: 8px;
+  animation: pulse 1.5s infinite;
+}
+
+.skeletonRing {
+  width: 140px;
+  height: 140px;
+  border-radius: 50%;
+}
+
+.skeletonBar {
+  height: 8px;
+  width: 100%;
+  margin-top: 4px;
+}
+
+@keyframes pulse {
+  0% { opacity: 0.6; }
+  50% { opacity: 0.3; }
+  100% { opacity: 0.6; }
+}

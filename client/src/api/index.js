@@ -71,4 +71,9 @@ api.weight = {
   update: (id, data)   => api.put(`/weight/${id}`, data),
 };
 
+api.dashboard = {
+  today: (params) => api.get('/dashboard/today', { params }), // params: { date }
+  week:  (params) => api.get('/dashboard/week', { params }),  // params: { startDate }
+};
+
 export default api;
