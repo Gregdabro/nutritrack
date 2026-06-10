@@ -1,0 +1,216 @@
+const { Router } = require('express');
+const auth = require('../middleware/auth');
+const Goal = require('../models/Goal');
+const FoodLog = require('../models/FoodLog');
+const Workout = require('../models/Workout');
+const WellbeingLog = require('../models/WellbeingLog');
+const WeightLog = require('../models/WeightLog');
+const { calcTotals } = require('../services/nutritionCalc');
+const logger = require('../logger');
+
+const router = Router();
+router.use(auth);
+
+// GET /api/dashboard/today
+router.get('/today', async (req, res, next) => {
+  try {
+    const userId = req.user.userId;
+    // Default to today's date if not passed, but usually frontend just asks for /today
+    // We can use a query param ?date=YYYY-MM-DD, or just generate today in user's timezone.
+    // For simplicity, let's use the date query param or generate UTC today if not provided.
+    const date = req.query.date || new Date().toISOString().split('T')[0];
+    
+    // Fetch all related documents for today
+    const [goal, foodLogs, workout, wellbeing, weight] = await Promise.all([
+      Goal.findOne({ userId }).lean(),
+      FoodLog.find({ userId, date }).sort({ loggedAt: -1 }).lean(),
+      Workout.findOne({ userId, date }).lean(),
+      WellbeingLog.findOne({ userId, date }).lean(),
+      WeightLog.findOne({ userId, date }).lean(),
+    ]);
+
+    // 1. Calculate foodTotals
+    // foodLogs is an array of meals. We need to sum up their totals.
+    const foodTotals = {
+      protein: 0, fat: 0, carbs: 0, fiber: 0, calories: 0, costEur: 0
+    };
+    
+    for (const log of foodLogs) {
+      if (log.totals) {
+        foodTotals.protein += log.totals.protein || 0;
+        foodTotals.fat += log.totals.fat || 0;
+        foodTotals.carbs += log.totals.carbs || 0;
+        foodTotals.fiber += log.totals.fiber || 0;
+        foodTotals.calories += log.totals.calories || 0;
+        if (log.totals.costEur != null) {
+          foodTotals.costEur += log.totals.costEur;
+        }
+      }
+    }
+
+    // 2. Calculate remaining (goals - foodTotals, >= 0)
+    const remaining = {
+      protein: Math.max(0, (goal?.protein || 0) - foodTotals.protein),
+      fat: Math.max(0, (goal?.fat || 0) - foodTotals.fat),
+      carbs: Math.max(0, (goal?.carbs || 0) - foodTotals.carbs),
+      fiber: Math.max(0, (goal?.fiber || 0) - foodTotals.fiber),
+      calories: Math.max(0, (goal?.calories || 0) - foodTotals.calories)
+    };
+
+    // 3. waterMl
+    // TODO: waterMl — учёт воды не реализован в MVP, возвращаем 0
+    const waterMl = 0;
+
+    // 4. recentMeals (last 3 FoodLog entries)
+    // Since we already sorted by loggedAt: -1 above, we just take first 3.
+    const recentMeals = foodLogs.slice(0, 3);
+
+    // 5. repeatSuggestion (yesterday's breakfast if today's breakfast is empty)
+    let repeatSuggestion = null;
+    const hasBreakfastToday = foodLogs.some(log => log.mealType === 'breakfast');
+    
+    if (!hasBreakfastToday) {
+      const yesterdayObj = new Date(date);
+      yesterdayObj.setDate(yesterdayObj.getDate() - 1);
+      const yesterdayDateStr = yesterdayObj.toISOString().split('T')[0];
+
+      const yesterdayBreakfast = await FoodLog.findOne({ 
+        userId, 
+        date: yesterdayDateStr, 
+        mealType: 'breakfast' 
+      }).lean();
+
+      if (yesterdayBreakfast && yesterdayBreakfast.items && yesterdayBreakfast.items.length > 0) {
+        repeatSuggestion = {
+          mealType: 'breakfast',
+          items: yesterdayBreakfast.items
+        };
+      }
+    }
+
+    res.json({
+      date,
+      goals: goal || null,
+      foodTotals,
+      remaining,
+      workout: workout || null,
+      wellbeing: wellbeing || null,
+      weight: weight || null,
+      waterMl,
+      recentMeals,
+      repeatSuggestion
+    });
+
+  } catch (err) {
+    next(err);
+  }
+});
+
+// GET /api/dashboard/week
+router.get('/week', async (req, res, next) => {
+  try {
+    const userId = req.user.userId;
+    // Calculate past 7 days based on startDate or today
+    const queryDate = req.query.startDate || new Date().toISOString().split('T')[0];
+    const endDate = new Date(queryDate);
+    
+    const daysArr = [];
+    const datesToQuery = [];
+
+    for (let i = 0; i < 7; i++) {
+      const d = new Date(endDate);
+      d.setDate(d.getDate() - i);
+      const dStr = d.toISOString().split('T')[0];
+      datesToQuery.push(dStr);
+    }
+    
+    datesToQuery.reverse(); // from oldest to newest
+
+    const [goal, foodLogs, workouts, wellbeings, weights] = await Promise.all([
+      Goal.findOne({ userId }).lean(),
+      FoodLog.find({ userId, date: { $in: datesToQuery } }).lean(),
+      Workout.find({ userId, date: { $in: datesToQuery } }).lean(),
+      WellbeingLog.find({ userId, date: { $in: datesToQuery } }).lean(),
+      WeightLog.find({ userId, date: { $in: datesToQuery } }).lean(),
+    ]);
+
+    let totalProtein = 0, totalFat = 0, totalCarbs = 0, totalFiber = 0, totalCalories = 0, weeklyFoodCost = 0;
+    let daysWithFood = 0;
+    let sumProteinPct = 0, sumFatPct = 0, sumCarbsPct = 0, sumFiberPct = 0, sumCaloriesPct = 0;
+
+    const days = datesToQuery.map(dStr => {
+      // Find data for this date
+      const dayFoods = foodLogs.filter(f => f.date === dStr);
+      const dayWorkout = workouts.find(w => w.date === dStr);
+      const dayWellbeing = wellbeings.find(w => w.date === dStr);
+      const dayWeight = weights.find(w => w.date === dStr);
+
+      const foodTotals = { protein: 0, fat: 0, carbs: 0, fiber: 0, calories: 0, costEur: 0 };
+      
+      for (const f of dayFoods) {
+        if (f.totals) {
+          foodTotals.protein += f.totals.protein || 0;
+          foodTotals.fat += f.totals.fat || 0;
+          foodTotals.carbs += f.totals.carbs || 0;
+          foodTotals.fiber += f.totals.fiber || 0;
+          foodTotals.calories += f.totals.calories || 0;
+          if (f.totals.costEur != null) foodTotals.costEur += f.totals.costEur;
+        }
+      }
+
+      if (dayFoods.length > 0) {
+        daysWithFood++;
+        totalProtein += foodTotals.protein;
+        totalFat += foodTotals.fat;
+        totalCarbs += foodTotals.carbs;
+        totalFiber += foodTotals.fiber;
+        totalCalories += foodTotals.calories;
+        weeklyFoodCost += foodTotals.costEur;
+
+        if (goal) {
+          sumProteinPct += Math.min(100, Math.round((foodTotals.protein / goal.protein) * 100) || 0);
+          sumFatPct += Math.min(100, Math.round((foodTotals.fat / goal.fat) * 100) || 0);
+          sumCarbsPct += Math.min(100, Math.round((foodTotals.carbs / goal.carbs) * 100) || 0);
+          sumFiberPct += Math.min(100, Math.round((foodTotals.fiber / goal.fiber) * 100) || 0);
+          sumCaloriesPct += Math.min(100, Math.round((foodTotals.calories / goal.calories) * 100) || 0);
+        }
+      }
+
+      return {
+        date: dStr,
+        foodTotals,
+        hasWorkout: !!dayWorkout,
+        wellbeing: dayWellbeing || null,
+        weight: dayWeight || null
+      };
+    });
+
+    const avgNutrients = {
+      protein: daysWithFood ? Math.round(totalProtein / daysWithFood) : 0,
+      fat: daysWithFood ? Math.round(totalFat / daysWithFood) : 0,
+      carbs: daysWithFood ? Math.round(totalCarbs / daysWithFood) : 0,
+      fiber: daysWithFood ? Math.round(totalFiber / daysWithFood) : 0,
+      calories: daysWithFood ? Math.round(totalCalories / daysWithFood) : 0,
+    };
+
+    const goalsCompletion = {
+      protein: daysWithFood ? Math.round(sumProteinPct / daysWithFood) : 0,
+      fat: daysWithFood ? Math.round(sumFatPct / daysWithFood) : 0,
+      carbs: daysWithFood ? Math.round(sumCarbsPct / daysWithFood) : 0,
+      fiber: daysWithFood ? Math.round(sumFiberPct / daysWithFood) : 0,
+      calories: daysWithFood ? Math.round(sumCaloriesPct / daysWithFood) : 0,
+    };
+
+    res.json({
+      days,
+      weeklyFoodCost: parseFloat(weeklyFoodCost.toFixed(2)),
+      avgNutrients,
+      goalsCompletion
+    });
+
+  } catch (err) {
+    next(err);
+  }
+});
+
+module.exports = router;
