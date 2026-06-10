@@ -151,8 +151,8 @@ export default function Dashboard() {
           <div className={styles.mealsList}>
             {recentMeals.map((meal, idx) => (
               <FoodEntry key={idx} item={{
-                name: meal.items.map(i => i.name).join(', '),
-                grams: meal.items.reduce((acc, i) => acc + (i.grams || 0), 0),
+                name: (meal.items || []).map(i => i.name).join(', ') || 'Приём пищи',
+                grams: (meal.items || []).reduce((acc, i) => acc + (i.grams || 0), 0),
                 calories: meal.totals?.calories || 0,
                 protein: meal.totals?.protein || 0,
                 fat: meal.totals?.fat || 0,

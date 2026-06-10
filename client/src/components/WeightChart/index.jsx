@@ -12,7 +12,7 @@ export default function WeightChart({ data = [] }) {
 
   return (
     <div style={{ width: '100%', height: 200 }}>
-      <ResponsiveContainer>
+      <ResponsiveContainer width="100%" height="100%">
         <LineChart data={data} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
           <XAxis 
             dataKey="date" 
