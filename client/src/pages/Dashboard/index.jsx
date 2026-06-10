@@ -6,6 +6,7 @@ import CalorieRing from '../../components/CalorieRing';
 import NutrientBar from '../../components/NutrientBar';
 import FoodEntry from '../../components/FoodEntry';
 import WeightChart from '../../components/WeightChart';
+import QuickAdd from '../../components/QuickAdd';
 import api from '../../api';
 import styles from './Dashboard.module.css';
 
@@ -14,6 +15,7 @@ export default function Dashboard() {
   const user = useAuthStore(state => state.user);
   const { todayData, weekData, fetchToday, fetchWeek, isLoadingToday, isLoadingWeek } = useDashboardStore();
   const [repeating, setRepeating] = useState(false);
+  const [quickAddOpen, setQuickAddOpen] = useState(false);
 
   useEffect(() => {
     fetchToday();
@@ -97,7 +99,7 @@ export default function Dashboard() {
           <h1 className={styles.greeting}>Привет, {user?.firstName || 'Друг'}!</h1>
           <div className={styles.date}>{capitalize(todayStr)}</div>
         </div>
-        <button className={styles.addButton} onClick={() => navigate('/diary')}>
+        <button className={styles.addButton} onClick={() => setQuickAddOpen(true)}>
           <i className="ti ti-plus" /> Добавить
         </button>
       </header>
@@ -131,7 +133,7 @@ export default function Dashboard() {
       </section>
 
       <section className={styles.quickActions}>
-        <button className={styles.actionBtn} onClick={() => navigate('/diary')}>
+        <button className={styles.actionBtn} onClick={() => setQuickAddOpen(true)}>
           <i className={`ti ti-apple ${styles.actionIcon}`} />
           <span>+ Еда</span>
         </button>
@@ -203,6 +205,17 @@ export default function Dashboard() {
           <div className={styles.emptyState}>Добавьте вес, чтобы увидеть график</div>
         )}
       </section>
+
+      {quickAddOpen && (
+        <QuickAdd
+          date={new Date().toISOString().split('T')[0]}
+          onClose={() => setQuickAddOpen(false)}
+          onAdded={() => {
+            fetchToday();
+            fetchWeek();
+          }}
+        />
+      )}
     </div>
   );
 }

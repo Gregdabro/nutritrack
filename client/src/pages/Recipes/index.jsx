@@ -41,7 +41,7 @@ export default function Recipes() {
 
   const fetchProducts = async () => {
     try {
-      const res = await api.products.list({ limit: 1000 });
+      const res = await api.products.list({ limit: 100 });
       setProducts(res.data.products || []);
     } catch (err) {
       console.error('Failed to fetch products', err);
