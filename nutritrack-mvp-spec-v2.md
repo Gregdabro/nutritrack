@@ -1695,12 +1695,12 @@ if (process.env.NODE_ENV === 'production') {
 
 ### Спринт 5 — Самочувствие и вес (3-4 дня)
 
-- [ ] Mongoose схемы: WellbeingLog, WeightLog
-- [ ] CRUD /wellbeing, /weight
-- [ ] Zod-схемы: weightSchemas.js, wellbeingSchemas.js
-- [ ] Telegram-бот: /feel, /weight
-- [ ] Страница /wellbeing — тепловая карта
-- [ ] Страница /weight — график со скользящим средним
+- [x] Mongoose схемы: WellbeingLog, WeightLog
+- [x] CRUD /wellbeing, /weight
+- [x] Zod-схемы: weightSchemas.js, wellbeingSchemas.js
+- [x] Telegram-бот: /feel, /weight
+- [x] Страница /wellbeing — тепловая карта
+- [x] Страница /weight — график со скользящим средним
 
 ### Спринт 6 — Dashboard и Recipes (4-6 дней)
 
