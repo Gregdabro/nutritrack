@@ -150,14 +150,14 @@ export default function Dashboard() {
         {recentMeals && recentMeals.length > 0 ? (
           <div className={styles.mealsList}>
             {recentMeals.map((meal, idx) => (
-              <FoodEntry key={idx} item={{
-                name: (meal.items || []).map(i => i.name).join(', ') || 'Приём пищи',
-                grams: (meal.items || []).reduce((acc, i) => acc + (i.grams || 0), 0),
-                calories: meal.totals?.calories || 0,
-                protein: meal.totals?.protein || 0,
-                fat: meal.totals?.fat || 0,
-                carbs: meal.totals?.carbs || 0,
-              }} />
+              <FoodEntry 
+                key={meal._id || idx} 
+                entry={meal} 
+                onDelete={() => {
+                  fetchToday();
+                  fetchWeek();
+                }} 
+              />
             ))}
           </div>
         ) : (

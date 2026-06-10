@@ -17,7 +17,7 @@ export default function FoodEntry({ entry, onDelete }) {
 
   return (
     <>
-      {entry.items.map((item, idx) => (
+      {(entry.items || []).map((item, idx) => (
         <div key={idx} className={styles.foodItem}>
           <div className={styles.foodName}>
             {item.name}
