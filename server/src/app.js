@@ -54,15 +54,18 @@ async function main() {
         logger.info({ hostname, webhookPath }, 'Bot webhook configured');
       } catch (webhookErr) {
         logger.error({ err: webhookErr }, 'Webhook setup failed, falling back to polling');
+        await bot.telegram.deleteWebhook({ drop_pending_updates: true });
         bot.launch();
         logger.info('Bot started in polling mode (fallback)');
       }
     } else {
       logger.warn('No Railway domain found, starting bot in polling mode');
+      await bot.telegram.deleteWebhook({ drop_pending_updates: true });
       bot.launch();
       logger.info('Bot started in polling mode');
     }
   } else {
+    await bot.telegram.deleteWebhook({ drop_pending_updates: true });
     bot.launch();
     logger.info('Bot started in polling mode');
   }
@@ -71,11 +74,19 @@ async function main() {
     logger.info({ port }, 'Server started');
   });
 
-  async function shutdown(signal) {
+  function shutdown(signal) {
     logger.info({ signal }, 'Shutting down');
     bot.stop(signal);
-    server.close();
-    process.exit(0);
+    server.close(() => {
+      logger.info('HTTP server closed');
+      process.exit(0);
+    });
+    
+    // Force close after 5 seconds if graceful shutdown fails
+    setTimeout(() => {
+      logger.warn('Could not close connections in time, forcefully shutting down');
+      process.exit(1);
+    }, 5000).unref();
   }
 
   process.once('SIGTERM', () => shutdown('SIGTERM'));
