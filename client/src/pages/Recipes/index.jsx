@@ -8,6 +8,7 @@ export default function Recipes() {
   const [products, setProducts] = useState([]);
   const [selectedRecipe, setSelectedRecipe] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [addingToDiary, setAddingToDiary] = useState(false);
   
   const { register, control, handleSubmit, reset } = useForm({
     defaultValues: {
@@ -66,6 +67,31 @@ export default function Recipes() {
       fetchRecipes();
     } catch (err) {
       console.error('Failed to create recipe', err);
+    }
+  };
+
+  const handleAddToDiary = async () => {
+    if (!selectedRecipe || addingToDiary) return;
+    setAddingToDiary(true);
+    try {
+      const today = new Date().toISOString().split('T')[0];
+      const items = selectedRecipe.ingredients.map(ing => ({
+        productId: ing.productId,
+        name: ing.productName,
+        grams: Math.round(ing.grams / selectedRecipe.totalServings)
+      }));
+
+      await api.foodLogs.create({
+        date: today,
+        mealType: 'snack', // default mealType
+        items
+      });
+      alert('Рецепт успешно добавлен в дневник (как перекус)!');
+    } catch (err) {
+      console.error('Failed to add to diary', err);
+      alert('Ошибка при добавлении в дневник');
+    } finally {
+      setAddingToDiary(false);
     }
   };
 
@@ -142,9 +168,12 @@ export default function Recipes() {
                 </div>
               </div>
 
-              {/* TODO: Add to diary logic if needed */}
-              <button className={styles.addToDiaryBtn}>
-                <i className="ti ti-plus" /> В дневник (1 порция)
+              <button 
+                className={styles.addToDiaryBtn} 
+                onClick={handleAddToDiary}
+                disabled={addingToDiary}
+              >
+                <i className="ti ti-plus" /> {addingToDiary ? 'Добавляю...' : 'В дневник (1 порция)'}
               </button>
             </div>
           ) : (

@@ -90,23 +90,65 @@ async function foodHandler(ctx) {
   for (const item of parsed) {
     // Try to find matching product via text search
     let product = null;
+    let recipe = null;
+    
     try {
       product = await Product.findOne({
         userId: user._id,
         $text: { $search: item.name },
       }).lean();
     } catch {
-      // text search may fail if index not ready — continue without match
+      // text search may fail if index not ready
+    }
+
+    if (!product) {
+      try {
+        const Recipe = require('../../models/Recipe');
+        recipe = await Recipe.findOne({
+          userId: user._id,
+          name: { $regex: new RegExp(`^${item.name}$`, 'i') }
+        }).lean();
+        
+        if (!recipe) {
+          recipe = await Recipe.findOne({
+            userId: user._id,
+            name: { $regex: new RegExp(item.name, 'i') }
+          }).lean();
+        }
+      } catch {}
     }
 
     if (product && !item.uncertain) {
-      const nutrients = calcItemNutrients(product, item.grams);
+      const grams = item.grams || (item.servings ? item.servings * 100 : 100);
+      const nutrients = calcItemNutrients(product, grams);
       enrichedItems.push({
         productId: product._id,
         name:      product.name,
-        grams:     item.grams,
+        grams,
         ...nutrients,
       });
+    } else if (recipe && !item.uncertain) {
+      const totalRecipeGrams = recipe.ingredients.reduce((acc, i) => acc + (i.grams || 0), 0);
+      let scale = 1 / recipe.totalServings;
+      if (item.servings) {
+        scale = item.servings / recipe.totalServings;
+      } else if (item.grams && totalRecipeGrams > 0) {
+        scale = item.grams / totalRecipeGrams;
+      }
+      
+      for (const ing of recipe.ingredients) {
+        const ingGrams = Math.round(ing.grams * scale);
+        const ingProduct = await Product.findById(ing.productId).lean();
+        if (ingProduct) {
+          const nutrients = calcItemNutrients(ingProduct, ingGrams);
+          enrichedItems.push({
+            productId: ingProduct._id,
+            name:      ing.productName || ingProduct.name,
+            grams:     ingGrams,
+            ...nutrients,
+          });
+        }
+      }
     } else {
       // No product match or uncertain — ask user instead of saving zeros
       unrecognized.push(item);
