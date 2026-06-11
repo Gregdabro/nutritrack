@@ -1,8 +1,8 @@
 const express = require('express');
 const { z } = require('zod');
 const User = require('../models/User');
-const { auth } = require('../middleware/auth');
-const validate = require('../middleware/validate');
+const auth = require('../middleware/auth');
+const { validate } = require('../middleware/validate');
 
 const router = express.Router();
 
@@ -16,7 +16,7 @@ const RemindersSchema = z.object({
 // GET /api/settings/reminders
 router.get('/reminders', auth, async (req, res, next) => {
   try {
-    const user = await User.findById(req.user._id).lean();
+    const user = await User.findById(req.user.userId).lean();
     const reminders = user.reminders || {
       morningEnabled: true,
       morningTime: '08:00',
@@ -30,10 +30,10 @@ router.get('/reminders', auth, async (req, res, next) => {
 });
 
 // PUT /api/settings/reminders
-router.put('/reminders', auth, validate({ body: RemindersSchema }), async (req, res, next) => {
+router.put('/reminders', auth, validate(RemindersSchema), async (req, res, next) => {
   try {
     const user = await User.findByIdAndUpdate(
-      req.user._id,
+      req.user.userId,
       { $set: { reminders: req.body } },
       { new: true }
     ).lean();
