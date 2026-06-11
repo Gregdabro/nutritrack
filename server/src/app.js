@@ -15,6 +15,8 @@ const workoutRoutes  = require('./routes/workouts');
 const wellbeingRoutes = require('./routes/wellbeing');
 const weightRoutes   = require('./routes/weight');
 const dashboardRoutes = require('./routes/dashboard');
+const settingsRoutes = require('./routes/settings');
+const { startReminderService } = require('./services/reminderService');
 const bot = require('./bot');
 
 async function main() {
@@ -38,6 +40,7 @@ async function main() {
   app.use('/api/wellbeing', wellbeingRoutes);
   app.use('/api/weight',    weightRoutes);
   app.use('/api/dashboard', dashboardRoutes);
+  app.use('/api/settings',  settingsRoutes);
 
   app.use(errorHandler);
 
@@ -71,6 +74,9 @@ async function main() {
     bot.launch().catch(err => logger.error({ err: err.message }, 'Bot polling error'));
     logger.info('Bot started in polling mode');
   }
+
+  startReminderService(bot);
+  logger.info('Reminder service started');
 
   const server = app.listen(port, () => {
     logger.info({ port }, 'Server started');
