@@ -13,9 +13,10 @@ const UserSchema = new mongoose.Schema({
   botState:     { type: String, default: 'idle' },
   botStateData: { type: mongoose.Schema.Types.Mixed },
   reminders:    {
-    morning:  { type: Boolean, default: true },
-    evening:  { type: Boolean, default: false },
-    morningTime: { type: String, default: '08:00' },
+    morningEnabled: { type: Boolean, default: true },
+    morningTime:    { type: String,  default: '08:00' },
+    eveningEnabled: { type: Boolean, default: true },
+    eveningTime:    { type: String,  default: '21:00' },
   },
   createdAt:    { type: Date, default: Date.now },
 });
