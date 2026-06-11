@@ -102,11 +102,11 @@ function startReminderService(bot) {
             if (!existingLog) {
               const keyboard = {
                 inline_keyboard: [
-                  [{ text: '😁 Отлично', callback_data: 'wellbeing_4' }],
-                  [{ text: '🙂 Хорошо', callback_data: 'wellbeing_3' }],
-                  [{ text: '😐 Нормально', callback_data: 'wellbeing_2' }],
-                  [{ text: '😔 Плохо', callback_data: 'wellbeing_1' }],
-                  [{ text: '🤒 Болею', callback_data: 'wellbeing_0' }]
+                  [{ text: '😁 Отлично', callback_data: 'feel_great' }],
+                  [{ text: '🙂 Хорошо', callback_data: 'feel_good' }],
+                  [{ text: '😐 Нормально', callback_data: 'feel_ok' }],
+                  [{ text: '😔 Плохо', callback_data: 'feel_bad' }],
+                  [{ text: '🤒 Болею', callback_data: 'feel_sick' }]
                 ]
               };
               
