@@ -76,4 +76,9 @@ api.dashboard = {
   week:  (params) => api.get('/dashboard/week', { params }),  // params: { startDate }
 };
 
+api.settings = {
+  getReminders: () => api.get('/settings/reminders'),
+  updateReminders: (data) => api.put('/settings/reminders', data),
+};
+
 export default api;

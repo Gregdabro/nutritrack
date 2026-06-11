@@ -31,7 +31,15 @@ export default function Settings() {
     weeklyBudget: '',
   });
 
+  const [reminders, setReminders] = useState({
+    morningEnabled: true,
+    morningTime: '08:00',
+    eveningEnabled: true,
+    eveningTime: '21:00',
+  });
+
   const [status, setStatus] = useState(null); // 'success' | 'error'
+  const [remindersStatus, setRemindersStatus] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -61,8 +69,15 @@ export default function Settings() {
           weeklyBudget: data.weeklyBudget ?? '',
         });
       })
-      .catch(() => setStatus('error'))
+      .catch(() => setStatus('error'));
+
+    api.settings.getReminders()
+      .then(({ data }) => {
+        if (data.reminders) setReminders(data.reminders);
+      })
+      .catch((err) => console.error('Failed to load reminders', err))
       .finally(() => setLoading(false));
+
   }, [token, navigate, user]);
 
   const handleGoalChange = (field) => (e) => {
@@ -75,6 +90,12 @@ export default function Settings() {
     const val = e.target.value;
     setProfile((prev) => ({ ...prev, [field]: val }));
     setStatus(null);
+  };
+
+  const handleReminderChange = (field) => (e) => {
+    const val = e.target.type === 'checkbox' ? e.target.checked : e.target.value;
+    setReminders((prev) => ({ ...prev, [field]: val }));
+    setRemindersStatus(null);
   };
 
   const computedCalories = Math.round(
@@ -134,6 +155,19 @@ export default function Settings() {
       setTimeout(() => setStatus(null), 3000);
     } catch {
       setStatus('error');
+    }
+  };
+
+  const handleRemindersSubmit = async (e) => {
+    e.preventDefault();
+    setRemindersStatus(null);
+    try {
+      const { data } = await api.settings.updateReminders(reminders);
+      setReminders(data.reminders);
+      setRemindersStatus('success');
+      setTimeout(() => setRemindersStatus(null), 3000);
+    } catch {
+      setRemindersStatus('error');
     }
   };
 
@@ -279,6 +313,66 @@ export default function Settings() {
 
           <button type="submit" className={styles.saveBtn}>
             Сохранить
+          </button>
+        </form>
+
+        <div className={styles.divider}></div>
+
+        <h2 className={styles.sectionTitle}>Напоминания (Бот)</h2>
+        {remindersStatus === 'success' && (
+          <div className={styles.alertSuccess}>Настройки сохранены! ✓</div>
+        )}
+        {remindersStatus === 'error' && (
+          <div className={styles.alertError}>Ошибка при сохранении</div>
+        )}
+
+        <form onSubmit={handleRemindersSubmit}>
+          <div className={styles.grid}>
+            <label className={`${styles.field} ${styles.fullWidth}`}>
+              <div className={styles.checkboxRow}>
+                <input
+                  type="checkbox"
+                  checked={reminders.morningEnabled}
+                  onChange={handleReminderChange('morningEnabled')}
+                />
+                <span>Утреннее напоминание (сводка за вчера и цели на день)</span>
+              </div>
+            </label>
+            <label className={styles.field}>
+              <span>Время (утром)</span>
+              <input
+                type="time"
+                value={reminders.morningTime}
+                onChange={handleReminderChange('morningTime')}
+                disabled={!reminders.morningEnabled}
+              />
+            </label>
+          </div>
+
+          <div className={styles.grid} style={{ marginTop: '1rem' }}>
+            <label className={`${styles.field} ${styles.fullWidth}`}>
+              <div className={styles.checkboxRow}>
+                <input
+                  type="checkbox"
+                  checked={reminders.eveningEnabled}
+                  onChange={handleReminderChange('eveningEnabled')}
+                />
+                <span>Вечернее напоминание (вопрос о самочувствии)</span>
+              </div>
+            </label>
+            <label className={styles.field}>
+              <span>Время (вечером)</span>
+              <input
+                type="time"
+                value={reminders.eveningTime}
+                onChange={handleReminderChange('eveningTime')}
+                disabled={!reminders.eveningEnabled}
+              />
+            </label>
+          </div>
+
+          <button type="submit" className={styles.saveBtn} style={{ marginTop: '1rem' }}>
+            Сохранить напоминания
           </button>
         </form>
 
