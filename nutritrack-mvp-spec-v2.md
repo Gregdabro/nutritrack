@@ -1704,11 +1704,11 @@ if (process.env.NODE_ENV === 'production') {
 
 ### Спринт 6 — Dashboard и Recipes (4-6 дней)
 
-- [ ] GET /dashboard/today + /dashboard/week
-- [ ] CRUD /recipes
-- [ ] Страница / (Dashboard) — все секции
-- [ ] Компоненты: CalorieRing, WeightChart
-- [ ] Страница /recipes — список и форма создания
+- [x] GET /dashboard/today + /dashboard/week
+- [x] CRUD /recipes
+- [x] Страница / (Dashboard) — все секции
+- [x] Компоненты: CalorieRing, WeightChart
+- [x] Страница /recipes — список и форма создания
 
 ### Спринт 7 — Напоминания (2-3 дня)
 
