@@ -428,6 +428,21 @@ WeightLogSchema.index({ userId: 1, date: -1 });
 WeightLogSchema.index({ userId: 1, date: 1 }, { unique: true });
 ```
 
+### 4.9 WaterLog
+
+```javascript
+// models/WaterLog.js
+const WaterLogSchema = new Schema({
+  userId:   { type: Schema.Types.ObjectId, ref: 'User', required: true },
+  date:     { type: String, required: true },
+  amountMl: { type: Number, required: true },
+  loggedAt: { type: Date, default: Date.now },
+});
+
+WaterLogSchema.index({ userId: 1, date: -1 });
+WaterLogSchema.index({ userId: 1, date: 1 }, { unique: true });
+```
+
 ---
 
 ## 5. Backend API — эндпоинты
@@ -613,6 +628,38 @@ GET  /api/dashboard/week
     avgNutrients: { protein, fat, carbs, fiber, calories },
     goalsCompletion: { protein: 87, fat: 92, ... },  // % выполнения
   }
+```
+
+### 5.10 Water
+
+```
+GET  /api/water?date=YYYY-MM-DD
+  Response: { date, amountMl }
+
+GET  /api/water?startDate=YYYY-MM-DD&endDate=YYYY-MM-DD
+  Response: [{ date, amountMl }]
+
+POST /api/water
+  Body: { date, amountMl }
+  Response: WaterLogObject
+```
+
+### 5.11 Settings
+
+```
+GET  /api/settings/reminders
+  Response: { reminders: { morningEnabled, morningTime, eveningEnabled, eveningTime } }
+
+PUT  /api/settings/reminders
+  Body: { morningEnabled, morningTime, eveningEnabled, eveningTime }
+  Response: { reminders: ... }
+
+GET  /api/settings/profile
+  Response: { weightKg, heightCm, timezone }
+
+PUT  /api/settings/profile
+  Body: { weightKg, heightCm, timezone }
+  Response: { weightKg, heightCm, timezone }
 ```
 
 ---

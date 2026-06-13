@@ -64,7 +64,7 @@ bot.command('login', async (ctx) => {
   const user = ctx.user;
   if (!user) return;
 
-  const rawToken = createLoginToken(user);
+  const rawToken = await createLoginToken(user);
   const webappUrl = process.env.WEBAPP_URL || 'https://nutritrack-topaz.vercel.app';
   const loginUrl = `${webappUrl}/login/token?t=${rawToken}`;
 

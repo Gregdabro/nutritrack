@@ -2,6 +2,7 @@ const { Router } = require('express');
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
 const User = require('../models/User');
+const LoginToken = require('../models/LoginToken');
 const { AuthenticationError, NotFoundError } = require('../errors/AppError');
 const { validate } = require('../middleware/validate');
 const { TelegramAuthSchema, BotLoginSchema } = require('../validation/authSchemas');
@@ -36,6 +37,11 @@ router.post('/telegram', validate(TelegramAuthSchema), async (req, res, next) =>
 
     if (!validateTelegramHash(data)) {
       throw new AuthenticationError('Invalid Telegram hash');
+    }
+
+    const currentTimestamp = Math.floor(Date.now() / 1000);
+    if (currentTimestamp - data.auth_date > 86400) {
+      throw new AuthenticationError('Telegram login data is outdated (replay attack protection)');
     }
 
     const user = await User.findOneAndUpdate(
@@ -92,21 +98,12 @@ router.post('/bot-login', validate(BotLoginSchema), async (req, res, next) => {
 
 // ---- Bot-Based Login Tokens ----
 // Одноразовые токены: бот генерирует, фронтенд обменивает на JWT
-const loginTokens = new Map();
-const LOGIN_TOKEN_TTL = 5 * 60 * 1000; // 5 минут
 
-setInterval(() => {
-  const now = Date.now();
-  for (const [key, entry] of loginTokens) {
-    if (now - entry.createdAt > LOGIN_TOKEN_TTL) loginTokens.delete(key);
-  }
-}, 60_000);
-
-function createLoginToken(user) {
+async function createLoginToken(user) {
   const raw = crypto.randomBytes(32).toString('hex');
-  loginTokens.set(raw, {
-    userId: user._id.toString(),
-    createdAt: Date.now(),
+  await LoginToken.create({
+    token: raw,
+    userId: user._id,
   });
   return raw;
 }
@@ -114,11 +111,10 @@ function createLoginToken(user) {
 // GET: обменять одноразовый токен на JWT
 router.get('/login-token/:rawToken', async (req, res, next) => {
   try {
-    const entry = loginTokens.get(req.params.rawToken);
+    const entry = await LoginToken.findOneAndDelete({ token: req.params.rawToken });
     if (!entry) {
       throw new AuthenticationError('Invalid or expired login token');
     }
-    loginTokens.delete(req.params.rawToken);
 
     const user = await User.findById(entry.userId);
     if (!user) {
