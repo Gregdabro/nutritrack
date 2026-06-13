@@ -2,6 +2,7 @@ const { Router } = require('express');
 const FoodLog = require('../models/FoodLog');
 const Product = require('../models/Product');
 const Recipe = require('../models/Recipe');
+const Workout = require('../models/Workout');
 const auth = require('../middleware/auth');
 const { validate, validateQuery } = require('../middleware/validate');
 const {
@@ -63,8 +64,15 @@ router.post('/parse', validate(ParseFoodSchema), async (req, res, next) => {
             userId: req.user.userId,
             $text: { $search: item.name },
           }).lean();
-          return product
-            ? { ...item, matchedProductId: product._id.toString() }
+          if (product) {
+            return { ...item, matchedProductId: product._id.toString() };
+          }
+          const recipe = await Recipe.findOne({
+            userId: req.user.userId,
+            $text: { $search: item.name },
+          }).lean();
+          return recipe
+            ? { ...item, recipeId: recipe._id.toString() }
             : item;
         } catch {
           return item;
@@ -149,13 +157,15 @@ router.get('/', validateQuery(FoodLogDateQuerySchema), async (req, res, next) =>
   try {
     const date = req.query.date || getTodayDate();
 
-    const logs = await FoodLog.find({
-      userId: req.user.userId,
-      date,
-    }).lean();
+    const [logs, workouts] = await Promise.all([
+      FoodLog.find({ userId: req.user.userId, date }).lean(),
+      Workout.find({ userId: req.user.userId, date }).lean(),
+    ]);
+
+    const burnedCalories = workouts.reduce((sum, w) => sum + (w.caloriesBurned || 0), 0);
 
     const dailyTotals = sumLogTotals(logs);
-    res.json({ logs, dailyTotals });
+    res.json({ logs, dailyTotals, burnedCalories });
   } catch (err) {
     next(err);
   }

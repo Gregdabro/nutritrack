@@ -31,4 +31,6 @@ const RecipeSchema = new Schema({
   createdAt: { type: Date, default: Date.now },
 });
 
+RecipeSchema.index({ userId: 1, name: 'text' });
+
 module.exports = mongoose.model('Recipe', RecipeSchema);

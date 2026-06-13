@@ -22,10 +22,10 @@ router.get('/today', async (req, res, next) => {
     const date = req.query.date || new Date().toISOString().split('T')[0];
     
     // Fetch all related documents for today
-    const [goal, foodLogs, workout, wellbeing, weight, water] = await Promise.all([
+    const [goal, foodLogs, workouts, wellbeing, weight, water] = await Promise.all([
       Goal.findOne({ userId }).lean(),
       FoodLog.find({ userId, date }).sort({ loggedAt: -1 }).lean(),
-      Workout.findOne({ userId, date }).lean(),
+      Workout.find({ userId, date }).lean(),
       WellbeingLog.findOne({ userId, date }).lean(),
       WeightLog.findOne({ userId, date }).lean(),
       WaterLog.findOne({ userId, date }).lean(),
@@ -36,13 +36,17 @@ router.get('/today', async (req, res, next) => {
     const foodTotals = calcTotals(foodLogs.map(f => f.totals).filter(Boolean));
     if (foodTotals.costEur === null) foodTotals.costEur = 0;
 
+    // 1.5 Calculate total workout calories
+    const totalBurned = workouts.reduce((sum, w) => sum + (w.caloriesBurned || 0), 0);
+    const workoutSummary = workouts.length > 0 ? { caloriesBurned: totalBurned, durationMinutes: workouts.reduce((sum, w) => sum + (w.durationMinutes || 0), 0) } : null;
+
     // 2. Calculate remaining (goals - foodTotals, >= 0)
     const remaining = {
       protein: Math.max(0, (goal?.protein || 0) - foodTotals.protein),
       fat: Math.max(0, (goal?.fat || 0) - foodTotals.fat),
       carbs: Math.max(0, (goal?.carbs || 0) - foodTotals.carbs),
       fiber: Math.max(0, (goal?.fiber || 0) - foodTotals.fiber),
-      calories: Math.max(0, (goal?.calories || 0) - foodTotals.calories)
+      calories: Math.max(0, ((goal?.calories || 0) + totalBurned) - foodTotals.calories)
     };
 
     // 3. waterMl
@@ -78,7 +82,7 @@ router.get('/today', async (req, res, next) => {
       goals: goal || null,
       foodTotals,
       remaining,
-      workout: workout || null,
+      workout: workoutSummary,
       wellbeing: wellbeing || null,
       weight: weight || null,
       waterMl,
@@ -126,12 +130,14 @@ router.get('/week', async (req, res, next) => {
     const days = datesToQuery.map(dStr => {
       // Find data for this date
       const dayFoods = foodLogs.filter(f => f.date === dStr);
-      const dayWorkout = workouts.find(w => w.date === dStr);
+      const dayWorkouts = workouts.filter(w => w.date === dStr);
       const dayWellbeing = wellbeings.find(w => w.date === dStr);
       const dayWeight = weights.find(w => w.date === dStr);
 
       const foodTotals = calcTotals(dayFoods.map(f => f.totals).filter(Boolean));
       if (foodTotals.costEur === null) foodTotals.costEur = 0;
+
+      const dayBurned = dayWorkouts.reduce((sum, w) => sum + (w.caloriesBurned || 0), 0);
 
       if (dayFoods.length > 0) {
         daysWithFood++;
@@ -147,14 +153,14 @@ router.get('/week', async (req, res, next) => {
           sumFatPct += Math.min(100, Math.round((foodTotals.fat / goal.fat) * 100) || 0);
           sumCarbsPct += Math.min(100, Math.round((foodTotals.carbs / goal.carbs) * 100) || 0);
           sumFiberPct += Math.min(100, Math.round((foodTotals.fiber / goal.fiber) * 100) || 0);
-          sumCaloriesPct += Math.min(100, Math.round((foodTotals.calories / goal.calories) * 100) || 0);
+          sumCaloriesPct += Math.min(100, Math.round((foodTotals.calories / (goal.calories + dayBurned)) * 100) || 0);
         }
       }
 
       return {
         date: dStr,
         foodTotals,
-        hasWorkout: !!dayWorkout,
+        hasWorkout: dayWorkouts.length > 0,
         wellbeing: dayWellbeing || null,
         weight: dayWeight || null
       };

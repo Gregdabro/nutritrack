@@ -4,6 +4,7 @@ import api from '../api';
 const useDiaryStore = create((set, get) => ({
   logs:        [],
   dailyTotals: { protein: 0, fat: 0, carbs: 0, fiber: 0, calories: 0, costEur: 0 },
+  burnedCalories: 0,
   loading:     false,
   error:       null,
 
@@ -14,6 +15,7 @@ const useDiaryStore = create((set, get) => ({
       set({
         logs:        res.data.logs || [],
         dailyTotals: res.data.dailyTotals || {},
+        burnedCalories: res.data.burnedCalories || 0,
         loading:     false,
       });
     } catch (err) {

@@ -38,7 +38,7 @@ export default function Diary() {
   const [currentDate, setCurrentDate] = useState(today);
   const [quickAdd, setQuickAdd] = useState(null); // { mealType }
 
-  const { logs, dailyTotals, loading, error, fetchDay, removeLog } = useDiaryStore();
+  const { logs, dailyTotals, burnedCalories, loading, error, fetchDay, removeLog } = useDiaryStore();
   const { goals, fetchGoals } = useGoalsStore();
 
   useEffect(() => {
@@ -138,7 +138,7 @@ export default function Diary() {
             <div className={styles.statCard}>
               <div className={styles.statLabel}>Ккал</div>
               <div className={styles.statValue}>{dailyTotals.calories || 0}</div>
-              <div className={styles.statSub}>/ {g.calories}</div>
+              <div className={styles.statSub}>/ {g.calories + (burnedCalories || 0)}</div>
             </div>
             
             {logs.some(l => l.product && l.product.pricePer100g) && (
