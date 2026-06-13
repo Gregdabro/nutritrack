@@ -4,7 +4,6 @@ import api from '../api';
 const useDiaryStore = create((set, get) => ({
   logs:        [],
   dailyTotals: { protein: 0, fat: 0, carbs: 0, fiber: 0, calories: 0, costEur: 0 },
-  goals:       null,
   loading:     false,
   error:       null,
 
@@ -22,14 +21,7 @@ const useDiaryStore = create((set, get) => ({
     }
   },
 
-  async fetchGoals() {
-    try {
-      const res = await api.goals.get();
-      set({ goals: res.data });
-    } catch {
-      // Goals are non-critical — ignore errors
-    }
-  },
+
 
   removeLog(id) {
     const logs = get().logs.filter((l) => l._id !== id);

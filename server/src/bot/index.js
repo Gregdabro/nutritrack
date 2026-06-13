@@ -16,6 +16,10 @@ const {
   handleDetailInputText
 } = require('./handlers/wellbeing');
 const { handleWeightCommand, handleWeightInput } = require('./handlers/weight');
+const helpHandler = require('./handlers/help');
+const statsHandler = require('./handlers/stats');
+const goalsHandler = require('./handlers/goals');
+const repeatHandler = require('./handlers/repeat');
 
 const bot = new Telegraf(process.env.BOT_TOKEN);
 
@@ -34,6 +38,18 @@ bot.command('feel', handleFeelCommand);
 
 // Команда /weight — вес
 bot.command('weight', handleWeightCommand);
+
+// Команда /stats — статистика за неделю
+bot.command('stats', statsHandler);
+
+// Команда /goals — текущие цели
+bot.command('goals', goalsHandler);
+
+// Команда /repeat — повторить последний прием пищи
+bot.command('repeat', repeatHandler);
+
+// Команда /help — справка
+bot.command('help', helpHandler);
 
 // Команда /cancel — сброс состояния диалога
 bot.command('cancel', async (ctx) => {

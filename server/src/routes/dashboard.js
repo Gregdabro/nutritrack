@@ -5,6 +5,7 @@ const FoodLog = require('../models/FoodLog');
 const Workout = require('../models/Workout');
 const WellbeingLog = require('../models/WellbeingLog');
 const WeightLog = require('../models/WeightLog');
+const WaterLog = require('../models/WaterLog');
 const { calcTotals } = require('../services/nutritionCalc');
 const logger = require('../logger');
 
@@ -21,32 +22,19 @@ router.get('/today', async (req, res, next) => {
     const date = req.query.date || new Date().toISOString().split('T')[0];
     
     // Fetch all related documents for today
-    const [goal, foodLogs, workout, wellbeing, weight] = await Promise.all([
+    const [goal, foodLogs, workout, wellbeing, weight, water] = await Promise.all([
       Goal.findOne({ userId }).lean(),
       FoodLog.find({ userId, date }).sort({ loggedAt: -1 }).lean(),
       Workout.findOne({ userId, date }).lean(),
       WellbeingLog.findOne({ userId, date }).lean(),
       WeightLog.findOne({ userId, date }).lean(),
+      WaterLog.findOne({ userId, date }).lean(),
     ]);
 
     // 1. Calculate foodTotals
     // foodLogs is an array of meals. We need to sum up their totals.
-    const foodTotals = {
-      protein: 0, fat: 0, carbs: 0, fiber: 0, calories: 0, costEur: 0
-    };
-    
-    for (const log of foodLogs) {
-      if (log.totals) {
-        foodTotals.protein += log.totals.protein || 0;
-        foodTotals.fat += log.totals.fat || 0;
-        foodTotals.carbs += log.totals.carbs || 0;
-        foodTotals.fiber += log.totals.fiber || 0;
-        foodTotals.calories += log.totals.calories || 0;
-        if (log.totals.costEur != null) {
-          foodTotals.costEur += log.totals.costEur;
-        }
-      }
-    }
+    const foodTotals = calcTotals(foodLogs.map(f => f.totals).filter(Boolean));
+    if (foodTotals.costEur === null) foodTotals.costEur = 0;
 
     // 2. Calculate remaining (goals - foodTotals, >= 0)
     const remaining = {
@@ -58,8 +46,7 @@ router.get('/today', async (req, res, next) => {
     };
 
     // 3. waterMl
-    // TODO: waterMl — учёт воды не реализован в MVP, возвращаем 0
-    const waterMl = 0;
+    const waterMl = water ? water.amountMl : 0;
 
     // 4. recentMeals (last 3 FoodLog entries)
     // Since we already sorted by loggedAt: -1 above, we just take first 3.
@@ -145,18 +132,8 @@ router.get('/week', async (req, res, next) => {
       const dayWellbeing = wellbeings.find(w => w.date === dStr);
       const dayWeight = weights.find(w => w.date === dStr);
 
-      const foodTotals = { protein: 0, fat: 0, carbs: 0, fiber: 0, calories: 0, costEur: 0 };
-      
-      for (const f of dayFoods) {
-        if (f.totals) {
-          foodTotals.protein += f.totals.protein || 0;
-          foodTotals.fat += f.totals.fat || 0;
-          foodTotals.carbs += f.totals.carbs || 0;
-          foodTotals.fiber += f.totals.fiber || 0;
-          foodTotals.calories += f.totals.calories || 0;
-          if (f.totals.costEur != null) foodTotals.costEur += f.totals.costEur;
-        }
-      }
+      const foodTotals = calcTotals(dayFoods.map(f => f.totals).filter(Boolean));
+      if (foodTotals.costEur === null) foodTotals.costEur = 0;
 
       if (dayFoods.length > 0) {
         daysWithFood++;

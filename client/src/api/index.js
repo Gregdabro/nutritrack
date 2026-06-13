@@ -71,6 +71,11 @@ api.weight = {
   update: (id, data)   => api.put(`/weight/${id}`, data),
 };
 
+api.water = {
+  get:    (params)     => api.get('/water', { params }), // params: { date }
+  create: (data)       => api.post('/water', data),
+};
+
 api.dashboard = {
   today: (params) => api.get('/dashboard/today', { params }), // params: { date }
   week:  (params) => api.get('/dashboard/week', { params }),  // params: { startDate }
@@ -79,6 +84,7 @@ api.dashboard = {
 api.settings = {
   getReminders: () => api.get('/settings/reminders'),
   updateReminders: (data) => api.put('/settings/reminders', data),
+  updateProfile: (data) => api.put('/settings/profile', data),
 };
 
 export default api;

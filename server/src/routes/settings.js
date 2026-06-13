@@ -13,6 +13,8 @@ const RemindersSchema = z.object({
   eveningTime:    z.string().regex(/^\d{2}:\d{2}$/),
 });
 
+const { UpdateProfileSchema } = require('../validation/settingsSchemas');
+
 // GET /api/settings/reminders
 router.get('/reminders', auth, async (req, res, next) => {
   try {
@@ -39,6 +41,25 @@ router.put('/reminders', auth, validate(RemindersSchema), async (req, res, next)
     ).lean();
     
     res.json({ reminders: user.reminders });
+  } catch (err) {
+    next(err);
+  }
+});
+
+// PUT /api/settings/profile
+router.put('/profile', auth, validate(UpdateProfileSchema), async (req, res, next) => {
+  try {
+    const user = await User.findByIdAndUpdate(
+      req.user.userId,
+      { $set: req.body },
+      { new: true, runValidators: true }
+    ).lean();
+
+    res.json({
+      weightKg: user.weightKg,
+      heightCm: user.heightCm,
+      timezone: user.timezone
+    });
   } catch (err) {
     next(err);
   }

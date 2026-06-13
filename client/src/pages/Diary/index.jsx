@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import useDiaryStore from '../../store/diaryStore';
+import useGoalsStore from '../../store/goalsStore';
 import FoodEntry from '../../components/FoodEntry';
 import NutrientBar from '../../components/NutrientBar';
 import QuickAdd from '../../components/QuickAdd';
@@ -35,8 +36,8 @@ export default function Diary() {
   const [currentDate, setCurrentDate] = useState(today);
   const [quickAdd, setQuickAdd] = useState(null); // { mealType }
 
-  const { logs, dailyTotals, goals, loading, error, fetchDay, fetchGoals, removeLog } =
-    useDiaryStore();
+  const { logs, dailyTotals, loading, error, fetchDay, removeLog } = useDiaryStore();
+  const { goals, fetchGoals } = useGoalsStore();
 
   useEffect(() => {
     fetchDay(currentDate);

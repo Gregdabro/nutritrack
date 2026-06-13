@@ -1,5 +1,6 @@
 const express = require('express');
 const WeightLog = require('../models/WeightLog');
+const User = require('../models/User');
 const requireAuth = require('../middleware/auth');
 const { validate } = require('../middleware/validate');
 const { CreateWeightSchema } = require('../validation/weightSchemas');
@@ -49,6 +50,8 @@ router.post('/', validate(CreateWeightSchema), async (req, res, next) => {
       { upsert: true, new: true, setDefaultsOnInsert: true }
     );
 
+    await User.updateOne({ _id: req.user.userId }, { weightKg });
+
     res.status(201).json(log);
   } catch (err) {
     next(err);
@@ -71,6 +74,8 @@ router.put('/:id', validate(CreateWeightSchema), async (req, res, next) => {
       log.date = req.body.date;
     }
     await log.save();
+
+    await User.updateOne({ _id: req.user.userId }, { weightKg: req.body.weightKg });
 
     res.json(log);
   } catch (err) {

@@ -16,6 +16,7 @@ export default function Dashboard() {
   const { todayData, weekData, fetchToday, fetchWeek, isLoadingToday, isLoadingWeek } = useDashboardStore();
   const [repeating, setRepeating] = useState(false);
   const [quickAddOpen, setQuickAddOpen] = useState(false);
+  const [addingWater, setAddingWater] = useState(false);
 
   useEffect(() => {
     fetchToday();
@@ -43,6 +44,24 @@ export default function Dashboard() {
       console.error('Failed to repeat breakfast', err);
     } finally {
       setRepeating(false);
+    }
+  };
+
+  const handleAddWater = async () => {
+    if (addingWater) return;
+    setAddingWater(true);
+    try {
+      const today = new Date().toISOString().split('T')[0];
+      const currentWater = todayData?.waterMl || 0;
+      await api.water.create({
+        date: today,
+        amountMl: currentWater + 250
+      });
+      fetchToday();
+    } catch (err) {
+      console.error('Failed to add water', err);
+    } finally {
+      setAddingWater(false);
     }
   };
 
@@ -137,6 +156,10 @@ export default function Dashboard() {
           <i className={`ti ti-apple ${styles.actionIcon}`} />
           <span>+ Еда</span>
         </button>
+        <button className={styles.actionBtn} onClick={handleAddWater} disabled={addingWater}>
+          <i className={`ti ti-droplet ${styles.actionIcon}`} style={{ color: 'var(--nt-blue-mid)' }} />
+          <span>+ Вода</span>
+        </button>
         <button className={styles.actionBtn} onClick={() => navigate('/workouts')}>
           <i className={`ti ti-barbell ${styles.actionIcon}`} />
           <span>+ Тренировка</span>
@@ -193,6 +216,12 @@ export default function Dashboard() {
           <span className={styles.miniLabel}>Вес сегодня</span>
           <span className={styles.miniValue}>
             {weight ? `${weight.weightKg} кг` : 'Нет'}
+          </span>
+        </div>
+        <div className={styles.miniCard}>
+          <span className={styles.miniLabel}>Вода</span>
+          <span className={styles.miniValue}>
+            {todayData.waterMl || 0} мл
           </span>
         </div>
       </section>

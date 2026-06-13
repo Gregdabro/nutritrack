@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import useAuthStore from '../../store/authStore';
+import useGoalsStore from '../../store/goalsStore';
 import api from '../../api';
 import styles from './Settings.module.css';
 
@@ -57,8 +58,9 @@ export default function Settings() {
       });
     }
 
-    api.goals.get()
-      .then(({ data }) => {
+    useGoalsStore.getState().fetchGoals().then(() => {
+      const data = useGoalsStore.getState().goals;
+      if (data) {
         setGoals({
           protein: data.protein || 100,
           fat: data.fat || 100,
@@ -68,8 +70,8 @@ export default function Settings() {
           water: data.water || 2000,
           weeklyBudget: data.weeklyBudget ?? '',
         });
-      })
-      .catch(() => setStatus('error'));
+      }
+    }).catch(() => setStatus('error'));
 
     api.settings.getReminders()
       .then(({ data }) => {
@@ -126,16 +128,9 @@ export default function Settings() {
     if (profile.heightCm !== '') profilePayload.heightCm = Number(profile.heightCm);
 
     try {
-      // We don't have a specific profile update endpoint in the provided API
-      // Wait, there might be one. Let's check api.js...
-      // For now, we assume user profile is updated via some api.auth.update() or similar if it exists
-      // Let's just try to update goals for now, and if there's an API for user we do that too.
-      // But we can update the Zustand store directly so it reflects on UI.
-      if (api.auth && api.auth.updateProfile) {
-        await api.auth.updateProfile(profilePayload);
-      }
+      await api.settings.updateProfile(profilePayload);
       
-      const { data } = await api.goals.update(goalsPayload);
+      const data = await useGoalsStore.getState().updateGoals(goalsPayload);
       
       setGoals({
         protein: data.protein,

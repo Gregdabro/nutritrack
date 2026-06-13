@@ -16,6 +16,7 @@ const wellbeingRoutes = require('./routes/wellbeing');
 const weightRoutes   = require('./routes/weight');
 const dashboardRoutes = require('./routes/dashboard');
 const settingsRoutes = require('./routes/settings');
+const waterRoutes = require('./routes/water');
 const { startReminderService } = require('./services/reminderService');
 const bot = require('./bot');
 
@@ -41,6 +42,7 @@ async function main() {
   app.use('/api/weight',    weightRoutes);
   app.use('/api/dashboard', dashboardRoutes);
   app.use('/api/settings',  settingsRoutes);
+  app.use('/api/water', waterRoutes);
 
   app.use(errorHandler);
 

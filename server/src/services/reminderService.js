@@ -38,8 +38,16 @@ async function getDayTotals(userId, dateStr) {
   }, zero);
 }
 
+let isProcessing = false;
+
 function startReminderService(bot) {
   cron.schedule('* * * * *', async () => {
+    if (isProcessing) {
+      logger.warn('Previous cron cycle is still processing, skipping this minute');
+      return;
+    }
+    
+    isProcessing = true;
     try {
       const users = await User.find({
         $or: [
@@ -129,6 +137,8 @@ function startReminderService(bot) {
       }
     } catch (err) {
       logger.error({ err }, 'Error in reminderService cron cycle');
+    } finally {
+      isProcessing = false;
     }
   });
 }
