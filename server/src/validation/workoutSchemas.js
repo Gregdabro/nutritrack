@@ -34,4 +34,10 @@ const UpdateWorkoutSchema = z.object({
   notes:           z.string().max(1000).optional(),
 });
 
-module.exports = { CreateWorkoutSchema, UpdateWorkoutSchema };
+const WorkoutQuerySchema = z.object({
+  date:      z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
+  startDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
+  endDate:   z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
+});
+
+module.exports = { CreateWorkoutSchema, UpdateWorkoutSchema, WorkoutQuerySchema };

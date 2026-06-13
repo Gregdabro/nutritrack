@@ -1,58 +1,52 @@
-# NutriTrack
+# NutriTrack 🥗
 
-Персональный трекер питания, тренировок и самочувствия.
+NutriTrack — это персональный трекер питания, тренировок и самочувствия с интеграцией Telegram-бота и AI-распознаванием еды.
 
-## Быстрый старт
+## 🌟 Основные возможности
 
-### 1. Клонировать репозиторий
+- **Дневник питания**: Удобное добавление продуктов с расчетом БЖУ, калорий и стоимости.
+- **AI-парсинг**: Запись еды естественным языком через Telegram-бота (например, "съел 2 яйца и 150г гречки").
+- **Тренировки**: Отслеживание различных видов активности, времени и сожженных калорий.
+- **Мониторинг веса**: Графики изменения веса и расчет скользящего среднего.
+- **Самочувствие**: Ежедневная оценка энергии, сна, стресса и настроения в виде тепловой карты.
+- **База продуктов**: Персональный справочник продуктов с возможностью указания цен в разных магазинах.
+- **Telegram-бот**: Быстрый доступ к статистике, напоминания о приемах пищи и логирование еды прямо в мессенджере.
 
-```bash
-git clone <repo-url>
-cd nutritrack
-```
+## 🛠 Технический стек
 
-### 2. Настроить переменные окружения
+- **Backend**: Node.js, Express, Mongoose, Telegraf (Telegram Bot API), Zod, Pino.
+- **Frontend**: React 18, Vite, Zustand, Recharts, CSS Modules.
+- **AI Layer**: DeepSeek API (основной) + Claude API (fallback) для распознавания естественного языка.
+- **База данных**: MongoDB.
 
-```bash
-cd server
-cp .env.example .env
-# Отредактировать .env — указать реальные значения:
-#   MONGODB_URI — строка подключения MongoDB Atlas
-#   BOT_TOKEN   — токен Telegram-бота (получить у @BotFather)
-```
+## 🚀 Локальный запуск
 
-### 3. Запустить backend
+1. **Клонируйте репозиторий**:
+   ```bash
+   git clone <URL>
+   cd Nutritrack
+   ```
 
-```bash
-cd server
-npm install
-npm run dev
-```
+2. **Установите зависимости**:
+   ```bash
+   npm run install:all
+   ```
 
-Сервер запустится на http://localhost:3001.
+3. **Настройте переменные окружения**:
+   Скопируйте `server/.env.example` в `server/.env` и `client/.env.example` в `client/.env`, заполните необходимые ключи:
+   - `MONGODB_URI`
+   - `JWT_SECRET`
+   - `TELEGRAM_BOT_TOKEN`
+   - `DEEPSEEK_API_KEY` (опционально)
+   - `ANTHROPIC_API_KEY` (опционально)
 
-Проверка:
-```bash
-curl http://localhost:3001/health
-# {"status":"ok","timestamp":"..."}
-```
+4. **Запустите проект в режиме разработки**:
+   ```bash
+   npm run dev
+   ```
+   Сервер запустится на `http://localhost:3001`, а клиент — на `http://localhost:5173`.
 
-### 4. Запустить frontend
+## 🌐 Продакшен
 
-```bash
-cd client
-npm install
-npm run dev
-```
-
-Приложение откроется на http://localhost:5173.
-
-### 5. Проверить Telegram-бота
-
-Найти бота в Telegram и отправить `/start`. Бот должен ответить «Привет! Бот NutriTrack работает.»
-
-## Деплой
-
-- **Backend**: Railway — определяется `railway.toml`
-- **Frontend**: Vercel — определяется `vercel.json`
-- **Database**: MongoDB Atlas M0 (бесплатный кластер)
+- **Telegram Bot**: [https://t.me/NutritrackBot](https://t.me/NutritrackBot)
+- **Web App**: [https://nutritrack.vercel.app](https://nutritrack.vercel.app)

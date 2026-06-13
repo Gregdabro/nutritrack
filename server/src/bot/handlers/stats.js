@@ -2,6 +2,7 @@ const User = require('../../models/User');
 const Goal = require('../../models/Goal');
 const FoodLog = require('../../models/FoodLog');
 const { progressBar } = require('../utils');
+const logger = require('../../logger');
 
 async function statsHandler(ctx) {
   try {
@@ -53,7 +54,7 @@ ${totalCost > 0 ? `Потрачено на еду: ${totalCost.toFixed(2)} €` 
     await ctx.reply(msg);
 
   } catch (err) {
-    console.error('Error in statsHandler:', err);
+    logger.error(err, 'Error in statsHandler');
     await ctx.reply('Произошла ошибка при получении статистики.');
   }
 }

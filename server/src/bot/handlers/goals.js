@@ -1,5 +1,6 @@
 const User = require('../../models/User');
 const Goal = require('../../models/Goal');
+const logger = require('../../logger');
 
 async function goalsHandler(ctx) {
   try {
@@ -24,7 +25,7 @@ ${goal.weeklyBudget ? `Бюджет в неделю: ${goal.weeklyBudget} €` :
 `;
     await ctx.reply(msg);
   } catch (err) {
-    console.error('Error in goalsHandler:', err);
+    logger.error(err, 'Error in goalsHandler');
     await ctx.reply('Произошла ошибка при получении целей.');
   }
 }

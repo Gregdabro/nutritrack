@@ -11,6 +11,7 @@ import {
 } from 'recharts';
 import styles from './Wellbeing.module.css';
 import api from '../../api';
+import Skeleton from '../../components/Skeleton/Skeleton';
 
 function getDaysInMonth(year, month) {
   return new Date(year, month + 1, 0).getDate();
@@ -215,7 +216,9 @@ export default function Wellbeing() {
       <div className={styles.card}>
         <h2 className={styles.cardTitle}>Карта месяца</h2>
         {loading ? (
-          <div className={styles.emptyState}>Загрузка...</div>
+          <div style={{ padding: '20px 0' }}>
+            <Skeleton height="150px" />
+          </div>
         ) : (
           <div className={styles.heatmapContainer}>
             <div className={styles.heatmapGrid}>

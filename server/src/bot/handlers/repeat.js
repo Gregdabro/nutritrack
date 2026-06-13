@@ -1,5 +1,6 @@
 const User = require('../../models/User');
 const FoodLog = require('../../models/FoodLog');
+const logger = require('../../logger');
 
 async function repeatHandler(ctx) {
   try {
@@ -48,7 +49,7 @@ async function repeatHandler(ctx) {
 
     await ctx.reply(`✅ Вчерашний ${currentMealType} успешно скопирован на сегодня!`);
   } catch (err) {
-    console.error('Error in repeatHandler:', err);
+    logger.error(err, 'Error in repeatHandler');
     await ctx.reply('Произошла ошибка при повторении приёма пищи.');
   }
 }

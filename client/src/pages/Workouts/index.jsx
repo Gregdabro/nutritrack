@@ -1,6 +1,8 @@
 import { useEffect, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../../api/index';
+import Skeleton from '../../components/Skeleton/Skeleton';
+import EmptyState from '../../components/EmptyState/EmptyState';
 import styles from './Workouts.module.css';
 
 const WORKOUT_TYPES = [
@@ -101,14 +103,23 @@ export default function Workouts() {
         </button>
       </div>
 
-      {loading && <p className={styles.loading}>Загружаю...</p>}
+      {loading && (
+        <div style={{ marginTop: '20px' }}>
+          <Skeleton height="80px" style={{ marginBottom: 16 }} />
+          <Skeleton height="80px" style={{ marginBottom: 16 }} />
+          <Skeleton height="80px" />
+        </div>
+      )}
       {error && <p className={styles.error}>{error}</p>}
 
       {!loading && !error && workouts.length === 0 && (
-        <div className={styles.empty}>
-          <span className={styles.emptyIcon}>🏋️</span>
-          <p>Тренировок ещё нет.<br />Запиши первую!</p>
-        </div>
+        <EmptyState
+          icon="💪"
+          title="Нет тренировок"
+          description="Запиши первую тренировку через бота или вручную"
+          actionLabel="Добавить тренировку"
+          onAction={() => setShowForm(true)}
+        />
       )}
 
       {weeks.map(([weekStart, items]) => (

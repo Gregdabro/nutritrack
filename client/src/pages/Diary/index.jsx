@@ -4,6 +4,8 @@ import useGoalsStore from '../../store/goalsStore';
 import FoodEntry from '../../components/FoodEntry';
 import NutrientBar from '../../components/NutrientBar';
 import QuickAdd from '../../components/QuickAdd';
+import Skeleton from '../../components/Skeleton/Skeleton';
+import EmptyState from '../../components/EmptyState/EmptyState';
 import styles from './Diary.module.css';
 
 const MEAL_TYPES = [
@@ -90,11 +92,20 @@ export default function Diary() {
         </button>
       </div>
 
-      {loading && <p className={styles.hint}>Загружаю...</p>}
-      {error   && <p className={styles.errorMsg}>{error}</p>}
-
-      {/* Daily totals (TOP) */}
-      <div className={styles.summaryCard}>
+      {loading ? (
+        <div style={{ padding: '20px 0' }}>
+          <Skeleton height="100px" style={{ marginBottom: 16 }} />
+          <Skeleton height="60px" style={{ marginBottom: 8 }} />
+          <Skeleton height="60px" style={{ marginBottom: 8 }} />
+          <Skeleton height="60px" style={{ marginBottom: 8 }} />
+          <Skeleton height="60px" />
+        </div>
+      ) : error ? (
+        <p className={styles.errorMsg}>{error}</p>
+      ) : (
+        <>
+          {/* Daily totals (TOP) */}
+          <div className={styles.summaryCard}>
         <div className={styles.summaryContent}>
           <div className={styles.summaryBars}>
             <NutrientBar
@@ -143,9 +154,17 @@ export default function Diary() {
         </div>
       </div>
 
-      {/* Meal sections container */}
-      <div className={styles.mealsCard}>
-        {MEAL_TYPES.map((meal, index) => {
+      {logs.length === 0 ? (
+        <EmptyState
+          icon="🍽"
+          title="Пока пусто"
+          description="Напиши боту что съел или добавь вручную"
+          actionLabel="Добавить еду"
+          onAction={() => setQuickAdd({ mealType: 'snack' })}
+        />
+      ) : (
+        <div className={styles.mealsCard}>
+          {MEAL_TYPES.map((meal, index) => {
           const mealLogs = logs.filter((l) => l.mealType === meal.id);
           const mealTotals = mealLogs.reduce(
             (acc, log) => {
@@ -215,6 +234,7 @@ export default function Diary() {
           </div>
         </div>
       </div>
+      )}
 
       {/* QuickAdd modal */}
       {quickAdd && (

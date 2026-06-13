@@ -1,8 +1,8 @@
 const { Router } = require('express');
 const Workout = require('../models/Workout');
 const auth = require('../middleware/auth');
-const { validate } = require('../middleware/validate');
-const { CreateWorkoutSchema, UpdateWorkoutSchema } = require('../validation/workoutSchemas');
+const { validate, validateQuery } = require('../middleware/validate');
+const { CreateWorkoutSchema, UpdateWorkoutSchema, WorkoutQuerySchema } = require('../validation/workoutSchemas');
 const { NotFoundError, AuthorizationError } = require('../errors/AppError');
 const { calcCaloriesBurned } = require('../services/caloriesBurned');
 const User = require('../models/User');
@@ -14,7 +14,7 @@ router.use(auth);
 
 // GET /api/workouts?date=YYYY-MM-DD
 // GET /api/workouts?startDate=YYYY-MM-DD&endDate=YYYY-MM-DD
-router.get('/', async (req, res, next) => {
+router.get('/', validateQuery(WorkoutQuerySchema), async (req, res, next) => {
   try {
     const { date, startDate, endDate } = req.query;
     const filter = { userId: req.user.userId };

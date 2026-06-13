@@ -7,6 +7,8 @@ import NutrientBar from '../../components/NutrientBar';
 import FoodEntry from '../../components/FoodEntry';
 import WeightChart from '../../components/WeightChart';
 import QuickAdd from '../../components/QuickAdd';
+import Skeleton from '../../components/Skeleton/Skeleton';
+import EmptyState from '../../components/EmptyState/EmptyState';
 import api from '../../api';
 import styles from './Dashboard.module.css';
 
@@ -83,17 +85,17 @@ export default function Dashboard() {
       <div className={styles.page}>
         <div className={styles.header}>
           <div>
-            <div className={`${styles.skeleton} ${styles.skeletonBar}`} style={{ width: 150, height: 24, marginBottom: 8 }} />
-            <div className={`${styles.skeleton} ${styles.skeletonBar}`} style={{ width: 100, height: 16 }} />
+            <Skeleton width="150px" height="24px" style={{ marginBottom: 8 }} />
+            <Skeleton width="100px" height="16px" />
           </div>
         </div>
         <div className={styles.card}>
           <div className={styles.ringSection}>
-            <div className={`${styles.skeleton} ${styles.skeletonRing}`} />
-            <div className={styles.macros} style={{ width: '100%' }}>
-              <div className={`${styles.skeleton} ${styles.skeletonBar}`} style={{ height: 20 }} />
-              <div className={`${styles.skeleton} ${styles.skeletonBar}`} style={{ height: 20 }} />
-              <div className={`${styles.skeleton} ${styles.skeletonBar}`} style={{ height: 20 }} />
+            <Skeleton width="120px" height="120px" borderRadius="50%" />
+            <div className={styles.macros} style={{ width: '100%', paddingLeft: 16 }}>
+              <Skeleton width="100%" height="20px" style={{ marginBottom: 8 }} />
+              <Skeleton width="100%" height="20px" style={{ marginBottom: 8 }} />
+              <Skeleton width="100%" height="20px" />
             </div>
           </div>
         </div>
@@ -128,30 +130,38 @@ export default function Dashboard() {
 
       <section className={styles.card}>
         <h2 className={styles.sectionTitle}>Прогресс</h2>
-        <div className={styles.ringSection}>
-          <CalorieRing eaten={eatenCals} goal={goalCals} burned={burnedCals} />
-          
-          <div className={styles.macros}>
-            <NutrientBar 
-              label="Б" 
-              current={foodTotals?.protein || 0} 
-              goal={goals?.protein || 100} 
-              color="var(--nt-blue-mid)" 
-            />
-            <NutrientBar 
-              label="Ж" 
-              current={foodTotals?.fat || 0} 
-              goal={goals?.fat || 100} 
-              color="var(--nt-amber-mid)" 
-            />
-            <NutrientBar 
-              label="У" 
-              current={foodTotals?.carbs || 0} 
-              goal={goals?.carbs || 200} 
-              color="var(--nt-green-mid)" 
-            />
+        {(eatenCals === 0 && burnedCals === 0) ? (
+          <EmptyState
+            icon="👋"
+            title="Добро пожаловать!"
+            description="Напиши боту что ты съел сегодня, и данные появятся здесь."
+          />
+        ) : (
+          <div className={styles.ringSection}>
+            <CalorieRing eaten={eatenCals} goal={goalCals} burned={burnedCals} />
+            
+            <div className={styles.macros}>
+              <NutrientBar 
+                label="Б" 
+                current={foodTotals?.protein || 0} 
+                goal={goals?.protein || 100} 
+                color="var(--nt-blue-mid)" 
+              />
+              <NutrientBar 
+                label="Ж" 
+                current={foodTotals?.fat || 0} 
+                goal={goals?.fat || 100} 
+                color="var(--nt-amber-mid)" 
+              />
+              <NutrientBar 
+                label="У" 
+                current={foodTotals?.carbs || 0} 
+                goal={goals?.carbs || 200} 
+                color="var(--nt-green-mid)" 
+              />
+            </div>
           </div>
-        </div>
+        )}
       </section>
 
       <section className={styles.quickActions}>
@@ -240,7 +250,13 @@ export default function Dashboard() {
         {chartData.length > 0 ? (
           <WeightChart data={chartData} />
         ) : (
-          <div className={styles.emptyState}>Добавьте вес, чтобы увидеть график</div>
+          <EmptyState
+            icon="⚖️"
+            title="Нет данных о весе"
+            description="Взвешивайся по утрам и записывай результат"
+            actionLabel="Добавить вес"
+            onAction={() => navigate('/weight')}
+          />
         )}
       </section>
 

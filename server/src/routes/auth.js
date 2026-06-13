@@ -146,7 +146,7 @@ router.get('/login-token/:rawToken', async (req, res, next) => {
 router.post('/dev-login', async (req, res, next) => {
   try {
     if (process.env.NODE_ENV === 'production') {
-      return res.status(404).json({ error: 'NOT_FOUND', message: 'Route not found' });
+      throw new NotFoundError('Route');
     }
 
     const telegramId = String(req.body.telegramId || `dev_${Date.now()}`);

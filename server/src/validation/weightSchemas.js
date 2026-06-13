@@ -7,6 +7,17 @@ const CreateWeightSchema = z.object({
   weightKg: z.number().positive().min(20).max(300),
 });
 
+const UpdateWeightSchema = z.object({
+  date: z.string().regex(dateRegex, 'Invalid date format (YYYY-MM-DD)').optional(),
+  weightKg: z.number().positive().min(20).max(300).optional(),
+});
+
+const WeightQuerySchema = z.object({
+  limit: z.string().regex(/^\d+$/).optional(),
+});
+
 module.exports = {
   CreateWeightSchema,
+  UpdateWeightSchema,
+  WeightQuerySchema,
 };

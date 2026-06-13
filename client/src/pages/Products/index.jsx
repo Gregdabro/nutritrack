@@ -2,6 +2,8 @@ import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../../api';
 import useAuthStore from '../../store/authStore';
+import Skeleton from '../../components/Skeleton/Skeleton';
+import EmptyState from '../../components/EmptyState/EmptyState';
 import styles from './Products.module.css';
 
 const CATEGORIES = [
@@ -258,7 +260,16 @@ export default function Products() {
   }
 
   if (loading && products.length === 0) {
-    return <div className={styles.loading}>Загрузка...</div>;
+    return (
+      <div className={styles.page}>
+        <div className={styles.card}>
+          <Skeleton height="40px" style={{ marginBottom: 16 }} />
+          <Skeleton height="60px" style={{ marginBottom: 8 }} />
+          <Skeleton height="60px" style={{ marginBottom: 8 }} />
+          <Skeleton height="60px" />
+        </div>
+      </div>
+    );
   }
 
   return (
@@ -423,12 +434,13 @@ export default function Products() {
 
         {/* Empty state */}
         {!loading && products.length === 0 && !showForm && (
-          <div className={styles.empty}>
-            <div>Продукты ещё не добавлены</div>
-            <button className={styles.emptyBtn} onClick={openCreateForm}>
-              + Добавить первый продукт
-            </button>
-          </div>
+          <EmptyState
+            icon="🥦"
+            title="База продуктов пуста"
+            description="Добавь продукты с их БЖУ и ценами"
+            actionLabel="Добавить продукт"
+            onAction={openCreateForm}
+          />
         )}
 
         {/* Product list */}

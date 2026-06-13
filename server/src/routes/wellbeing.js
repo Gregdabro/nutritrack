@@ -1,15 +1,15 @@
 const express = require('express');
 const WellbeingLog = require('../models/WellbeingLog');
 const requireAuth = require('../middleware/auth');
-const { validate } = require('../middleware/validate');
-const { CreateWellbeingSchema } = require('../validation/wellbeingSchemas');
+const { validate, validateQuery } = require('../middleware/validate');
+const { CreateWellbeingSchema, UpdateWellbeingSchema, WellbeingQuerySchema } = require('../validation/wellbeingSchemas');
 const { AppError, AuthorizationError, NotFoundError } = require('../errors/AppError');
 
 const router = express.Router();
 
 router.use(requireAuth);
 
-router.get('/', async (req, res, next) => {
+router.get('/', validateQuery(WellbeingQuerySchema), async (req, res, next) => {
   try {
     const { date, startDate, endDate } = req.query;
 
@@ -56,7 +56,7 @@ router.post('/', validate(CreateWellbeingSchema), async (req, res, next) => {
   }
 });
 
-router.put('/:id', validate(CreateWellbeingSchema), async (req, res, next) => {
+router.put('/:id', validate(UpdateWellbeingSchema), async (req, res, next) => {
   try {
     const log = await WellbeingLog.findById(req.params.id);
     if (!log) {

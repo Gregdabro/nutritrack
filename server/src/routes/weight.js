@@ -2,8 +2,8 @@ const express = require('express');
 const WeightLog = require('../models/WeightLog');
 const User = require('../models/User');
 const requireAuth = require('../middleware/auth');
-const { validate } = require('../middleware/validate');
-const { CreateWeightSchema } = require('../validation/weightSchemas');
+const { validate, validateQuery } = require('../middleware/validate');
+const { CreateWeightSchema, UpdateWeightSchema, WeightQuerySchema } = require('../validation/weightSchemas');
 const { AuthorizationError, NotFoundError } = require('../errors/AppError');
 
 const router = express.Router();
@@ -18,7 +18,7 @@ function calcMovingAverage(logs, windowSize = 7) {
   });
 }
 
-router.get('/', async (req, res, next) => {
+router.get('/', validateQuery(WeightQuerySchema), async (req, res, next) => {
   try {
     const limit = parseInt(req.query.limit, 10) || 30;
     
@@ -58,7 +58,7 @@ router.post('/', validate(CreateWeightSchema), async (req, res, next) => {
   }
 });
 
-router.put('/:id', validate(CreateWeightSchema), async (req, res, next) => {
+router.put('/:id', validate(UpdateWeightSchema), async (req, res, next) => {
   try {
     const log = await WeightLog.findById(req.params.id);
     if (!log) {

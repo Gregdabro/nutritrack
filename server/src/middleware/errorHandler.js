@@ -9,6 +9,14 @@ function errorHandler(err, req, res, _next) {
     });
   }
 
+  if (err.code === 11000) {
+    logger.warn({ path: req.path, method: req.method }, 'Duplicate key error');
+    return res.status(409).json({
+      error: 'ALREADY_EXISTS',
+      message: 'Запись уже существует',
+    });
+  }
+
   if (err instanceof AppError) {
     logger.warn(
       { code: err.code, statusCode: err.statusCode, method: req.method, path: req.path },

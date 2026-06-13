@@ -11,6 +11,8 @@ import {
 } from 'recharts';
 import styles from './Weight.module.css';
 import api from '../../api';
+import Skeleton from '../../components/Skeleton/Skeleton';
+import EmptyState from '../../components/EmptyState/EmptyState';
 
 function formatDate(dateStr) {
   const d = new Date(dateStr);
@@ -175,9 +177,16 @@ export default function Weight() {
       </div>
 
       {loading ? (
-        <div className={styles.emptyState}>Загрузка...</div>
+        <div style={{ padding: '20px 0' }}>
+          <Skeleton height="300px" style={{ marginBottom: 16 }} />
+          <Skeleton height="200px" />
+        </div>
       ) : logs.length === 0 ? (
-        <div className={styles.emptyState}>Нет записей за этот период. Добавьте свой первый вес!</div>
+        <EmptyState
+          icon="⚖️"
+          title="Нет данных о весе"
+          description="Взвешивайся по утрам и записывай результат"
+        />
       ) : (
         <>
           <div className={styles.card}>
