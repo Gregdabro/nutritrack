@@ -84,7 +84,7 @@ export default function Settings() {
       .catch((err) => console.error('Failed to load reminders', err))
       .finally(() => setLoading(false));
 
-  }, [token, navigate, user]);
+  }, [token, navigate]);
 
   const handleGoalChange = (field) => (e) => {
     const val = e.target.value;
