@@ -52,27 +52,25 @@ router.get('/today', async (req, res, next) => {
     // Since we already sorted by loggedAt: -1 above, we just take first 3.
     const recentMeals = foodLogs.slice(0, 3);
 
-    // 5. repeatSuggestion (yesterday's breakfast if today's breakfast is empty)
+    // 5. repeatSuggestion
     let repeatSuggestion = null;
-    const hasBreakfastToday = foodLogs.some(log => log.mealType === 'breakfast');
+
+    // Determine current meal type roughly by hour
+    const tz = goal?.timezone || 'Europe/Rome';
+    const hourStr = new Intl.DateTimeFormat('en-GB', { timeZone: tz, hour: '2-digit', hour12: false }).format(new Date());
+    const hour = parseInt(hourStr, 10);
     
-    if (!hasBreakfastToday) {
-      const yesterdayObj = new Date(date);
-      yesterdayObj.setDate(yesterdayObj.getDate() - 1);
-      const yesterdayDateStr = yesterdayObj.toISOString().split('T')[0];
+    let currentMealType = 'snack';
+    if (hour >= 6 && hour < 11) currentMealType = 'breakfast';
+    else if (hour >= 11 && hour < 16) currentMealType = 'lunch';
+    else if (hour >= 16 && hour < 22) currentMealType = 'dinner';
 
-      const yesterdayBreakfast = await FoodLog.findOne({ 
-        userId, 
-        date: yesterdayDateStr, 
-        mealType: 'breakfast' 
-      }).lean();
-
-      if (yesterdayBreakfast && yesterdayBreakfast.items && yesterdayBreakfast.items.length > 0) {
-        repeatSuggestion = {
-          mealType: 'breakfast',
-          items: yesterdayBreakfast.items
-        };
-      }
+    const hasCurrentMealToday = foodLogs.some(log => log.mealType === currentMealType);
+    
+    if (!hasCurrentMealToday) {
+      repeatSuggestion = {
+        mealType: currentMealType
+      };
     }
 
     res.json({

@@ -82,6 +82,7 @@ api.dashboard = {
 };
 
 api.settings = {
+  getProfile: () => api.get('/settings/profile'),
   getReminders: () => api.get('/settings/reminders'),
   updateReminders: (data) => api.put('/settings/reminders', data),
   updateProfile: (data) => api.put('/settings/profile', data),

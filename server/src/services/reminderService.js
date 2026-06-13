@@ -61,11 +61,11 @@ function startReminderService(bot) {
       for (const user of users) {
         try {
           // Determine current time in user's timezone (HH:mm)
-          const userTimeStr = new Intl.DateTimeFormat('en-GB', {
+          const userTimeStr = new Intl.DateTimeFormat('sv-SE', {
             timeZone: user.timezone || 'Europe/Rome',
             hour: '2-digit',
             minute: '2-digit',
-            hour12: false
+            hourCycle: 'h23'
           }).format(now); // e.g. "08:00"
 
           const r = user.reminders || {};

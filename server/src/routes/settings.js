@@ -46,6 +46,20 @@ router.put('/reminders', auth, validate(RemindersSchema), async (req, res, next)
   }
 });
 
+// GET /api/settings/profile
+router.get('/profile', auth, async (req, res, next) => {
+  try {
+    const user = await User.findById(req.user.userId).lean();
+    res.json({
+      weightKg: user.weightKg,
+      heightCm: user.heightCm,
+      timezone: user.timezone
+    });
+  } catch (err) {
+    next(err);
+  }
+});
+
 // PUT /api/settings/profile
 router.put('/profile', auth, validate(UpdateProfileSchema), async (req, res, next) => {
   try {

@@ -23,7 +23,7 @@ export default function Dashboard() {
     fetchWeek();
   }, [fetchToday, fetchWeek]);
 
-  const handleRepeatBreakfast = async () => {
+  const handleRepeatMeal = async () => {
     if (!todayData?.repeatSuggestion || repeating) return;
     setRepeating(true);
     try {
@@ -34,14 +34,17 @@ export default function Dashboard() {
 
       await api.foodLogs.repeat({
         sourceDate: yesterdayStr,
-        mealType: 'breakfast',
+        mealType: todayData.repeatSuggestion.mealType,
         targetDate: today
       });
       // Refresh dashboard
       fetchToday();
       fetchWeek();
     } catch (err) {
-      console.error('Failed to repeat breakfast', err);
+      console.error('Failed to repeat meal', err);
+      if (err.response?.status === 404) {
+        alert(`Не удалось найти записи за вчера для приёма пищи: ${todayData.repeatSuggestion.mealType}`);
+      }
     } finally {
       setRepeating(false);
     }
@@ -191,8 +194,14 @@ export default function Dashboard() {
 
         {repeatSuggestion && (
           <div className={styles.repeatBox}>
-            <span className={styles.repeatText}>Повторить завтрак как вчера?</span>
-            <button className={styles.repeatBtn} onClick={handleRepeatBreakfast} disabled={repeating}>
+            <span className={styles.repeatText}>
+              Повторить {
+                repeatSuggestion.mealType === 'breakfast' ? 'завтрак' :
+                repeatSuggestion.mealType === 'lunch' ? 'обед' :
+                repeatSuggestion.mealType === 'dinner' ? 'ужин' : 'перекус'
+              } как вчера?
+            </span>
+            <button className={styles.repeatBtn} onClick={handleRepeatMeal} disabled={repeating}>
               {repeating ? 'Добавляю...' : 'Повторить'}
             </button>
           </div>

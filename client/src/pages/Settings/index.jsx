@@ -14,7 +14,7 @@ const TIMEZONES = [
 
 export default function Settings() {
   const navigate = useNavigate();
-  const { token, user, updateUser } = useAuthStore();
+  const { token, user, setUser } = useAuthStore();
   
   const [profile, setProfile] = useState({
     weightKg: '',
@@ -49,14 +49,18 @@ export default function Settings() {
       return;
     }
 
-    // Set profile data from authStore user
-    if (user) {
-      setProfile({
-        weightKg: user.weightKg || '',
-        heightCm: user.heightCm || '',
-        timezone: user.timezone || 'Europe/Rome',
-      });
-    }
+    api.settings.getProfile()
+      .then(({ data }) => {
+        setProfile({
+          weightKg: data.weightKg || '',
+          heightCm: data.heightCm || '',
+          timezone: data.timezone || 'Europe/Rome',
+        });
+        if (setUser && user) {
+          setUser({ ...user, ...data });
+        }
+      })
+      .catch((err) => console.error('Failed to load profile', err));
 
     useGoalsStore.getState().fetchGoals().then(() => {
       const data = useGoalsStore.getState().goals;
@@ -142,8 +146,8 @@ export default function Settings() {
         weeklyBudget: data.weeklyBudget ?? '',
       });
       
-      if (updateUser) {
-        updateUser({ ...user, ...profilePayload });
+      if (setUser) {
+        setUser({ ...user, ...profilePayload });
       }
 
       setStatus('success');
