@@ -8,6 +8,7 @@ export default function Recipes() {
   const [products, setProducts] = useState([]);
   const [selectedRecipe, setSelectedRecipe] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingRecipeId, setEditingRecipeId] = useState(null);
   const [addingToDiary, setAddingToDiary] = useState(false);
   
   const { register, control, handleSubmit, reset } = useForm({
@@ -51,7 +52,6 @@ export default function Recipes() {
 
   const onSubmit = async (data) => {
     try {
-      // API expects ingredients: [{productId, grams}] and totalServings as number
       const payload = {
         name: data.name,
         totalServings: Number(data.totalServings),
@@ -61,12 +61,47 @@ export default function Recipes() {
         }))
       };
       
-      await api.recipes.create(payload);
+      if (editingRecipeId) {
+        const res = await api.recipes.update(editingRecipeId, payload);
+        setSelectedRecipe(res.data);
+      } else {
+        await api.recipes.create(payload);
+      }
+      
       setIsModalOpen(false);
+      setEditingRecipeId(null);
       reset();
       fetchRecipes();
     } catch (err) {
-      console.error('Failed to create recipe', err);
+      console.error('Failed to save recipe', err);
+      alert('Ошибка при сохранении');
+    }
+  };
+
+  const handleEdit = (recipe) => {
+    setEditingRecipeId(recipe._id);
+    reset({
+      name: recipe.name,
+      totalServings: recipe.totalServings,
+      ingredients: recipe.ingredients.map(ing => ({
+        productId: ing.productId,
+        grams: ing.grams
+      }))
+    });
+    setIsModalOpen(true);
+  };
+
+  const handleDelete = async (id) => {
+    if (!window.confirm('Удалить этот рецепт?')) return;
+    try {
+      await api.recipes.remove(id);
+      if (selectedRecipe?._id === id) {
+        setSelectedRecipe(null);
+      }
+      fetchRecipes();
+    } catch (err) {
+      console.error('Failed to delete recipe', err);
+      alert('Ошибка при удалении');
     }
   };
 
@@ -99,7 +134,11 @@ export default function Recipes() {
     <div className={styles.page}>
       <header className={styles.header}>
         <h1 className={styles.title}>Мои рецепты</h1>
-        <button className={styles.addButton} onClick={() => setIsModalOpen(true)}>
+        <button className={styles.addButton} onClick={() => {
+          setEditingRecipeId(null);
+          reset({ name: '', totalServings: 1, ingredients: [{ productId: '', grams: 100 }] });
+          setIsModalOpen(true);
+        }}>
           <i className="ti ti-plus" /> Создать
         </button>
       </header>
@@ -168,13 +207,23 @@ export default function Recipes() {
                 </div>
               </div>
 
-              <button 
-                className={styles.addToDiaryBtn} 
-                onClick={handleAddToDiary}
-                disabled={addingToDiary}
-              >
-                <i className="ti ti-plus" /> {addingToDiary ? 'Добавляю...' : 'В дневник (1 порция)'}
-              </button>
+              <div className={styles.actionButtons}>
+                <button 
+                  className={styles.addToDiaryBtn} 
+                  onClick={handleAddToDiary}
+                  disabled={addingToDiary}
+                >
+                  <i className="ti ti-plus" /> {addingToDiary ? 'Добавляю...' : 'В дневник (1 порц)'}
+                </button>
+                <div className={styles.secondaryActions}>
+                  <button className={styles.editBtn} onClick={() => handleEdit(selectedRecipe)} title="Редактировать">
+                    <i className="ti ti-pencil" />
+                  </button>
+                  <button className={styles.deleteBtn} onClick={() => handleDelete(selectedRecipe._id)} title="Удалить">
+                    <i className="ti ti-trash" />
+                  </button>
+                </div>
+              </div>
             </div>
           ) : (
             <div className={styles.detailsCard}>
@@ -187,7 +236,7 @@ export default function Recipes() {
       {isModalOpen && (
         <div className={styles.modalOverlay}>
           <div className={styles.modal}>
-            <h2 className={styles.modalTitle}>Новый рецепт</h2>
+            <h2 className={styles.modalTitle}>{editingRecipeId ? 'Редактировать рецепт' : 'Новый рецепт'}</h2>
             <form onSubmit={handleSubmit(onSubmit)}>
               <div className={styles.formGroup}>
                 <label>Название рецепта</label>
@@ -243,7 +292,10 @@ export default function Recipes() {
               </div>
 
               <div className={styles.modalActions}>
-                <button type="button" className={styles.cancelBtn} onClick={() => setIsModalOpen(false)}>
+                <button type="button" className={styles.cancelBtn} onClick={() => {
+                  setIsModalOpen(false);
+                  setEditingRecipeId(null);
+                }}>
                   Отмена
                 </button>
                 <button type="submit" className={styles.submitBtn}>

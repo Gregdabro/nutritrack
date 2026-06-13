@@ -168,9 +168,14 @@
   color: var(--nt-text);
 }
 
-.addToDiaryBtn {
+.actionButtons {
   margin-top: 24px;
-  width: 100%;
+  display: flex;
+  gap: 12px;
+}
+
+.addToDiaryBtn {
+  flex: 1;
   background: var(--nt-green-mid);
   color: #fff;
   border: none;
@@ -183,6 +188,37 @@
   justify-content: center;
   align-items: center;
   gap: 8px;
+}
+
+.secondaryActions {
+  display: flex;
+  gap: 8px;
+}
+
+.editBtn, .deleteBtn {
+  background: var(--nt-surface2);
+  color: var(--nt-text);
+  border: 0.5px solid var(--nt-border2);
+  border-radius: 8px;
+  width: 44px;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: background 0.2s;
+}
+
+.editBtn:hover {
+  background: var(--nt-border2);
+}
+
+.deleteBtn {
+  color: var(--nt-coral-mid);
+}
+
+.deleteBtn:hover {
+  background: var(--nt-coral-bg);
+  border-color: var(--nt-coral-mid);
 }
 
 .emptyState {
