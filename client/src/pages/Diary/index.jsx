@@ -235,6 +235,8 @@ export default function Diary() {
         </div>
       </div>
       )}
+        </>
+      )}
 
       {/* QuickAdd modal */}
       {quickAdd && (
